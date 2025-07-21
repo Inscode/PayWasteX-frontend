@@ -41,7 +41,7 @@ const RoleButtonGroup = () => {
     shopOwner: [
       { label: "Dashboard", path: "/shopOwner/dashboard" },
       { label: "Billing History", path: "/shopOwner/bills" },
-      { label: "Property Details", path: "/shopOwner/properties" },
+      // { label: "Property Details", path: "/shopOwner/properties" },
     ],
     responsibleOfficer: [
       { label: "Dashboard", path: "/responsibleOfficer/dashboard" },
