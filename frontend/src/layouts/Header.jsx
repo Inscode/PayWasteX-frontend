@@ -2,19 +2,22 @@
 import React from "react";
 import logoB from "../assets/logoBin.png";
 import { useAuth } from "../contexts/AuthContext";
+import { useLanguage } from "../contexts/LanguageContext";
 
 const Header = () => {
   const { user, logout } = useAuth();
+  const { lang, switchLanguage } = useLanguage();
+
+const handleLangChange = (selectedLang) => {
+  switchLanguage(selectedLang);
+};
+
 
   return (
     <nav className="sticky top-0 z-50 bg-green-700 flex justify-between items-center h-12 sm:h-16 px-4 sm:px-6">
       {/* Left: Logo + Brand */}
       <div className="flex items-center gap-2">
-        <img
-          src={logoB}
-          alt="PayWasteX Logo"
-          className="h-8 sm:h-10 w-auto"
-        />
+        <img src={logoB} alt="PayWasteX Logo" className="h-8 sm:h-10 w-auto" />
         <span className="text-xl sm:text-2xl font-bold text-white">
           PayWasteX
         </span>
@@ -23,19 +26,32 @@ const Header = () => {
       {/* Right: Language, Bell, Profile */}
       <div className="flex items-center gap-4">
         {/* Language Switch */}
-        <button className="text-white text-lg sm:text-xl hover:underline transition">
-          සිංහල
-        </button>
+        <div className="flex gap-2 text-white text-sm sm:text-base font-medium">
+          <button
+            onClick={() => handleLangChange("en")}
+            className={`hover:underline transition ${lang === "en" ? "underline font-bold" : ""}`}
+          >
+            English
+          </button>
+          |
+          <button
+            onClick={() => handleLangChange("si")}
+            className={`hover:underline transition ${lang === "si" ? "underline font-bold" : ""}`}
+          >
+            සිංහල
+          </button>
+          |
+          <button
+            onClick={() => handleLangChange("ta")}
+            className={`hover:underline transition ${lang === "ta" ? "underline font-bold" : ""}`}
+          >
+            தமிழ்
+          </button>
+        </div>
 
         {/* Notification Bell */}
         <button className="text-white text-2xl sm:text-3xl hover:text-green-200 transition">
-          <svg
-            width="24"
-            height="24"
-            fill="none"
-            viewBox="0 0 24 24"
-            className="sm:w-10 sm:h-10"
-          >
+          <svg width="24" height="24" fill="none" viewBox="0 0 24 24" className="sm:w-10 sm:h-10">
             <path
               d="M12 22c1.104 0 2-.896 2-2h-4a2 2 0 002 2zm6-6V11c0-3.07-1.63-5.64-5-6.32V4a1 1 0 10-2 0v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"
               fill="white"
