@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { FaDownload, FaChevronDown, FaFilter } from 'react-icons/fa';
+import { FaDownload, FaFilter } from 'react-icons/fa';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const billingData = [
   { id: 'INV1001', period: 'Mar 2025', due: 'LKR 1000.00', paid: 'Mar 15 2025', status: 'Unpaid' },
@@ -9,9 +10,47 @@ const billingData = [
   { id: 'INV1005', period: 'Feb 2025', due: 'LKR 1000.00', paid: 'Feb 15 2025', status: 'Paid' },
 ];
 
+const labels = {
+  en: {
+    billingPeriod: 'Billing Period',
+    status: 'Status',
+    billId: 'Bill ID',
+    amountDue: 'Amount Due',
+    amountPaid: 'Amount Paid',
+    paid: 'Paid',
+    unpaid: 'Unpaid',
+    download: 'Download',
+    noResults: 'No results found.',
+  },
+  si: {
+    billingPeriod: 'බිල්පත් කාලය',
+    status: 'තත්ත්වය',
+    billId: 'බිල් අංකය',
+    amountDue: 'ගෙවිය යුතු මුදල',
+    amountPaid: 'ගෙවූ මුදල',
+    paid: 'ගෙවී ඇත',
+    unpaid: 'නොගෙවී ඇත',
+    download: 'බාගන්න',
+    noResults: 'ප්‍රතිඵල නොමැත.',
+  },
+  ta: {
+    billingPeriod: 'பில் காலம்',
+    status: 'நிலைமை',
+    billId: 'பில் ஐடி',
+    amountDue: 'கடன் தொகை',
+    amountPaid: 'செலுத்திய தொகை',
+    paid: 'செலுத்தப்பட்டது',
+    unpaid: 'செலுத்தப்படவில்லை',
+    download: 'பதிவிறக்கவும்',
+    noResults: 'முடிவுகள் எதுவும் இல்லை.',
+  },
+};
+
 const BillingHistory = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('All');
   const [selectedStatus, setSelectedStatus] = useState('All');
+  const { lang } = useLanguage();
+  const t = labels[lang] || labels.en;
 
   const billingPeriods = ['All', ...new Set(billingData.map((item) => item.period))];
   const statuses = ['All', 'Paid', 'Unpaid'];
@@ -30,7 +69,7 @@ const BillingHistory = () => {
         <div className="flex items-center justify-between bg-gray-200 px-4 py-2 rounded-md w-full md:w-[70%] shadow-sm">
           <div className="flex items-center gap-2 font-medium text-green-800">
             <FaFilter className="text-green-600" />
-            <span>Billing Period:</span>
+            <span>{t.billingPeriod}:</span>
           </div>
           <select
             value={selectedPeriod}
@@ -47,7 +86,7 @@ const BillingHistory = () => {
 
         {/* Status Filter */}
         <div className="flex items-center justify-between bg-gray-200 px-4 py-2 rounded-md w-full md:w-[28%] shadow-sm">
-          <span className="font-medium text-green-800">Status:</span>
+          <span className="font-medium text-green-800">{t.status}:</span>
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
@@ -55,23 +94,23 @@ const BillingHistory = () => {
           >
             {statuses.map((status) => (
               <option key={status} value={status}>
-                {status}
+                {t[status.toLowerCase()]}
               </option>
             ))}
           </select>
         </div>
       </div>
 
-      {/* Table (Desktop Only) */}
+      {/* Desktop Table */}
       <div className="hidden md:block bg-gray-100 rounded-xl shadow-lg overflow-x-auto">
         <table className="min-w-[600px] w-full text-center text-sm">
           <thead className="bg-gray-200 text-gray-700 font-semibold">
             <tr>
-              <th className="py-3">Bill ID</th>
-              <th>Billing Period</th>
-              <th>Amount Due</th>
-              <th>Amount Paid</th>
-              <th>Status</th>
+              <th className="py-3">{t.billId}</th>
+              <th>{t.billingPeriod}</th>
+              <th>{t.amountDue}</th>
+              <th>{t.amountPaid}</th>
+              <th>{t.status}</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -83,19 +122,19 @@ const BillingHistory = () => {
                 <td>{bill.due}</td>
                 <td>{bill.paid}</td>
                 <td>
-                  {bill.status === 'Paid' ? (
-                    <span className="inline-block bg-green-700 text-white text-xs font-semibold px-4 py-1 rounded-full">
-                      Paid
-                    </span>
-                  ) : (
-                    <span className="inline-block bg-white border border-gray-300 text-xs text-gray-600 font-semibold px-4 py-1 rounded-full">
-                      Unpaid
-                    </span>
-                  )}
+                  <span
+                    className={`inline-block ${
+                      bill.status === 'Paid'
+                        ? 'bg-green-700 text-white'
+                        : 'bg-white border border-gray-300 text-gray-600'
+                    } text-xs font-semibold px-4 py-1 rounded-full`}
+                  >
+                    {t[bill.status.toLowerCase()]}
+                  </span>
                 </td>
                 <td>
                   <button className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold text-xs px-4 py-1 rounded shadow inline-flex items-center gap-1">
-                    Download <FaDownload />
+                    {t.download} <FaDownload />
                   </button>
                 </td>
               </tr>
@@ -103,7 +142,7 @@ const BillingHistory = () => {
             {filteredData.length === 0 && (
               <tr>
                 <td colSpan="6" className="py-6 text-gray-500 text-center">
-                  No results found.
+                  {t.noResults}
                 </td>
               </tr>
             )}
@@ -111,43 +150,47 @@ const BillingHistory = () => {
         </table>
       </div>
 
-      {/* Cards (Mobile Only) */}
+      {/* Mobile Cards */}
       <div className="block md:hidden space-y-4">
         {filteredData.map((bill, idx) => (
           <div key={idx} className="bg-gray-100 p-4 rounded-lg shadow-md">
             <div className="flex justify-between mb-2">
-              <span className="text-sm text-gray-600 font-medium">Bill ID:</span>
+              <span className="text-sm text-gray-600 font-medium">{t.billId}:</span>
               <span className="font-semibold">{bill.id}</span>
             </div>
             <div className="flex justify-between mb-2">
-              <span className="text-sm text-gray-600 font-medium">Billing Period:</span>
+              <span className="text-sm text-gray-600 font-medium">{t.billingPeriod}:</span>
               <span>{bill.period}</span>
             </div>
             <div className="flex justify-between mb-2">
-              <span className="text-sm text-gray-600 font-medium">Amount Due:</span>
+              <span className="text-sm text-gray-600 font-medium">{t.amountDue}:</span>
               <span>{bill.due}</span>
             </div>
             <div className="flex justify-between mb-2">
-              <span className="text-sm text-gray-600 font-medium">Amount Paid:</span>
+              <span className="text-sm text-gray-600 font-medium">{t.amountPaid}:</span>
               <span>{bill.paid}</span>
             </div>
             <div className="flex justify-between mb-2">
-              <span className="text-sm text-gray-600 font-medium">Status:</span>
-              {bill.status === 'Paid' ? (
-                <span className="bg-green-700 text-white text-xs px-3 py-1 rounded-full font-semibold">Paid</span>
-              ) : (
-                <span className="bg-white border border-gray-300 text-gray-600 text-xs px-3 py-1 rounded-full font-semibold">Unpaid</span>
-              )}
+              <span className="text-sm text-gray-600 font-medium">{t.status}:</span>
+              <span
+                className={`text-xs font-semibold px-3 py-1 rounded-full ${
+                  bill.status === 'Paid'
+                    ? 'bg-green-700 text-white'
+                    : 'bg-white border border-gray-300 text-gray-600'
+                }`}
+              >
+                {t[bill.status.toLowerCase()]}
+              </span>
             </div>
             <div className="mt-3 text-right">
               <button className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold text-xs px-4 py-1 rounded shadow inline-flex items-center gap-1">
-                Download <FaDownload />
+                {t.download} <FaDownload />
               </button>
             </div>
           </div>
         ))}
         {filteredData.length === 0 && (
-          <div className="text-center text-gray-500 mt-6">No results found.</div>
+          <div className="text-center text-gray-500 mt-6">{t.noResults}</div>
         )}
       </div>
     </div>
