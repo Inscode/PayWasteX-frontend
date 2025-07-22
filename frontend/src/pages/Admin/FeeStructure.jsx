@@ -1,9 +1,13 @@
 import React, { useState } from "react";
 import { useLanguage } from "../../contexts/LanguageContext";
+import { useNavigate } from "react-router-dom";
 
 export default function FeeStructurePage() {
   const [successMessage, setSuccessMessage] = useState("");
+  const [editIndex, setEditIndex] = useState(null);
+  const [editData, setEditData] = useState({});
   const { lang } = useLanguage();
+  const navigate = useNavigate();
 
   const translations = {
     en: {
@@ -21,7 +25,10 @@ export default function FeeStructurePage() {
       monthly: "Monthly",
       quarterly: "Quarterly",
       addButton: "Add New Fee Structure",
-      success: "Successfully added new fee structure!",
+      success: "Successfully updated fee structure!",
+      close: "Close",
+      update: "Update Fee",
+      cancel: "Cancel",
     },
     si: {
       title: "ගාස්තු ව්‍යුහය",
@@ -38,7 +45,10 @@ export default function FeeStructurePage() {
       monthly: "මාසිකව",
       quarterly: "තරමක් මාසිකව",
       addButton: "නව ගාස්තු ව්‍යුහය එක් කරන්න",
-      success: "නව ගාස්තු ව්‍යුහය සාර්ථකව එක් කරන ලදි!",
+      success: "ගාස්තු ව්‍යුහය සාර්ථකව යාවත්කාලීන කරන ලදි!",
+      close: "වසන්න",
+      update: "යාවත්කාලීන කිරීම",
+      cancel: "අවලංගු කරන්න",
     },
     ta: {
       title: "கட்டண அமைப்பு",
@@ -55,18 +65,39 @@ export default function FeeStructurePage() {
       monthly: "மாதந்தோறும்",
       quarterly: "மூன்றுமாதத்திற்கு ஒருமுறை",
       addButton: "புதிய கட்டண அமைப்பைச் சேர்க்கவும்",
-      success: "புதிய கட்டண அமைப்பு வெற்றிகரமாக சேர்க்கப்பட்டது!",
+      success: "கட்டண அமைப்பு வெற்றிகரமாக புதுப்பிக்கப்பட்டது!",
+      close: "மூடு",
+      update: "கட்டணத்தை புதுப்பிக்கவும்",
+      cancel: "ரத்துசெய்",
     },
   };
 
   const t = translations[lang];
 
-  const tableData = [
+  const [tableData, setTableData] = useState([
     { premises: "Company", category: "Small Scale", amount: 300.0 },
     { premises: "Grocery", category: "Small Scale", amount: 300.0 },
     { premises: "Shop", category: "Large Scale", amount: 413.0 },
     { premises: "Hotel", category: "Large Scale", amount: 413.0 },
-  ];
+  ]);
+
+  const handleEditClick = (index) => {
+    setEditIndex(index);
+    setEditData(tableData[index]);
+  };
+
+  const handleUpdate = () => {
+    const updated = [...tableData];
+    updated[editIndex] = editData;
+    setTableData(updated);
+    setSuccessMessage(t.success);
+    setEditIndex(null);
+    setTimeout(() => setSuccessMessage(""), 3000);
+  };
+
+  const handleCancel = () => {
+    setEditIndex(null);
+  };
 
   const handleNewFeeStructure = () => {
     setSuccessMessage(t.success);
@@ -90,13 +121,16 @@ export default function FeeStructurePage() {
           </thead>
           <tbody>
             {tableData.map((row, index) => (
-              <tr key={index} className="border-amber-700 hover:bg-gray-100">
+              <tr key={index} className="hover:bg-gray-100">
                 <td className="px-4 py-2">{row.premises}</td>
                 <td className="px-4 py-2">
-                {t[row.category.toLowerCase().replace(" ", "")] || row.category}
+                  {t[row.category.toLowerCase().replace(" ", "")] || row.category}
                 </td>
                 <td className="px-4 py-2">LKR {row.amount.toFixed(2)}</td>
-                <td className="px-4 py-2 text-blue-600 font-medium cursor-pointer hover:underline">
+                <td
+                  className="px-4 py-2 text-blue-600 font-medium cursor-pointer hover:underline"
+                  onClick={() => handleEditClick(index)}
+                >
                   {t.edit}
                 </td>
               </tr>
@@ -117,8 +151,8 @@ export default function FeeStructurePage() {
               {row.premises}
             </div>
             <div className="mb-2">
-                <span className="font-semibold text-gray-700">{t.category}: </span>
-                {t[row.category.toLowerCase().replace(" ", "")] || row.category}
+              <span className="font-semibold text-gray-700">{t.category}: </span>
+              {t[row.category.toLowerCase().replace(" ", "")] || row.category}
             </div>
             <div className="mb-2">
               <span className="font-semibold text-gray-700">{t.amount}: </span>
@@ -126,7 +160,10 @@ export default function FeeStructurePage() {
             </div>
             <div>
               <span className="font-semibold text-gray-700">{t.status}: </span>
-              <span className="text-blue-600 font-medium cursor-pointer hover:underline">
+              <span
+                className="text-blue-600 font-medium cursor-pointer hover:underline"
+                onClick={() => handleEditClick(index)}
+              >
                 {t.edit}
               </span>
             </div>
@@ -137,8 +174,6 @@ export default function FeeStructurePage() {
       {/* New Fee Structure Form */}
       <h2 className="text-xl font-bold text-green-800 mt-10 mb-4">{t.newTitle}</h2>
       <div className="bg-gray-100 rounded p-4 space-y-4">
-
-        {/* Row 1 */}
         <div className="flex flex-wrap gap-4">
           <input
             type="text"
@@ -156,8 +191,6 @@ export default function FeeStructurePage() {
             className="flex-1 min-w-[200px] px-4 py-2 border border-gray-300 rounded"
           />
         </div>
-
-        {/* Row 2 */}
         <div className="flex flex-wrap gap-4 items-center">
           <select className="flex-1 min-w-[200px] px-4 py-2 border border-gray-300 rounded">
             <option value="">{t.billingFrequency}</option>
@@ -169,22 +202,80 @@ export default function FeeStructurePage() {
             className="flex-1 min-w-[200px] px-4 py-2 border border-gray-300 rounded"
           />
         </div>
-
-        {/* Button Row - Centered */}
         <div className="flex justify-center mt-4">
           <button
             onClick={handleNewFeeStructure}
-            className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-6 py-2 rounded"
+            className="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 font-bold px-6 py-2 rounded"
           >
             {t.addButton}
           </button>
         </div>
       </div>
 
+      {/* Edit Modal */}
+      {editIndex !== null && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow-xl w-96">
+            <h2 className="text-xl font-bold text-center text-green-800 mb-4">
+              {t.edit} {t.title}
+            </h2>
+            <div className="space-y-3">
+              <input
+                type="text"
+                value={editData.premises}
+                readOnly
+                className="w-full px-4 py-2 border rounded"
+              />
+              <input
+                type="text"
+                value={editData.category}
+                readOnly
+                className="w-full px-4 py-2 border rounded"
+              />
+              <input
+                type="number"
+                value={editData.amount}
+                onChange={(e) =>
+                  setEditData({
+                    ...editData,
+                    amount: parseFloat(e.target.value) || 0,
+                  })
+                }
+                className="w-full px-4 py-2 border rounded"
+              />
+              <input
+                type="date"
+                value={editData.effectiveDate || ""}
+                onChange={(e) =>
+                  setEditData({ ...editData, effectiveDate: e.target.value })
+                }
+                className="w-full px-4 py-2 border rounded"
+              />
+            </div>
+            <div className="flex justify-between mt-6 gap-4">
+  <button
+    onClick={handleUpdate}
+    className="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded h-10"
+  >
+    {t.update}
+  </button>
+  <button
+    onClick={handleCancel}
+    className="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+  >
+    {t.cancel}
+  </button>
+</div>
+
+            
+          </div>
+        </div>
+      )}
+
       {/* Toast Message */}
       {successMessage && (
         <div className="fixed top-15 right-4 z-50">
-          <div className=" text-yellow-700 px-4 py-2  font-medium">
+          <div className=" text-yellow-800 px-4  font-medium">
             {successMessage}
           </div>
         </div>
