@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FaDownload, FaFilter } from 'react-icons/fa';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useNavigate } from 'react-router-dom'; // ✅ Import useNavigate
 
 const billingData = [
   { id: 'INV1001', period: 'Mar 2025', due: 'LKR 1000.00', paid: 'Mar 15 2025', status: 'Unpaid' },
@@ -51,6 +52,7 @@ const BillingHistory = () => {
   const [selectedStatus, setSelectedStatus] = useState('All');
   const { lang } = useLanguage();
   const t = labels[lang] || labels.en;
+  const navigate = useNavigate(); // ✅ Define navigate
 
   const billingPeriods = ['All', ...new Set(billingData.map((item) => item.period))];
   const statuses = ['All', 'Paid', 'Unpaid'];
@@ -133,9 +135,13 @@ const BillingHistory = () => {
                   </span>
                 </td>
                 <td>
-                  <button className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold text-xs px-4 py-1 rounded shadow inline-flex items-center gap-1">
-                    {t.download} <FaDownload />
-                  </button>
+                  <button
+  className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold text-xs px-4 py-1 rounded shadow inline-flex items-center gap-1"
+  onClick={() => navigate('/shopOwner/receipt-preview', { state: { bill } })}
+>
+  {t.download} <FaDownload />
+</button>
+
                 </td>
               </tr>
             ))}
@@ -183,7 +189,10 @@ const BillingHistory = () => {
               </span>
             </div>
             <div className="mt-3 text-right">
-              <button className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold text-xs px-4 py-1 rounded shadow inline-flex items-center gap-1">
+              <button
+                className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold text-xs px-4 py-1 rounded shadow inline-flex items-center gap-1"
+                onClick={() => navigate('/receipt-preview', { state: { bill } })}
+              >
                 {t.download} <FaDownload />
               </button>
             </div>
