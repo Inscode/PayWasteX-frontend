@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-// import FeeCollectorDashboard from "../pages/dashboard/FeeCollectorDashboard";
+import FeeCollectorDashboard from "../pages/FeeCollector/Dashboard";
 export default function FeeCollectorRoutes() {
   return (
     <Routes>
