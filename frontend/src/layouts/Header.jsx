@@ -27,26 +27,17 @@ const handleLangChange = (selectedLang) => {
       <div className="flex items-center gap-4">
         {/* Language Switch */}
         <div className="flex gap-2 text-white text-sm sm:text-base font-medium">
-          <button
-            onClick={() => handleLangChange("en")}
-            className={`hover:underline transition ${lang === "en" ? "underline font-bold" : ""}`}
-          >
-            English
-          </button>
-          |
-          <button
-            onClick={() => handleLangChange("si")}
-            className={`hover:underline transition ${lang === "si" ? "underline font-bold" : ""}`}
-          >
-            සිංහල
-          </button>
-          |
-          <button
-            onClick={() => handleLangChange("ta")}
-            className={`hover:underline transition ${lang === "ta" ? "underline font-bold" : ""}`}
-          >
-            தமிழ்
-          </button>
+         <button
+  onClick={() => {
+    const nextLang = lang === "en" ? "si" : lang === "si" ? "ta" : "en";
+    switchLanguage(nextLang);
+  }}
+  className="text-white text-sm sm:text-base font-medium hover:underline transition"
+>
+  {lang === "en" && "English"}
+  {lang === "si" && "සිංහල"}
+  {lang === "ta" && "தமிழ்"}
+</button>
         </div>
 
         {/* Notification Bell */}
