@@ -253,19 +253,19 @@ export default function FeeStructurePage() {
               />
             </div>
             <div className="flex justify-between mt-6 gap-4">
-  <button
-    onClick={handleUpdate}
-    className="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded h-10"
-  >
-    {t.update}
-  </button>
-  <button
-    onClick={handleCancel}
-    className="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
-  >
-    {t.cancel}
-  </button>
-</div>
+        <button
+        onClick={handleUpdate}
+        className="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded h-10"
+        >
+        {t.update}
+        </button>
+        <button
+        onClick={handleCancel}
+        className="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+        >
+        {t.cancel}
+        </button>
+        </div>
 
             
           </div>
