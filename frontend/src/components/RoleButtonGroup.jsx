@@ -23,7 +23,7 @@ export default function RoleButtonGroup() {
       { label: "Dashboard", path: "/responsibleOfficer/dashboard" },
       { label: "Bills", path: "/responsibleOfficer/bills" },
       { label: "Store Owners", path: "/responsibleOfficer/stores" },
-      { label: "Outstanding", path: "/responsibleOfficer/payments" },
+      { label: "Reports", path: "/responsibleOfficer/reports" },
     ],
     feeCollector: [
       { label: "Dashboard", path: "/feeCollector/dashboard" },
