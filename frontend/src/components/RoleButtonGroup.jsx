@@ -21,7 +21,7 @@ export default function RoleButtonGroup() {
     ],
     responsibleOfficer: [
       { label: "Dashboard", path: "/responsibleOfficer/dashboard" },
-      { label: "Bills", path: "/responsibleOfficer/bills" },
+      { label: "Bill Management", path: "/responsibleOfficer/billmanagement" },
       { label: "Store Owners", path: "/responsibleOfficer/stores" },
       { label: "Reports", path: "/responsibleOfficer/reports" },
     ],
