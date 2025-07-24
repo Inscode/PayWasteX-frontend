@@ -1,5 +1,4 @@
-// src/pages/BillManagement.jsx
-import React from "react";
+import React, { useState } from "react";
 import { useLanguage } from "../../contexts/LanguageContext";
 
 const labels = {
@@ -70,6 +69,34 @@ const dummyData = [
     company: "Railway Tourist Bungalow",
     time: "12/04/2025 - 20/04/2025",
     status: "pending",
+    zone: "A1",
+  },
+  {
+    invoiceNo: "INV1001",
+    regNo: "ST1NWT1",
+    name: "M S D Priyantha",
+    company: "Railway Tourist Bungalow",
+    time: "12/04/2025 - 20/04/2025",
+    status: "pending",
+    zone: "A1",
+  },
+  {
+    invoiceNo: "INV1001",
+    regNo: "ST1NWT1",
+    name: "M S D Priyantha",
+    company: "Railway Tourist Bungalow",
+    time: "12/04/2025 - 20/04/2025",
+    status: "pending",
+    zone: "A1",
+  },
+  {
+    invoiceNo: "INV1001",
+    regNo: "ST1NWT1",
+    name: "M S D Priyantha",
+    company: "Railway Tourist Bungalow",
+    time: "12/04/2025 - 20/04/2025",
+    status: "pending",
+    zone: "A1",
   },
   {
     invoiceNo: "INV1002",
@@ -78,6 +105,7 @@ const dummyData = [
     company: "Rajarata Oil",
     time: "12/04/2025 - 20/04/2025",
     status: "paid",
+    zone: "A1",
   },
   {
     invoiceNo: "INV1003",
@@ -86,6 +114,7 @@ const dummyData = [
     company: "Kings’ Communication",
     time: "12/04/2025 - 20/04/2025",
     status: "overdue",
+    zone: "A2",
   },
   {
     invoiceNo: "INV1004",
@@ -94,6 +123,7 @@ const dummyData = [
     company: "Star Grocery",
     time: "12/04/2025 - 20/04/2025",
     status: "pending",
+    zone: "A2",
   },
   {
     invoiceNo: "INV1005",
@@ -102,47 +132,163 @@ const dummyData = [
     company: "Horana Wasana Bakery",
     time: "12/04/2025 - 20/04/2025",
     status: "paid",
+    zone: "B1",
   },
+  {
+    invoiceNo: "INV1006",
+    regNo: "ST1NWT1",
+    name: "Tharindu Silva",
+    company: "Ocean View",
+    time: "10/04/2025 - 17/04/2025",
+    status: "pending",
+    zone: "B1",
+  },
+  {
+    invoiceNo: "INV1007",
+    regNo: "ST1NWT1",
+    name: "Dinesh Perera",
+    company: "Digital Tech",
+    time: "08/04/2025 - 15/04/2025",
+    status: "overdue",
+    zone: "B2",
+  },
+   {
+    invoiceNo: "INV1007",
+    regNo: "ST1NWT1",
+    name: "Dinesh Perera",
+    company: "Digital Tech",
+    time: "08/04/2025 - 15/04/2025",
+    status: "overdue",
+    zone: "B2",
+  },
+   {
+    invoiceNo: "INV1007",
+    regNo: "ST1NWT1",
+    name: "Dinesh Perera",
+    company: "Digital Tech",
+    time: "08/04/2025 - 15/04/2025",
+    status: "overdue",
+    zone: "B2",
+  },
+   {
+    invoiceNo: "INV1007",
+    regNo: "ST1NWT1",
+    name: "Dinesh Perera",
+    company: "Digital Tech",
+    time: "08/04/2025 - 15/04/2025",
+    status: "overdue",
+    zone: "B2",
+  },
+   {
+    invoiceNo: "INV1007",
+    regNo: "ST1NWT1",
+    name: "Dinesh Perera",
+    company: "Digital Tech",
+    time: "08/04/2025 - 15/04/2025",
+    status: "overdue",
+    zone: "B2",
+  },
+   {
+    invoiceNo: "INV1007",
+    regNo: "ST1NWT1",
+    name: "Dinesh Perera",
+    company: "Digital Tech",
+    time: "08/04/2025 - 15/04/2025",
+    status: "overdue",
+    zone: "B2",
+  },
+   {
+    invoiceNo: "INV1007",
+    regNo: "ST1NWT1",
+    name: "Dinesh Perera",
+    company: "Digital Tech",
+    time: "08/04/2025 - 15/04/2025",
+    status: "overdue",
+    zone: "B2",
+  },
+   {
+    invoiceNo: "INV1007",
+    regNo: "ST1NWT1",
+    name: "Dinesh Perera",
+    company: "Digital Tech",
+    time: "08/04/2025 - 15/04/2025",
+    status: "overdue",
+    zone: "B2",
+  },
+   {
+    invoiceNo: "INV1007",
+    regNo: "ST1NWT1",
+    name: "Dinesh Perera",
+    company: "Digital Tech",
+    time: "08/04/2025 - 15/04/2025",
+    status: "overdue",
+    zone: "B2",
+  },
+   {
+    invoiceNo: "INV1007",
+    regNo: "ST1NWT1",
+    name: "Dinesh Perera",
+    company: "Digital Tech",
+    time: "08/04/2025 - 15/04/2025",
+    status: "overdue",
+    zone: "B2",
+  },
+  
 ];
+
+const zones = ["A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4", "C1", "C2", "C3", "C4"];
 
 const BillManagement = () => {
   const { lang } = useLanguage();
   const t = labels[lang] || labels.en;
+
+  const [selectedZone, setSelectedZone] = useState("A1");
+  const [currentPage, setCurrentPage] = useState(1);
+  const perPage = 4;
+
+  const filteredData = dummyData.filter((d) => d.zone === selectedZone);
+  const totalPages = Math.ceil(filteredData.length / perPage);
+  const paginatedData = filteredData.slice((currentPage - 1) * perPage, currentPage * perPage);
 
   return (
     <div className="min-h-screen p-4 sm:p-8 bg-white text-gray-800">
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
         <div className="bg-blue-600 text-white rounded-lg p-4 text-center shadow">
-          <p className="text-2xl font-bold">15</p>
+          <p className="text-2xl font-bold">{dummyData.length}</p>
           <p>{t.total}</p>
         </div>
         <div className="bg-yellow-400 text-yellow-900 rounded-lg p-4 text-center shadow">
-          <p className="text-2xl font-bold">15</p>
+          <p className="text-2xl font-bold">{dummyData.filter(d => d.status === "pending").length}</p>
           <p>{t.pending}</p>
         </div>
         <div className="bg-red-500 text-white rounded-lg p-4 text-center shadow">
-          <p className="text-2xl font-bold">15</p>
+          <p className="text-2xl font-bold">{dummyData.filter(d => d.status === "overdue").length}</p>
           <p>{t.overdue}</p>
         </div>
       </div>
 
-      {/* Filter + Zones */}
-      <div className="flex flex-wrap gap-4 justify-between items-center mb-6">
-        <div className="text-gray-700">{t.filtered}</div>
-        <button className="bg-green-700 text-white px-4 py-2 rounded shadow hover:bg-green-800">
-          {t.issue}
-        </button>
-      </div>
+      {/* Filter Buttons */}
       <div className="flex flex-wrap gap-2 mb-4">
-        {["A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4", "C1", "C2", "C3", "C4"].map((zone) => (
-          <span key={zone} className="bg-green-100 text-green-800 px-2 py-1 rounded text-sm font-medium shadow-sm">
+        {zones.map((zone) => (
+          <button
+            key={zone}
+            onClick={() => {
+              setSelectedZone(zone);
+              setCurrentPage(1);
+            }}
+            className={`px-3 py-1 rounded text-sm font-medium shadow-sm border
+              ${selectedZone === zone
+                ? "bg-green-700 text-white"
+                : "bg-green-100 text-green-800"
+              }`}
+          >
             {zone}
-          </span>
+          </button>
         ))}
       </div>
 
-      {/* Desktop Table */}
+      {/* Table for Desktop */}
       <div className="hidden md:block overflow-x-auto rounded-lg shadow bg-gray-100">
         <table className="w-full text-sm text-left">
           <thead className="bg-gray-200 text-gray-700 font-semibold">
@@ -157,7 +303,7 @@ const BillManagement = () => {
             </tr>
           </thead>
           <tbody>
-            {dummyData.map((item, idx) => (
+            {paginatedData.map((item, idx) => (
               <tr key={idx} className="border-t bg-white">
                 <td className="px-3 py-2">{item.invoiceNo}</td>
                 <td className="px-3 py-2">{item.regNo}</td>
@@ -184,7 +330,7 @@ const BillManagement = () => {
 
       {/* Mobile Cards */}
       <div className="md:hidden flex flex-col gap-4">
-        {dummyData.map((item, idx) => (
+        {paginatedData.map((item, idx) => (
           <div key={idx} className="bg-gray-100 rounded-lg p-4 shadow space-y-2 text-sm">
             <p><strong>{t.invoiceNo}:</strong> {item.invoiceNo}</p>
             <p><strong>{t.regNo}:</strong> {item.regNo}</p>
@@ -207,6 +353,35 @@ const BillManagement = () => {
           </div>
         ))}
       </div>
+
+     {/* Pagination */}
+{totalPages > 1 && (
+  <div className="flex justify-center mt-6 gap-2">
+    {Array.from({ length: totalPages }, (_, i) => (
+      <button
+        key={i}
+        onClick={() => setCurrentPage(i + 1)}
+        className={`w-10 h-10 rounded-md font-semibold transition
+          ${currentPage === i + 1
+            ? "bg-green-700 text-white"
+            : "bg-green-100 text-green-900 hover:bg-green-200"}`}
+      >
+        {i + 1}
+      </button>
+    ))}
+
+    {/* Next Arrow Button */}
+    {currentPage < totalPages && (
+      <button
+        onClick={() => setCurrentPage((prev) => prev + 1)}
+        className="w-10 h-10 rounded-md font-semibold bg-green-100 text-green-900 hover:bg-green-200"
+      >
+        &gt;
+      </button>
+    )}
+  </div>
+)}
+
     </div>
   );
 };
