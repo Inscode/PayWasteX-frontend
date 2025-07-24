@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useLanguage } from "../../contexts/LanguageContext";
-import { FaCalendarAlt, FaUser, FaFilter } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -32,7 +32,7 @@ const labels = {
       "ගෙවූ අයගේ ලැයිස්තුව",
       "නොගෙවූ අයගේ ලැයිස්තුව",
       "ගාස්තු විශේෂඥයන්ගේ කාර්ය සාධන සාරාංශය",
-      "කලාපය හෝ ප්‍රවර්ගය අනුව පOutstanding බකියාවන්",
+      "කලාපය හෝ ප්‍රවර්ගය අනුව Outstanding බකියාවන්",
     ],
   },
   ta: {
@@ -58,11 +58,35 @@ const dummyZones = ["Zone A", "Zone B", "Zone C"];
 const Reports = () => {
   const { lang } = useLanguage();
   const t = labels[lang] || labels.en;
+  const navigate = useNavigate();
 
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [collector, setCollector] = useState("");
   const [zone, setZone] = useState("");
+
+  const handleGenerateClick = (index) => {
+  switch (index) {
+    case 0:
+      navigate("/report/collection-summery");
+      break;
+    case 1:
+      navigate("/report/payers");
+      break;
+    case 2:
+      navigate("/report/non-payers");
+      break;
+    case 3:
+      navigate("/report/performance-summery");
+      break;
+    case 4:
+      navigate("/report/outstanding-balance");
+      break;
+    default:
+      alert("This report is not yet implemented.");
+  }
+};
+
 
   return (
     <div className="min-h-screen p-4 sm:p-6 bg-white text-gray-800">
@@ -133,7 +157,10 @@ const Reports = () => {
           >
             <p className="text-base sm:text-lg text-gray-700 flex-1">{title}</p>
             <div className="flex gap-2">
-              <button className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800 text-sm">
+              <button
+                onClick={() => handleGenerateClick(idx)}
+                className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800 text-sm"
+              >
                 {t.generate}
               </button>
               <button className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 text-sm">
