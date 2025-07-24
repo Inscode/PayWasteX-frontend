@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useLanguage } from "../../contexts/LanguageContext";
 import EditBillModal from "../../components/EditBillModal";
+import ViewBillModal from "../../components/ViewBillModal";
+
 
 const labels = {
   en: {
@@ -64,6 +66,9 @@ const BillManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedBill, setSelectedBill] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+
+
 
   const perPage = 4;
   const filteredData = bills.filter((d) => d.zone === selectedZone);
@@ -154,18 +159,26 @@ const BillManagement = () => {
                       : t.overdueStatus}
                   </span>
                 </td>
-                <td className="px-3 py-2 space-x-2">
-                  <button
-                    className="text-blue-600 hover:underline"
-                    onClick={() => {
-                      setSelectedBill(item);
-                      setIsModalOpen(true);
-                    }}
-                  >
-                    {t.edit}
-                  </button>
-                  <button className="text-green-700 hover:underline">{t.view}</button>
-                </td>
+               <td className="px-3 py-2 space-x-2">
+  <button
+    className="text-blue-600 hover:underline"
+    onClick={() => {
+      setSelectedBill(item);
+      setIsModalOpen(true); // for Edit
+    }}
+  >
+    {t.edit}
+  </button>
+  <button
+    className="text-green-700 hover:underline"
+    onClick={() => {
+      setSelectedBill(item);
+      setIsViewModalOpen(true); // ← This must be here!
+    }}
+  >
+    {t.view}
+  </button>
+</td>
               </tr>
             ))}
           </tbody>
@@ -207,7 +220,17 @@ const BillManagement = () => {
               >
                 {t.edit}
               </button>
-              <button className="text-green-700 hover:underline">{t.view}</button>
+             <button
+  className="text-green-700 hover:underline"
+  onClick={() => {
+    setSelectedBill(item);
+    setIsViewModalOpen(true);
+  }}
+>
+  {t.view}
+  
+</button>
+
             </div>
           </div>
         ))}
@@ -239,6 +262,12 @@ const BillManagement = () => {
         billData={selectedBill}
         onSave={handleSave}
       />
+      <ViewBillModal
+  isOpen={isViewModalOpen}
+  onClose={() => setIsViewModalOpen(false)}
+  billData={selectedBill}
+/>
+
     </div>
   );
 };
