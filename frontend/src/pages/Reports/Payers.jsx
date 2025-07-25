@@ -47,6 +47,7 @@ const payers = [
 ];
 
 const PayersReport = () => {
+    const navigate = useNavigate();
   const itemsPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -55,7 +56,7 @@ const PayersReport = () => {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
-const navigate = useNavigate();
+
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) setCurrentPage(page);
