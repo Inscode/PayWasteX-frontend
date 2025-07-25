@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const nonPayers = [
   {
@@ -53,6 +54,7 @@ const nonPayers = [
 ];
 
 const NonPayersReport = () => {
+      const navigate = useNavigate();
   const itemsPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -158,9 +160,15 @@ const NonPayersReport = () => {
         <button className="bg-green-700 hover:bg-green-800 text-white px-6 py-2 rounded font-medium">
           Re-Generate Report
         </button>
-        <button className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded font-medium">
+        <button
+          onClick={() =>
+            navigate("/report/non-payers/download-non-payers-report")
+          }
+          className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded font-medium"
+        >
           Download As PDF
         </button>
+
         <button className="bg-yellow-300 hover:bg-yellow-400 text-yellow-900 px-6 py-2 rounded font-medium">
           Back To Report List
         </button>

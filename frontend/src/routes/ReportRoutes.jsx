@@ -7,7 +7,8 @@ import PerformanceSummery from "../pages/Reports/PerformanceSummery";
 import CollectionSummery from "../pages/Reports/CollectionSummery";
 import OutstandingBalance from "../pages/Reports/OutstandingBalance";
 import ReceiptPreview from "../pages/Reports/ReceiptPreview";
-
+import PayersReportDownload from "../pages/Reports/PayersReportDownload";
+import DefaultersReportDownload from "../pages/Reports/defaultersreportdownload";
 
 
 const ReportRoutes = () => {
@@ -19,6 +20,8 @@ const ReportRoutes = () => {
       <Route path="collection-summery" element={CollectionSummery} />
       <Route path="outstanding-balance" element={OutstandingBalance} />
       <Route path="receipt-preview" element={<ReceiptPreview />} />
+      <Route path="payers/download-payers-report" element={<PayersReportDownload />} />
+    <Route path="/non-payers/download-non-payers-report" element={<DefaultersReportDownload />} />
       {/* Add more report routes here if needed */}
     </Routes>
   );
