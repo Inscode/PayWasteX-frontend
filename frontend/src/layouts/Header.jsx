@@ -1,45 +1,77 @@
+// src/layouts/Header.jsx
+import React from "react";
+import logoB from "../assets/logoBin.png";
 import { useAuth } from "../contexts/AuthContext";
+import { useLanguage } from "../contexts/LanguageContext";
 
 const Header = () => {
   const { user, logout } = useAuth();
+  const { lang, switchLanguage } = useLanguage();
+
+const handleLangChange = (selectedLang) => {
+  switchLanguage(selectedLang);
+};
+
 
   return (
-    <nav className="bg-green-700 flex items-center justify-between px-6 py-4">
-      {/* Brand */}
-      <div className="flex items-center gap-3">
-        {/* Replace with your logo if available */}
-        <div className="bg-white rounded p-2 mr-2">
-          <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
-            {/* Simple SVG icon */}
-            <rect width="24" height="24" rx="6" fill="#4ade80" />
-            <path d="M8 12l2 2l4-4" stroke="#222" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </div>
-        <span className="text-2xl font-bold text-white">PayWasteX</span>
-        <span className="text-xs text-green-100 font-medium ml-2 hidden md:inline">
-          Track. Pay. Stay Updated.
+    <nav className="sticky top-0 z-50 bg-green-700 flex justify-between items-center h-12 sm:h-16 px-4 sm:px-6">
+      {/* Left: Logo + Brand */}
+      <div className="flex items-center gap-2">
+        <img src={logoB} alt="PayWasteX Logo" className="h-8 sm:h-10 w-auto" />
+        <span className="text-xl sm:text-2xl font-bold text-white">
+          PayWasteX
         </span>
       </div>
 
-      {/* Right-side controls */}
-      <div className="flex items-center gap-6">
-        {/* Language Switcher */}
-        <div className="flex gap-2 text-white text-base">
-          <button className="hover:underline px-2 py-1 rounded">සිංහල</button>
-          <button className="hover:underline px-2 py-1 rounded">தமிழ்</button>
+      {/* Right: Language, Bell, Profile */}
+      <div className="flex items-center gap-4">
+        {/* Language Switch */}
+        <div className="flex gap-2 text-white text-sm sm:text-base font-medium">
+         <button
+  onClick={() => {
+    const nextLang = lang === "en" ? "si" : lang === "si" ? "ta" : "en";
+    switchLanguage(nextLang);
+  }}
+  className="text-white text-sm sm:text-base font-medium hover:underline transition"
+>
+  {lang === "en" && "English"}
+  {lang === "si" && "සිංහල"}
+  {lang === "ta" && "தமிழ்"}
+</button>
         </div>
-        {/* Notification Bell (icon only for now) */}
-        <button className="text-white text-2xl hover:text-green-200 transition">
-          <span role="img" aria-label="bell">🔔</span>
+
+        {/* Notification Bell */}
+        <button className="text-white text-2xl sm:text-3xl hover:text-green-200 transition">
+          <svg width="24" height="24" fill="none" viewBox="0 0 24 24" className="sm:w-10 sm:h-10">
+            <path
+              d="M12 22c1.104 0 2-.896 2-2h-4a2 2 0 002 2zm6-6V11c0-3.07-1.63-5.64-5-6.32V4a1 1 0 10-2 0v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"
+              fill="white"
+            />
+          </svg>
         </button>
-        {/* Profile dropdown (basic version) */}
+
+        {/* User Profile */}
         <div className="relative group">
-          <button className="w-9 h-9 rounded-full bg-green-900 flex items-center justify-center text-white text-xl hover:bg-green-800">
-            <span role="img" aria-label="user">👤</span>
+          <button className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white flex items-center justify-center text-green-700 text-xl sm:text-2xl transition hover:ring-2 hover:ring-green-300">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-5 h-5 sm:w-7 sm:h-7"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <circle cx="12" cy="8" r="4" />
+              <path d="M4 20c0-3.31 3.58-6 8-6s8 2.69 8 6" />
+            </svg>
           </button>
-          <div className="absolute right-0 z-10 hidden group-hover:block bg-white text-black rounded shadow-md mt-2 min-w-[120px]">
-            <div className="px-4 py-2">{user?.role}</div>
-            <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={logout}>Logout</button>
+          {/* Dropdown */}
+          <div className="absolute right-0 hidden group-hover:block bg-white text-black rounded shadow-md mt-2 min-w-[140px]">
+            <div className="px-4 py-2 border-b">{user?.role || "User"}</div>
+            <button
+              onClick={logout}
+              className="w-full px-4 py-2 text-left hover:bg-gray-100"
+            >
+              Logout
+            </button>
           </div>
         </div>
       </div>

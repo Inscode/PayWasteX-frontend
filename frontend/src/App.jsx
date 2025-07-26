@@ -9,6 +9,10 @@ import AdminRoutes from "./routes/AdminRoutes";
 import ShopOwnerRoutes from "./routes/ShopOwnerRoutes";
 import ResponsibleOfficerRoutes from "./routes/ResponsibleOfficerRoutes";
 import FeeCollectorRoutes from "./routes/FeeCollectorRoutes";
+import AdminRegister from "./pages/Register/AdminRegister";
+import ShopOwnerRegister from "./pages/Register/ShopOwnerRegister";
+import ResponsibleOfficerRegister from "./pages/Register/ResponsibleOfficerRegister";
+import { LanguageProvider } from  "./contexts/LanguageContext"
 
 function AppRoutes() {
   const { user } = useAuth();
@@ -17,6 +21,10 @@ function AppRoutes() {
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<Login />} />
       <Route path="/notfound" element={<NotFound />} />
+      <Route path="/adminRegister/" element={<AdminRegister />} />
+      <Route path="/shopOwnerRegister" element={<ShopOwnerRegister />} />
+      <Route path="/responsibleOfficerRegister" element={<ResponsibleOfficerRegister />} />
+
       <Route
         element={
           <PrivateRoute
@@ -40,11 +48,12 @@ function AppRoutes() {
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <AppRoutes />
-      </Router>
+      <LanguageProvider>
+        <Router>
+          <AppRoutes />
+        </Router>
+      </LanguageProvider>
     </AuthProvider>
   );
 }
-
 export default App;
