@@ -49,7 +49,7 @@ function AppRoutes() {
       <Route
         element={
           <PrivateRoute
-            allowedRoles={["admin", "shopOwner", "responsibleOfficer", "feeCollector"]}
+            allowedRoles={["ADMIN", "SHOPOWNER", "RESPONSIBLEOFFICER", "FEECOLLECTOR"]}
             userRole={user?.role}
           />
         }
