@@ -9,23 +9,23 @@ export default function RoleButtonGroup() {
   if (!user) return null;
 
   const roleTabs = {
-    admin: [
+    ADMIN: [
       { label: "User Management", path: "/admin/userManagement" },
       { label: "Fee Structure", path: "/admin/feeStructure" },
       { label: "Audit Logs", path: "/admin/auditLogs" },
       { label: "System Settings", path: "/admin/systemSettings" },
     ],
-    shopOwner: [
+    SHOPOWNER: [
       { label: "Dashboard", path: "/shopOwner/dashboard" },
       { label: "Billing History", path: "/shopOwner/bills" },
     ],
-    responsibleOfficer: [
+    RESPONSIBLEOFFICER: [
       { label: "Dashboard", path: "/responsibleOfficer/dashboard" },
       { label: "Bills", path: "/responsibleOfficer/bills" },
       { label: "Store Owners", path: "/responsibleOfficer/stores" },
       { label: "Outstanding", path: "/responsibleOfficer/payments" },
     ],
-    feeCollector: [
+    FEECOLLECTOR: [
       { label: "Dashboard", path: "/feeCollector/dashboard" },
     ],
   };
