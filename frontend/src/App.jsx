@@ -13,6 +13,9 @@ import AdminRegister from "./pages/Register/AdminRegister";
 import ShopOwnerRegister from "./pages/Register/ShopOwnerRegister";
 import ResponsibleOfficerRegister from "./pages/Register/ResponsibleOfficerRegister";
 import { LanguageProvider } from  "./contexts/LanguageContext"
+import ReportRoutes from "./routes/ReportRoutes";
+import AppLayoutWithoutRoleButtons from "./layouts/AppLayoutWithoutRoleButtons";
+
 
 function AppRoutes() {
   const { user } = useAuth();
@@ -24,11 +27,29 @@ function AppRoutes() {
       <Route path="/adminRegister/" element={<AdminRegister />} />
       <Route path="/shopOwnerRegister" element={<ShopOwnerRegister />} />
       <Route path="/responsibleOfficerRegister" element={<ResponsibleOfficerRegister />} />
+      <Route
+  element={
+    <PrivateRoute
+      allowedRoles={[ "responsibleOfficer","shopOwner"]}
+      userRole={user?.role}
+    />
+  }
+>
+  <Route element={<AppLayoutWithoutRoleButtons />}>
+    <Route path="/report/*" element={<ReportRoutes />} />
+    
+  </Route>
+</Route>
+
+
+
+
+
 
       <Route
         element={
           <PrivateRoute
-            allowedRoles={["admin", "shopOwner", "responsibleOfficer", "feeCollector"]}
+            allowedRoles={["ADMIN", "SHOPOWNER", "RESPONSIBLEOFFICER", "FEECOLLECTOR"]}
             userRole={user?.role}
           />
         }
@@ -42,6 +63,7 @@ function AppRoutes() {
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>
+
   );
 }
 
