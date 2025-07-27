@@ -66,27 +66,26 @@ const Reports = () => {
   const [zone, setZone] = useState("");
 
   const handleGenerateClick = (index) => {
-  switch (index) {
-    case 0:
-      navigate("/report/collection-summery");
-      break;
-    case 1:
-      navigate("/report/payers");
-      break;
-    case 2:
-      navigate("/report/non-payers");
-      break;
-    case 3:
-      navigate("/report/performance-summery");
-      break;
-    case 4:
-      navigate("/report/outstanding-balance");
-      break;
-    default:
-      alert("This report is not yet implemented.");
-  }
-};
-
+    switch (index) {
+      case 0:
+        navigate("/report/collection-summery");
+        break;
+      case 1:
+        navigate("/report/payers");
+        break;
+      case 2:
+        navigate("/report/non-payers");
+        break;
+      case 3:
+        navigate("/report/performance-summery");
+        break;
+      case 4:
+        navigate("/report/outstanding-balance");
+        break;
+      default:
+        alert("This report is not yet implemented.");
+    }
+  };
 
   return (
     <div className="min-h-screen p-4 sm:p-6 bg-white text-gray-800">
@@ -127,7 +126,9 @@ const Reports = () => {
           >
             <option value="">--</option>
             {dummyCollectors.map((c, i) => (
-              <option key={i} value={c}>{c}</option>
+              <option key={i} value={c}>
+                {c}
+              </option>
             ))}
           </select>
         </div>
@@ -141,7 +142,9 @@ const Reports = () => {
           >
             <option value="">--</option>
             {dummyZones.map((z, i) => (
-              <option key={i} value={z}>{z}</option>
+              <option key={i} value={z}>
+                {z}
+              </option>
             ))}
           </select>
         </div>
@@ -155,10 +158,17 @@ const Reports = () => {
             key={idx}
             className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 bg-gray-100 px-4 py-3 rounded-md shadow"
           >
-            <p className="text-base sm:text-lg text-gray-700 flex-1">{title}</p>
+            {/* ✅ Make the title a clickable button */}
+            <button
+              onClick={() => handleGenerateClick(idx)}
+              className="text-left text-base sm:text-lg text-gray-700 flex-1 hover:underline hover:text-green-800"
+            >
+              {title}
+            </button>
+
             <div className="flex gap-2">
               <button
-                onClick={() => handleGenerateClick(idx)}
+                onClick={() => console.log(`Generating report ${idx}`)}
                 className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800 text-sm"
               >
                 {t.generate}
