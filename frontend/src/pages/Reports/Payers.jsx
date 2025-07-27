@@ -47,7 +47,7 @@ const payers = [
 ];
 
 const PayersReport = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const itemsPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -57,9 +57,34 @@ const PayersReport = () => {
     currentPage * itemsPerPage
   );
 
-
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) setCurrentPage(page);
+  };
+
+  const handleDownloadReport = async () => {
+    try {
+      // For now using a dummy PDF link for demo
+      const response = await fetch(
+        "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+      );
+
+      if (!response.ok) throw new Error("Failed to download file");
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "payers-report.pdf";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      alert("Report downloaded successfully!");
+    } catch (error) {
+      console.error(error);
+      alert("Failed to download the report.");
+    }
   };
 
   return (
@@ -76,8 +101,8 @@ const PayersReport = () => {
           Anuradhapura 01
         </p>
         <p>
-          <span className="font-semibold text-[#224A29]">Collector :</span>{" "}
-          Mr. Prasad Perera
+          <span className="font-semibold text-[#224A29]">Collector :</span> Mr.
+          Prasad Perera
         </p>
         <p>
           <span className="font-semibold text-[#224A29]">Date :</span>{" "}
@@ -147,17 +172,20 @@ const PayersReport = () => {
 
       {/* Action Buttons */}
       <div className="flex justify-center gap-3 mt-10 flex-wrap">
-        <button className="bg-green-700 hover:bg-green-800 text-white px-6 py-2 rounded font-medium">
+        {/* <button className="bg-green-700 hover:bg-green-800 text-white px-6 py-2 rounded font-medium">
           Re-Generate Report
+        </button> */}
+        <button
+          onClick={handleDownloadReport}
+          className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded font-medium"
+        >
+          Download As PDF
         </button>
-       <button
-  onClick={() => navigate("/report/payers/download-payers-report")}
-  className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded font-medium"
->
-  Download As PDF
-</button>
 
-        <button className="bg-yellow-300 hover:bg-yellow-400 text-yellow-900 px-6 py-2 rounded font-medium">
+        <button
+          onClick={() => navigate("/responsibleOfficer/reports")}
+          className="bg-yellow-300 hover:bg-yellow-400 text-yellow-900 px-6 py-2 rounded font-medium"
+        >
           Back To Report List
         </button>
       </div>
