@@ -12,8 +12,8 @@ export default function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    login({ name: username || "User", role: "admin" });
-    navigate(`/admin/dashboard`);
+    login({ name: username || "User", role: "responsibleOfficer" });
+    navigate(`/responsibleOfficer/dashboard`);
   };
 
   return (
