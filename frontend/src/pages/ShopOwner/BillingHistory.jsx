@@ -137,7 +137,7 @@ const BillingHistory = () => {
                 <td>
                   <button
   className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold text-xs px-4 py-1 rounded shadow inline-flex items-center gap-1"
-  onClick={() => navigate('/shopOwner/receipt-preview', { state: { bill } })}
+  onClick={() => navigate('/report/receipt-preview', { state: { bill } })}
 >
   {t.download} <FaDownload />
 </button>
