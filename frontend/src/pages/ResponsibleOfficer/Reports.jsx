@@ -10,8 +10,8 @@ const labels = {
     dateRange: "Date Range",
     collector: "Collector",
     zone: "Zone/ Category",
-    generate: "Generate Report",
-    export: "Export to Excel/PDF",
+    generate: "Download Report",
+    export: "Export As PDF",
     titles: [
       "Daily/Weekly/Monthly Collections Summary",
       "List of Payers",
@@ -25,8 +25,8 @@ const labels = {
     dateRange: "දිනයේ පරාසය",
     collector: "ගාස්තු විශේෂඥයා",
     zone: "කලාපය/ප්‍රවර්ගය",
-    generate: "වාර්තාව ජනනය කරන්න",
-    export: "Excel/PDF සඳහා අපනයනය කරන්න",
+    generate: "වාර්තාව බාගන්න",
+    export: "PDF ලෙස අපනයනය කරන්න",
     titles: [
       "දෛනික/සතිපතා/මාසික එකතු කිරීමේ සාරාංශය",
       "ගෙවූ අයගේ ලැයිස්තුව",
@@ -40,8 +40,8 @@ const labels = {
     dateRange: "தேதிகள் வரம்பு",
     collector: "வசூல்பவர்",
     zone: "மண்டலம் / வகை",
-    generate: "அறிக்கையை உருவாக்கு",
-    export: "Excel/PDF க்கு ஏற்றுமதி",
+    generate: "அறிக்கையைப் பதிவிறக்கு",
+    export: "PDF ஆக ஏற்றுமதி செய்",
     titles: [
       "தினசரி/வாராந்திர/மாதாந்திர வசூல் சுருக்கம்",
       "செலுத்தியவர்களின் பட்டியல்",
@@ -86,6 +86,42 @@ const Reports = () => {
         alert("This report is not yet implemented.");
     }
   };
+
+  const handleDownloadClick = async (index) => {
+  const reportTypes = [
+    "collection-summary",
+    "payers",
+    "non-payers",
+    "performance-summary",
+    "outstanding-balance",
+  ];
+
+  const selectedType = reportTypes[index];
+
+  try {
+    const response = await fetch(`/api/report/download?type=${selectedType}`, {
+      method: "GET",
+    });
+
+    if (!response.ok) throw new Error("Failed to download");
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${selectedType}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+
+    alert("Report downloaded successfully!");
+  } catch (error) {
+    alert("Failed to download report.");
+    console.error(error);
+  }
+};
+
 
   return (
     <div className="min-h-screen p-4 sm:p-6 bg-white text-gray-800">
@@ -168,14 +204,14 @@ const Reports = () => {
 
             <div className="flex gap-2">
               <button
-                onClick={() => console.log(`Generating report ${idx}`)}
-                className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800 text-sm"
+                onClick={() => handleDownloadClick(idx)}
+                className="bg-yellow-400 text-white px-4 py-2 rounded hover:bg-yellow-500 text-sm"
               >
                 {t.generate}
               </button>
-              <button className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 text-sm">
+              {/* <button className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 text-sm">
                 {t.export}
-              </button>
+              </button> */}
             </div>
           </div>
         ))}
