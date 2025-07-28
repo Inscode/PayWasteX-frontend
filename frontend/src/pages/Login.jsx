@@ -55,27 +55,29 @@ const translations = {
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login, user } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const { language, setLanguage } = useLanguage();
-  const t = translations[language];
+  const { lang, setLang } = useLanguage();
+  const t = translations[lang];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await login({ email, password });
+      const res = await login({ email, password }); // ✅ use returned value
+      console.log("🔍 Full login response from backend:", res);
+      const role = res?.role;
 
-      if (!user || !user.role) {
+      if (!role) {
         alert("Login failed: Missing user role");
         return;
       }
-      const role = user.role.toUpperCase();
 
-      switch (role) {
+      console.log("user", res);
+      switch (role.toUpperCase()) {
         case "ADMIN":
           navigate("/admin/userManagement");
           break;
@@ -92,7 +94,9 @@ export default function Login() {
           navigate("/login");
       }
     } catch (error) {
-      alert("Login failed: " + (error.response?.data?.message || error.message));
+      alert(
+        "Login failed: " + (error.response?.data?.message || error.message)
+      );
     } finally {
       setLoading(false);
     }
@@ -100,8 +104,8 @@ export default function Login() {
 
   const cycleLanguage = () => {
     const order = ["en", "si", "ta"];
-    const nextLang = order[(order.indexOf(language) + 1) % order.length];
-    setLanguage(nextLang);
+    const nextLang = order[(order.indexOf(lang) + 1) % order.length];
+    setLang(nextLang);
   };
 
   return (
@@ -121,10 +125,20 @@ export default function Login() {
       <div className="absolute top-4 right-6 z-20">
         <button
           onClick={cycleLanguage}
-          className="bg-white/20 text-white text-sm px-4 py-1 rounded hover:bg-white/30 transition"
+          className="bg-white/20 text-white text-xs sm:text-sm px-3 py-1 rounded hover:bg-white/30 transition flex items-center gap-1"
+          title="Switch Language"
+          aria-label="Switch Language"
         >
-          {t.langLabel}
+          🌐{" "}
+          {lang === "en"
+            ? "English"
+            : lang === "si"
+            ? "සිංහල"
+            : lang === "ta"
+            ? "தமிழ்"
+            : "English"}
         </button>
+
       </div>
 
       {/* Content */}
@@ -133,14 +147,20 @@ export default function Login() {
         <div className="flex-1 flex flex-col justify-center px-8 md:px-12 py-8 md:py-16 text-white relative">
           <div className="relative z-10">
             <div className="flex flex-row items-start gap-6 mb-4">
-              <img src={logo} alt="Logo" className="w-20 md:w-28 mt-2 drop-shadow-2xl" />
+              <img
+                src={logo}
+                alt="Logo"
+                className="w-20 md:w-28 mt-2 drop-shadow-2xl"
+              />
               <div>
                 <h2 className="text-4xl md:text-5xl font-extrabold mb-2 leading-tight drop-shadow-lg">
                   {t.welcome}
                 </h2>
               </div>
             </div>
-            <p className="mb-4 text-lg font-semibold text-green-100 drop-shadow-lg">{t.sub}</p>
+            <p className="mb-4 text-lg font-semibold text-green-100 drop-shadow-lg">
+              {t.sub}
+            </p>
           </div>
         </div>
 
@@ -193,7 +213,9 @@ export default function Login() {
             </button>
 
             <div className="flex justify-between text-xs text-gray-300">
-              <a href="#" className="hover:underline">{t.forgot}</a>
+              <a href="#" className="hover:underline">
+                {t.forgot}
+              </a>
               <span>
                 {t.notRegistered}{" "}
                 <a

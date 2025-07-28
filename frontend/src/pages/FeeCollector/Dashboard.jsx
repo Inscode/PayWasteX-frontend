@@ -1,7 +1,20 @@
 import React, { useState } from "react";
-import { useLanguage } from "../../contexts/LanguageContext"; 
+import { useLanguage } from "../../contexts/LanguageContext";
 
-const zones = ["A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4", "C1", "C2", "C3", "C4"];
+const zones = [
+  "A1",
+  "A2",
+  "A3",
+  "A4",
+  "B1",
+  "B2",
+  "B3",
+  "B4",
+  "C1",
+  "C2",
+  "C3",
+  "C4",
+];
 
 const sampleCards = Array(8).fill({
   id: "ST1NWT2",
@@ -58,8 +71,12 @@ const translations = {
 };
 
 export default function FeeCollectorDashboard() {
+
   const { lang } = useLanguage();         
-  const t = translations[lang];           
+ 
+  const t = translations[lang] || translations.en;
+   
+
 
   const [selectedZone, setSelectedZone] = useState("A1");
   const [showModal, setShowModal] = useState(false);
@@ -69,6 +86,7 @@ export default function FeeCollectorDashboard() {
 
   const totalAmount = sampleCards.reduce((sum, card) => sum + card.due, 0);
 
+  
   const handlePayClick = (amount) => {
     setSelectedAmount(amount);
     setEditedAmount(amount.toFixed(2));
@@ -82,6 +100,8 @@ export default function FeeCollectorDashboard() {
     setSuccessMessage(t.paidMessage);
     setTimeout(() => setSuccessMessage(""), 3000);
   };
+
+
 
   const handleSubmitCollection = () => {
     setSuccessMessage(t.submittedMessage);
@@ -112,7 +132,9 @@ export default function FeeCollectorDashboard() {
             key={index}
             className="bg-gray-100 rounded-lg shadow-sm p-4 border border-gray-300 flex flex-col gap-2"
           >
-            <h2 className="text-sm font-bold text-gray-800 text-center">{card.id}</h2>
+            <h2 className="text-sm font-bold text-gray-800 text-center">
+              {card.id}
+            </h2>
             <div className="text-sm text-gray-800 space-y-1">
               <div className="flex justify-between">
                 <span className="font-semibold">{t.name}</span>
@@ -173,7 +195,9 @@ export default function FeeCollectorDashboard() {
               ×
             </button>
 
-            <h2 className="text-xl font-bold mb-4 text-gray-800">{t.paidAmount}</h2>
+            <h2 className="text-xl font-bold mb-4 text-gray-800">
+              {t.paidAmount}
+            </h2>
             <input
               type="number"
               value={editedAmount}

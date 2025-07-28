@@ -1,23 +1,45 @@
-// src/layouts/Header.jsx
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import logoB from "../assets/logoBin.png";
 import { useAuth } from "../contexts/AuthContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import { notifications, notificationLabels } from "../data/notification";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const { user, logout } = useAuth();
   const { lang, switchLanguage } = useLanguage();
-  const [showNotifications, setShowNotifications] = useState(false);
+  const navigate = useNavigate();
 
-  const toggleLang = () => {
-    const nextLang = lang === "en" ? "si" : lang === "si" ? "ta" : "en";
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+
+  const notifRef = useRef(null);
+  const profileRef = useRef(null);
+
+  const cycleLanguage = () => {
+    const order = ["en", "si", "ta"];
+    const nextLang = order[(order.indexOf(lang) + 1) % order.length];
     switchLanguage(nextLang);
   };
 
-  const toggleDropdown = () => {
-    setShowNotifications(!showNotifications);
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
   };
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (notifRef.current && !notifRef.current.contains(e.target)) {
+        setShowNotifications(false);
+      }
+      if (profileRef.current && !profileRef.current.contains(e.target)) {
+        setShowProfileMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const t = notificationLabels[lang] || notificationLabels.en;
 
@@ -33,33 +55,44 @@ const Header = () => {
 
       {/* Right: Language | Notifications | Profile */}
       <div className="flex items-center gap-4">
-        {/* Language Switcher */}
+        {/* Language Button */}
         <button
-          onClick={toggleLang}
-          className="text-white text-sm sm:text-base font-medium hover:underline transition"
+          onClick={cycleLanguage}
+          className="bg-white/20 text-white text-xs sm:text-sm px-3 py-1 rounded hover:bg-white/30 transition flex items-center gap-1"
+          title="Switch Language"
         >
-          {lang === "en" && "English"}
-          {lang === "si" && "සිංහල"}
-          {lang === "ta" && "தமிழ்"}
+          🌐{" "}
+          {lang === "en"
+            ? "English"
+            : lang === "si"
+            ? "සිංහල"
+            : lang === "ta"
+            ? "தமிழ்"
+            : "English"}
         </button>
 
         {/* Notification Bell */}
-        <div className="relative">
+        <div className="relative" ref={notifRef}>
           <button
-            onClick={toggleDropdown}
-            className="text-white text-2xl sm:text-3xl hover:text-green-200 transition"
+            onClick={() => setShowNotifications(!showNotifications)}
+            className="text-white transition hover:text-green-300 p-1"
+            title="Notifications"
           >
-            <svg width="24" height="24" fill="none" viewBox="0 0 24 24" className="sm:w-10 sm:h-10">
+            <svg
+              width="20"
+              height="20"
+              fill="none"
+              viewBox="0 0 24 24"
+              className="w-6 h-6"
+            >
               <path
                 d="M12 22c1.104 0 2-.896 2-2h-4a2 2 0 002 2zm6-6V11c0-3.07-1.63-5.64-5-6.32V4a1 1 0 10-2 0v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"
                 fill="white"
               />
             </svg>
           </button>
-
-          {/* Notification Dropdown */}
           {showNotifications && (
-            <div className="absolute right-0 mt-2 text-sm rounded shadow-md w-72 z-50">
+            <div className="absolute right-0 mt-2 text-sm rounded shadow-md w-72 z-50 bg-white">
               {notifications.map((n, index) => (
                 <div
                   key={index}
@@ -77,11 +110,15 @@ const Header = () => {
         </div>
 
         {/* Profile Menu */}
-        <div className="relative group">
-          <button className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white flex items-center justify-center text-green-700 text-xl sm:text-2xl transition hover:ring-2 hover:ring-green-300">
+        <div className="relative" ref={profileRef}>
+          <button
+            onClick={() => setShowProfileMenu(!showProfileMenu)}
+            className="text-white transition hover:text-green-300 p-1"
+            title="Profile"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="w-5 h-5 sm:w-7 sm:h-7"
+              className="w-6 h-6 sm:w-7 sm:h-7"
               viewBox="0 0 24 24"
               fill="currentColor"
             >
@@ -89,17 +126,19 @@ const Header = () => {
               <path d="M4 20c0-3.31 3.58-6 8-6s8 2.69 8 6" />
             </svg>
           </button>
-
-          {/* Profile Dropdown */}
-          <div className="absolute right-0 hidden group-hover:block bg-white text-black rounded shadow-md mt-2 min-w-[140px]">
-            <div className="px-4 py-2 border-b">{user?.role || "User"}</div>
-            <button
-              onClick={logout}
-              className="w-full px-4 py-2 text-left hover:bg-gray-100"
-            >
-              Logout
-            </button>
-          </div>
+          {showProfileMenu && (
+            <div className="absolute right-0 mt-2 w-40 bg-white text-black rounded shadow-md z-50">
+              <div className="px-4 py-2 border-b text-sm font-medium">
+                {user?.role || "User"}
+              </div>
+              <button
+                onClick={handleLogout}
+                className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm"
+              >
+                Logout
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </nav>
