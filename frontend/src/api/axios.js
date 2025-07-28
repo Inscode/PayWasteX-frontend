@@ -8,7 +8,15 @@ const api = axios.create({
 // Attach access token to Authorization header on each request
 api.interceptors.request.use((config) => {
   const token = sessionStorage.getItem("accessToken");
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+
+  // List of public endpoints that should not get Authorization header
+  const publicPaths = ["/auth/login", "/auth/refresh", "/auth/user-register"];
+  const isPublic = publicPaths.some((path) => config.url?.includes(path));
+
+  if (!isPublic && token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
   return config;
 });
 

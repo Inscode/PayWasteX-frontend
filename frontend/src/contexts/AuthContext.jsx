@@ -1,6 +1,16 @@
-import React, { createContext, useContext, useEffect, useState, useRef } from "react";
-import { login as svcLogin, refresh as svcRefresh, logout as svcLogout } from "../services/authService";
-import { jwtDecode } from 'jwt-decode';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+} from "react";
+import {
+  login as svcLogin,
+  refresh as svcRefresh,
+  logout as svcLogout,
+} from "../services/authService";
+import { jwtDecode } from "jwt-decode";
 
 const AuthContext = createContext();
 
@@ -56,6 +66,7 @@ export const AuthProvider = ({ children }) => {
     sessionStorage.setItem("accessToken", data.token);
     setUser({ id: data.userId, role: data.role });
     scheduleSilentRefresh(data.token);
+    return data; // ✅ return the login response
   };
 
   const logout = async () => {
@@ -65,7 +76,11 @@ export const AuthProvider = ({ children }) => {
     if (refreshTimeout.current) clearTimeout(refreshTimeout.current);
   };
 
-  return <AuthContext.Provider value={{ user, login, logout }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ user, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => useContext(AuthContext);
