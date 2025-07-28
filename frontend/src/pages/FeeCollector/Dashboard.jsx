@@ -59,8 +59,9 @@ const translations = {
 
 export default function FeeCollectorDashboard() {
   const { lang } = useLanguage();         
-  const t = translations[lang] || translations.en;
-  
+ 
+   const t = translations[lang] || translations.en;
+
           
 
   const [selectedZone, setSelectedZone] = useState("A1");
@@ -84,6 +85,8 @@ export default function FeeCollectorDashboard() {
     setSuccessMessage(t.paidMessage);
     setTimeout(() => setSuccessMessage(""), 3000);
   };
+
+
 
   const handleSubmitCollection = () => {
     setSuccessMessage(t.submittedMessage);
