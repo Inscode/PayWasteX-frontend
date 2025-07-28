@@ -13,9 +13,9 @@ const RoleSelectionModal = ({ onClose }) => {
       case "shopOwner":
         navigate("/shopOwnerRegister");
         break;
-      case "responsibleOfficer":
-        navigate("/responsibleOfficerRegister");
-        break;
+      // case "responsibleOfficer":
+      //   navigate("/responsibleOfficerRegister");
+      //   break;
       case "feeCollector": // New case for Fee Collector registration
         navigate("/feeCollectorRegister");
         break;
@@ -52,13 +52,13 @@ const RoleSelectionModal = ({ onClose }) => {
             onClick={() => handleSelect("shopOwner")}
             color="green"
           />
-          <RoleButton
+          {/* <RoleButton
             icon={<FaUserShield size={32} />}
             label="Responsible Officer"
             description="Oversee operations and ensure compliance"
             onClick={() => handleSelect("responsibleOfficer")}
             color="purple"
-          />
+          /> */}
           <RoleButton
             icon={<FaMoneyBillWave size={32} />} // Icon representing money/collection
             label="Fee Collector"
