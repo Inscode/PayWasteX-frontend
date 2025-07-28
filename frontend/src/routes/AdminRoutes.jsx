@@ -7,7 +7,7 @@ import AdminSystemSettings from "../pages/Admin/SystemSettings";
 export default function AdminRoutes() {
   return (
     <Routes>
-      <Route path="dashboard" element={<AdminDashboard />} />
+      <Route path="userManagement" element={<AdminDashboard />} />
       <Route path="feestructure" element={<AdminFeeStructure />} />
       <Route path="auditlogs" element={<AdminAuditLogs />} />
       <Route path="systemsettings" element={<AdminSystemSettings />} />
