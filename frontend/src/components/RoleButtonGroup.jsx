@@ -6,8 +6,11 @@ export default function RoleButtonGroup() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
+  // If user is not available, don't render the component
   if (!user) return null;
 
+  // Define tabs based on user roles
   const roleTabs = {
     ADMIN: [
       { label: "User Management", path: "/admin/userManagement" },
@@ -31,26 +34,35 @@ export default function RoleButtonGroup() {
   };
 
   const tabs = roleTabs[user.role] || [];
-
-  const [selected, setSelected] = useState(location.pathname);
-  useEffect(() => setSelected(location.pathname), [location.pathname]);
-
-  const handleSelect = (e) => navigate(e.target.value);
   const isSingleTab = tabs.length === 1;
 
+  // State to manage the selected tab, initialized with current path
+  const [selected, setSelected] = useState(location.pathname);
+
+  // Update selected tab when location changes
+  useEffect(() => {
+    setSelected(location.pathname);
+  }, [location.pathname]);
+
+  // Handle navigation on dropdown selection (mobile)
+  const handleSelect = (e) => {
+    navigate(e.target.value);
+  };
+
   return (
-    <div className="mt-12 md:mt-4 px-3">
-      {/* Mobile dropdown */}
+    <div className="mt-12 px-3 md:mt-4">
+      {/* Mobile Dropdown for Navigation */}
       <div className="md:hidden">
         <select
-          value={selected}
+          value={selected} // Controlled component
           onChange={handleSelect}
+          aria-label="Select navigation page" // Added for accessibility
           className="
-            w-full 
-            bg-[#c5ecd4] text-green-800 font-semibold text-sm
-            px-3 py-2 rounded-lg shadow-sm 
-            border border-green-300
-            focus:outline-none
+            w-full
+            rounded-lg border border-green-300 bg-[#c5ecd4] px-3 py-2
+            text-sm font-semibold text-green-800 shadow-sm outline-none
+            focus:border-green-500 focus:ring-1 focus:ring-green-500
+            cursor-pointer
           "
         >
           {tabs.map((tab) => (
@@ -61,36 +73,39 @@ export default function RoleButtonGroup() {
         </select>
       </div>
 
-      {/* Desktop tab group */}
-      <div className={`
-      hidden md:flex 
-      w-full justify-center
-      ${isSingleTab ? "" : "bg-[#c5ecd4] rounded-[16px] shadow-sm overflow-hidden border border-green-300 min-h-[48px] max-w-2xl mx-auto"}
-      `}>
-
-
-        {tabs.map((tab, i) => {
+      {/* Desktop Tab Group */}
+      <div
+        className={`
+          hidden md:flex
+          w-full justify-center
+          ${isSingleTab
+            ? "max-w-xs rounded-2xl border border-green-300 bg-[#c5ecd4] p-2 shadow-sm" // Styling for a single button
+            : "mx-auto max-w-2xl rounded-2xl border border-green-300 bg-[#c5ecd4] p-1 shadow-sm" // Styling for tab group
+          }
+          items-center space-x-1 // Added for spacing between tabs if not single
+        `}
+      >
+        {tabs.map((tab) => {
           const isActive = location.pathname === tab.path;
           return (
-            <div key={tab.path} className={`${isSingleTab ? "" : "flex-1 flex items-center justify-center relative"}`}>
-
-
-              <button
+            <button
+              key={tab.path}
               onClick={() => navigate(tab.path)}
+              aria-current={isActive ? "page" : undefined} // Added for accessibility
               className={`
-              ${isSingleTab ? "bg-[#c5ecd4] border border-green-300 px-6 py-2 rounded-[16px]" : ""}
-              whitespace-nowrap text-sm md:text-base font-semibold text-green-800 transition 
-              ${isActive ? "underline underline-offset-4 decoration-2" : ""}
+                relative flex-1 rounded-xl px-4 py-2 text-center text-sm font-semibold transition-all duration-300 ease-in-out
+                ${isActive
+                  ? "bg-white text-green-900 shadow-md" // Active tab style: highlighted background, darker text, shadow
+                  : "text-green-800 hover:bg-white/50 hover:text-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2" // Inactive tab style: hover effect, focus ring for accessibility
+                }
+                ${isSingleTab ? "w-full" : ""} // Ensure single tab takes full width of its container
+                whitespace-nowrap // Prevents text wrapping
+                cursor-pointer // Explicitly show pointer on hover
               `}
             >
               {tab.label}
+              {/* Removed the bottom span indicator to eliminate the "underline" look */}
             </button>
-
-              {!isSingleTab && i < tabs.length - 1 && (
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 h-2/3 w-[1px] bg-green-500" />
-            )}
-
-            </div>
           );
         })}
       </div>
