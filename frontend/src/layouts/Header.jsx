@@ -10,8 +10,9 @@ const Header = () => {
   const { lang, switchLanguage } = useLanguage();
   const [showNotifications, setShowNotifications] = useState(false);
 
-  const toggleLang = () => {
-    const nextLang = lang === "en" ? "si" : lang === "si" ? "ta" : "en";
+  const cycleLanguage = () => {
+    const order = ["en", "si", "ta"];
+    const nextLang = order[(order.indexOf(lang) + 1) % order.length];
     switchLanguage(nextLang);
   };
 
@@ -33,14 +34,20 @@ const Header = () => {
 
       {/* Right: Language | Notifications | Profile */}
       <div className="flex items-center gap-4">
-        {/* Language Switcher */}
         <button
-          onClick={toggleLang}
-          className="text-white text-sm sm:text-base font-medium hover:underline transition"
+          onClick={cycleLanguage}
+          className="bg-white/20 text-white text-xs sm:text-sm px-3 py-1 rounded hover:bg-white/30 transition flex items-center gap-1"
+          title="Switch Language"
+          aria-label="Switch Language"
         >
-          {lang === "en" && "English"}
-          {lang === "si" && "සිංහල"}
-          {lang === "ta" && "தமிழ்"}
+          🌐{" "}
+          {lang === "en"
+            ? "English"
+            : lang === "si"
+            ? "සිංහල"
+            : lang === "ta"
+            ? "தமிழ்"
+            : "English"}
         </button>
 
         {/* Notification Bell */}
@@ -49,7 +56,13 @@ const Header = () => {
             onClick={toggleDropdown}
             className="text-white text-2xl sm:text-3xl hover:text-green-200 transition"
           >
-            <svg width="24" height="24" fill="none" viewBox="0 0 24 24" className="sm:w-10 sm:h-10">
+            <svg
+              width="24"
+              height="24"
+              fill="none"
+              viewBox="0 0 24 24"
+              className="sm:w-10 sm:h-10"
+            >
               <path
                 d="M12 22c1.104 0 2-.896 2-2h-4a2 2 0 002 2zm6-6V11c0-3.07-1.63-5.64-5-6.32V4a1 1 0 10-2 0v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"
                 fill="white"
