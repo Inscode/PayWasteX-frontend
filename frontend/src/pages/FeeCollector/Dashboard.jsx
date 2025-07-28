@@ -60,6 +60,7 @@ const translations = {
 export default function FeeCollectorDashboard() {
   const { lang } = useLanguage();         
   const t = translations[lang] || translations.en;
+  
           
 
   const [selectedZone, setSelectedZone] = useState("A1");
