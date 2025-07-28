@@ -60,8 +60,8 @@ export default function Login() {
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const { language, setLanguage } = useLanguage();
-  const t = translations[language];
+  const { lang, setLang } = useLanguage();
+  const t = translations[lang];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -104,8 +104,8 @@ export default function Login() {
 
   const cycleLanguage = () => {
     const order = ["en", "si", "ta"];
-    const nextLang = order[(order.indexOf(language) + 1) % order.length];
-    setLanguage(nextLang);
+    const nextLang = order[(order.indexOf(lang) + 1) % order.length];
+    setLang(nextLang);
   };
 
   return (
@@ -125,10 +125,20 @@ export default function Login() {
       <div className="absolute top-4 right-6 z-20">
         <button
           onClick={cycleLanguage}
-          className="bg-white/20 text-white text-sm px-4 py-1 rounded hover:bg-white/30 transition"
+          className="bg-white/20 text-white text-xs sm:text-sm px-3 py-1 rounded hover:bg-white/30 transition flex items-center gap-1"
+          title="Switch Language"
+          aria-label="Switch Language"
         >
-          {t.langLabel}
+          🌐{" "}
+          {lang === "en"
+            ? "English"
+            : lang === "si"
+            ? "සිංහල"
+            : lang === "ta"
+            ? "தமிழ்"
+            : "English"}
         </button>
+
       </div>
 
       {/* Content */}
