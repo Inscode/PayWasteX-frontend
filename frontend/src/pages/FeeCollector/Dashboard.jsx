@@ -59,7 +59,10 @@ const translations = {
 
 export default function FeeCollectorDashboard() {
   const { lang } = useLanguage();         
+ 
   const t = translations[lang] || translations.en;
+   
+
           
 
   const [selectedZone, setSelectedZone] = useState("A1");
@@ -70,6 +73,7 @@ export default function FeeCollectorDashboard() {
 
   const totalAmount = sampleCards.reduce((sum, card) => sum + card.due, 0);
 
+  
   const handlePayClick = (amount) => {
     setSelectedAmount(amount);
     setEditedAmount(amount.toFixed(2));
@@ -83,6 +87,8 @@ export default function FeeCollectorDashboard() {
     setSuccessMessage(t.paidMessage);
     setTimeout(() => setSuccessMessage(""), 3000);
   };
+
+
 
   const handleSubmitCollection = () => {
     setSuccessMessage(t.submittedMessage);
