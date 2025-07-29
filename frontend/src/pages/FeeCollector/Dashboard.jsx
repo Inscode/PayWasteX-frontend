@@ -123,6 +123,7 @@ export default function FeeCollectorDashboard() {
     setTimeout(() => setSuccessMessage(""), 4000);
   };
 
+  //success message handle
   const handleSubmitCollection = () => {
     setSuccessMessage(t.submittedMessage);
     setTimeout(() => setSuccessMessage(""), 4000);

@@ -1,7 +1,11 @@
+// components/Dashboard.js
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { HiDownload, HiUserGroup, HiCash, HiMap, HiTrendingUp, HiClock, HiCheckCircle } from "react-icons/hi";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+
   const collectors = [
     { name: "Collector A", amount: "45,000.00", change: "+12.5%", trend: "up" },
     { name: "Collector B", amount: "68,000.00", change: "+8.3%", trend: "up" },
@@ -20,6 +24,19 @@ const Dashboard = () => {
     { action: "New bill issued", zone: "Zone B1", amount: "2,500", time: "15 min ago" },
     { action: "Report generated", type: "Monthly", time: "1 hour ago" },
   ];
+
+  // Navigation handlers
+  const handleConfirmPayments = () => {
+    navigate('/responsibleOfficer/directpayments');
+  };
+
+  const handleIssueBill = () => {
+    navigate('/responsibleOfficer/billmanagement');
+  };
+
+  const handleGenerateReport = () => {
+    navigate('/responsibleOfficer/reports');
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
@@ -113,9 +130,24 @@ const Dashboard = () => {
             {/* Quick Actions */}
             <Section title="⚙️ Quick Actions" subtitle="Common tasks">
               <div className="space-y-3">
-                <ActionButton icon={<HiCheckCircle />} text="Confirm Payments" color="emerald" />
-                <ActionButton icon={<HiDownload />} text="Issue Bill" color="blue" />
-                <ActionButton icon={<HiTrendingUp />} text="Generate Report" color="purple" />
+                <ActionButton 
+                  icon={<HiCheckCircle />} 
+                  text="Direct Payments" 
+                  color="emerald" 
+                  onClick={handleConfirmPayments}
+                />
+                <ActionButton 
+                  icon={<HiDownload />} 
+                  text="Issue Bill" 
+                  color="blue" 
+                  onClick={handleIssueBill}
+                />
+                <ActionButton 
+                  icon={<HiTrendingUp />} 
+                  text="Generate Report" 
+                  color="purple" 
+                  onClick={handleGenerateReport}
+                />
               </div>
             </Section>
 
@@ -134,6 +166,7 @@ const Dashboard = () => {
   );
 };
 
+// All your existing components (StatCard, CollectorCard, etc.) remain the same
 const StatCard = ({ title, value, icon, color, trend, subtitle }) => {
   const colorClasses = {
     emerald: "from-emerald-500 to-teal-600",
@@ -241,7 +274,7 @@ const ActivityItem = ({ activity }) => (
   </div>
 );
 
-const ActionButton = ({ icon, text, color }) => {
+const ActionButton = ({ icon, text, color, onClick }) => {
   const colorClasses = {
     emerald: "bg-emerald-500 hover:bg-emerald-600",
     blue: "bg-blue-500 hover:bg-blue-600",
@@ -249,7 +282,10 @@ const ActionButton = ({ icon, text, color }) => {
   };
 
   return (
-    <button className={`w-full ${colorClasses[color]} text-white p-3 rounded-lg font-medium hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center space-x-2`}>
+    <button 
+      onClick={onClick}
+      className={`w-full ${colorClasses[color]} text-white p-3 rounded-lg font-medium hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center space-x-2`}
+    >
       {icon}
       <span>{text}</span>
     </button>

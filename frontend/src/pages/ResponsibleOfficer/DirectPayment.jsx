@@ -201,7 +201,7 @@ const PaymentConfirmation = () => {
         {/* Payment Confirmation Form */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="bg-gradient-to-r from-emerald-500 to-teal-600 p-6">
-            <h2 className="text-xl font-bold text-white mb-2">Confirm New Payment</h2>
+            <h2 className="text-xl font-bold text-white mb-2">Direct Customer Payment</h2>
             <p className="text-emerald-100">Enter payment details to confirm transaction</p>
           </div>
           
