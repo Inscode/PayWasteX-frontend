@@ -37,7 +37,7 @@ const ShopOwnerRegister = () => {
       {/* Header */}
       <div className="bg-green-700 py-6 px-4">
         <h2 className="text-white text-3xl font-bold text-center">
-          Register As A Shop Owner
+          Register As A Customer
         </h2>
       </div>
       {/* Form */}
@@ -79,21 +79,21 @@ const ShopOwnerRegister = () => {
                   required
                 />
                 <input
-                  type="text"
-                  name="mobile"
-                  value={form.mobile}
-                  onChange={handleChange}
-                  className="border rounded px-4 py-2"
-                  placeholder="Mobile No"
-                  required
-                />
-                <input
                   type="password"
                   name="password"
                   value={form.password}
                   onChange={handleChange}
                   className="border rounded px-4 py-2"
                   placeholder="Password"
+                  required
+                />
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  value={form.confirmPassword}
+                  onChange={handleChange}
+                  className="border rounded px-4 py-2"
+                  placeholder="Confirm Password"
                   required
                 />
               </div>
@@ -139,13 +139,14 @@ const ShopOwnerRegister = () => {
                   placeholder="City /Town"
                   required
                 />
+
                 <input
-                  type="password"
-                  name="confirmPassword"
-                  value={form.confirmPassword}
+                  type="text"
+                  name="mobile"
+                  value={form.mobile}
                   onChange={handleChange}
                   className="border rounded px-4 py-2"
-                  placeholder="Confirm Password"
+                  placeholder="Mobile No"
                   required
                 />
               </div>
