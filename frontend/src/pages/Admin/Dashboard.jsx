@@ -1,34 +1,59 @@
 // src/pages/AdminUserManagement.jsx
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState, useEffect } from "react";
 import { FiFilter } from "react-icons/fi";
+import { fetchAllUser } from "../../services/admin";
 
 /* ── Notification Component ─────────────────────────────────── */
 function Notification({ type, message, onClose }) {
   const config = {
     success: {
-      outer: "flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800",
-      iconBg: "inline-flex items-center justify-center shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200",
+      outer:
+        "flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800",
+      iconBg:
+        "inline-flex items-center justify-center shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200",
       icon: (
-        <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
+        <svg
+          className="w-5 h-5"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
         </svg>
       ),
     },
     danger: {
-      outer: "flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800",
-      iconBg: "inline-flex items-center justify-center shrink-0 w-8 h-8 text-red-500 bg-red-100 rounded-lg dark:bg-red-800 dark:text-red-200",
+      outer:
+        "flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800",
+      iconBg:
+        "inline-flex items-center justify-center shrink-0 w-8 h-8 text-red-500 bg-red-100 rounded-lg dark:bg-red-800 dark:text-red-200",
       icon: (
-        <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 11.793a1 1 0 1 1-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L8.586 10 6.293 7.707a1 1 0 0 1 1.414-1.414L10 8.586l2.293-2.293a1 1 0 0 1 1.414 1.414L11.414 10l2.293 2.293Z"/>
+        <svg
+          className="w-5 h-5"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 11.793a1 1 0 1 1-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L8.586 10 6.293 7.707a1 1 0 0 1 1.414-1.414L10 8.586l2.293-2.293a1 1 0 0 1 1.414 1.414L11.414 10l2.293 2.293Z" />
         </svg>
       ),
     },
     warning: {
-      outer: "flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800",
-      iconBg: "inline-flex items-center justify-center shrink-0 w-8 h-8 text-orange-500 bg-orange-100 rounded-lg dark:bg-orange-700 dark:text-orange-200",
+      outer:
+        "flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800",
+      iconBg:
+        "inline-flex items-center justify-center shrink-0 w-8 h-8 text-orange-500 bg-orange-100 rounded-lg dark:bg-orange-700 dark:text-orange-200",
       icon: (
-        <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM10 15a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm1-4a1 1 0 0 1-2 0V6a1 1 0 0 1 2 0v5Z"/>
+        <svg
+          className="w-5 h-5"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM10 15a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm1-4a1 1 0 0 1-2 0V6a1 1 0 0 1 2 0v5Z" />
         </svg>
       ),
     },
@@ -50,28 +75,32 @@ function Notification({ type, message, onClose }) {
         aria-label="Close"
       >
         <span className="sr-only">Close</span>
-        <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-          <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+        <svg
+          className="w-3 h-3"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 14 14"
+        >
+          <path
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+          />
         </svg>
       </button>
     </div>
   );
 }
 
-/* ── mock data ─────────────────────────────────────────────── */
-const USERS = [
-  { id: "U001", name: "Sugath Perera", role: "Admin", contact: "sugath@gmail.com", status: "Active" },
-  { id: "U002", name: "Mahesh Kumara", role: "Responsible Officer", contact: "mahesh@gmail.com", status: "Active" },
-  { id: "U003", name: "M S S M Hashan", role: "Responsible Officer", contact: "hashan@gmail.com", status: "Active" },
-  { id: "U004", name: "A A Rasik", role: "Fee Collector", contact: "rasik@gmail.com", status: "Active" },
-  { id: "U005", name: "Sisira Nirmal", role: "Fee Collector", contact: "sisira@gmail.com", status: "Active" },
-  { id: "U006", name: "Row 6", role: "Fee Collector", contact: "six@gmail.com", status: "Active" },
-  { id: "U007", name: "Row 7", role: "Fee Collector", contact: "seven@gmail.com", status: "Active" },
-];
 const PER_PAGE = 5;
 
 /* ── page component ─────────────────────────────────────────── */
 export default function Dashboard() {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
@@ -80,9 +109,15 @@ export default function Dashboard() {
   const [selectedUser, setSelectedUser] = useState(null);
 
   /* notification state */
-  const [notification, setNotification] = useState({ type: "", message: "", visible: false });
-  const showNotification = (type, message) => setNotification({ type, message, visible: true });
-  const closeNotification = () => setNotification(prev => ({ ...prev, visible: false }));
+  const [notification, setNotification] = useState({
+    type: "",
+    message: "",
+    visible: false,
+  });
+  const showNotification = (type, message) =>
+    setNotification({ type, message, visible: true });
+  const closeNotification = () =>
+    setNotification((prev) => ({ ...prev, visible: false }));
 
   /* handlers */
   const openModal = (type, user = null) => {
@@ -102,29 +137,48 @@ export default function Dashboard() {
   /* filter + paginate */
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return USERS.filter(u =>
-      u.id.toLowerCase().includes(q) || u.name.toLowerCase().includes(q)
+    return users.filter(
+      (u) =>
+        u.id.toString().toLowerCase().includes(q) ||
+        u.fullName.toLowerCase().includes(q) ||
+        u.email.toLowerCase().includes(q)
     );
-  }, [search]);
+  }, [search, users]);
+
   const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
   const pageUsers = useMemo(
     () => filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE),
     [filtered, page]
   );
 
+  /* fetch all users */
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const users = await fetchAllUser();
+        setUsers(users);
+        setLoading(false);
+      } catch (error) {
+        console.error("Failed to fetch users:", error);
+        showNotification("danger", "Failed to fetch users");
+        setLoading(false);
+      }
+    };
+    fetchUsers();
+  }, []);
+
   return (
     <>
-    {/* ── Toast Notification ── */}
-<div className="fixed top-19 right-6 z-60 w-80">
-  {notification.visible && (
-    <Notification
-      type={notification.type}
-      message={notification.message}
-      onClose={closeNotification}
-    />
-  )}
-</div>
-
+      {/* ── Toast Notification ── */}
+      <div className="fixed top-19 right-6 z-60 w-80">
+        {notification.visible && (
+          <Notification
+            type={notification.type}
+            message={notification.message}
+            onClose={closeNotification}
+          />
+        )}
+      </div>
 
       <section className="w-full px-4 sm:px-6 pt-6 pb-12">
         {/* █ HEADER ROW █ */}
@@ -132,7 +186,7 @@ export default function Dashboard() {
           <div className="relative flex-grow sm:flex-grow-0 sm:basis-1/3">
             <FiFilter className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
             <input
-              placeholder="User ID or Name"
+              placeholder="User ID, Name or Email"
               value={search}
               onChange={handleSearch}
               className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded placeholder-gray-500
@@ -149,90 +203,172 @@ export default function Dashboard() {
           </button>
         </header>
 
-        {/* █ CARD LIST (mobile) █ */}
-        <ul className="sm:hidden space-y-4">
-          {pageUsers.map(u => (
-            <li key={u.id} className="border rounded-lg p-4 bg-gray-50 shadow-sm">
-              <div className="flex justify-between">
-                <span className="font-semibold">{u.id}</span>
-                <span className="inline-block bg-green-700 text-white text-xs px-3 py-[2px] rounded-full">
-                  {u.status}
-                </span>
-              </div>
-              <dl className="mt-2 text-sm space-y-1">
-                <InfoPair label="Name" value={u.name} />
-                <InfoPair label="Role" value={u.role} />
-                <InfoPair label="Email" value={u.contact} />
-              </dl>
-              <div className="flex gap-6 mt-3 text-sm font-semibold">
-                <button className="text-blue-600" onClick={() => openModal("edit", u)}>
-                  Edit
-                </button>
-                <button className="text-red-600" onClick={() => openModal("delete", u)}>
-                  Delete
-                </button>
-                <button className="text-yellow-600" onClick={() => openModal("view", u)}>
-                  View
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
-
-        {/* █ TABLE (≥ sm) █ */}
-        <div className="hidden sm:block overflow-x-auto rounded-lg">
-          <table className="w-full text-[15px] shadow">
-            <thead className="bg-gray-100 text-green-900 uppercase text-sm">
-              <tr>
-                {["User ID","Name","Role","Contact Info","Status","Action"].map(h => (
-                  <th key={h} className="px-6 py-4 text-left font-bold">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {pageUsers.map((u,i) => (
-                <tr key={u.id} className={`${i%2?"bg-white":"bg-gray-50"} border-t last:border-b`}>
-                  <td className="px-4 py-4">{u.id}</td>
-                  <td className="px-4 py-4">{u.name}</td>
-                  <td className="px-4 py-4">{u.role}</td>
-                  <td className="px-4 py-4">{u.contact}</td>
-                  <td className="px-4 py-4">
-                    <span className="inline-block bg-green-700 text-white text-s px-7 py-[8px] rounded-full">
-                      {u.status}
+        {loading ? (
+          <div className="text-center py-8">Loading users...</div>
+        ) : (
+          <>
+            {/* █ CARD LIST (mobile) █ */}
+            <ul className="sm:hidden space-y-4">
+              {pageUsers.map((u) => (
+                <li
+                  key={u.id}
+                  className="border rounded-lg p-4 bg-gray-50 shadow-sm"
+                >
+                  <div className="flex justify-between">
+                    <span className="font-semibold">
+                      U{u.id.toString().padStart(3, "0")}
                     </span>
-                  </td>
-                  <td className="px-4 py-4">
-                    <div className="flex gap-6 text-sm font-semibold">
-                      <button className="text-blue-600 hover:underline" onClick={() => openModal("edit", u)}>Edit</button>
-                      <button className="text-red-600  hover:underline" onClick={() => openModal("delete", u)}>Delete</button>
-                      <button className="text-yellow-600 hover:underline" onClick={() => openModal("view", u)}>View</button>
-                    </div>
-                  </td>
-                </tr>
+                    <span className="inline-block bg-green-700 text-white text-xs px-3 py-[2px] rounded-full">
+                      Active
+                    </span>
+                  </div>
+                  <dl className="mt-2 text-sm space-y-1">
+                    <InfoPair label="Name" value={u.fullName} />
+                    <InfoPair label="Role" value={u.role} />
+                    <InfoPair label="Email" value={u.email} />
+                    <InfoPair label="Contact" value={u.contactNo} />
+                  </dl>
+                  <div className="flex gap-6 mt-3 text-sm font-semibold">
+                    <button
+                      className="text-blue-600"
+                      onClick={() => openModal("edit", u)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="text-red-600"
+                      onClick={() => openModal("delete", u)}
+                    >
+                      Delete
+                    </button>
+                    <button
+                      className="text-yellow-600"
+                      onClick={() => openModal("view", u)}
+                    >
+                      View
+                    </button>
+                  </div>
+                </li>
               ))}
-            </tbody>
-          </table>
-        </div>
+            </ul>
 
-        {/* █ PAGINATION █ */}
-        <footer className="mt-6 flex justify-center items-center gap-2 select-none">
-          <PageNav label="<" disabled={page===1} onClick={()=>changePage(page-1)} />
-          {Array.from({ length: totalPages }).map((_,i) => (
-            <PageNumber
-              key={i}
-              number={i+1}
-              active={page===i+1}
-              onClick={()=>changePage(i+1)}
-            />
-          ))}
-          <PageNav label=">" disabled={page===totalPages} onClick={()=>changePage(page+1)} />
-        </footer>
+            {/* █ TABLE (≥ sm) █ */}
+            <div className="hidden sm:block overflow-x-auto rounded-lg">
+              <table className="w-full text-[15px] shadow">
+                <thead className="bg-gray-100 text-green-900 uppercase text-sm">
+                  <tr>
+                    {[
+                      "User ID",
+                      "Name",
+                      "Role",
+                      "Email",
+                      "Contact",
+                      "Status",
+                      "Action",
+                    ].map((h) => (
+                      <th key={h} className="px-6 py-4 text-left font-bold">
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {pageUsers.map((u, i) => (
+                    <tr
+                      key={u.id}
+                      className={`${
+                        i % 2 ? "bg-white" : "bg-gray-50"
+                      } border-t last:border-b`}
+                    >
+                      <td className="px-4 py-4">
+                        U{u.id.toString().padStart(3, "0")}
+                      </td>
+                      <td className="px-4 py-4">{u.fullName}</td>
+                      <td className="px-4 py-4">{u.role}</td>
+                      <td className="px-4 py-4">{u.email}</td>
+                      <td className="px-4 py-4">{u.contactNo}</td>
+                      <td className="px-4 py-4">
+                        <span className="inline-block bg-green-700 text-white text-s px-7 py-[8px] rounded-full">
+                          {u.accountNonLocked ? "Active" : "Inactive"}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="flex gap-6 text-sm font-semibold">
+                          <button
+                            className="text-blue-600 hover:underline"
+                            onClick={() => openModal("edit", u)}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className="text-red-600 hover:underline"
+                            onClick={() => openModal("delete", u)}
+                          >
+                            Delete
+                          </button>
+                          <button
+                            className="text-yellow-600 hover:underline"
+                            onClick={() => openModal("view", u)}
+                          >
+                            View
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* █ PAGINATION █ */}
+            {users.length > 0 && (
+              <footer className="mt-6 flex justify-center items-center gap-2 select-none">
+                <PageNav
+                  label="<"
+                  disabled={page === 1}
+                  onClick={() => changePage(page - 1)}
+                />
+                {Array.from({ length: totalPages }).map((_, i) => (
+                  <PageNumber
+                    key={i}
+                    number={i + 1}
+                    active={page === i + 1}
+                    onClick={() => changePage(i + 1)}
+                  />
+                ))}
+                <PageNav
+                  label=">"
+                  disabled={page === totalPages}
+                  onClick={() => changePage(page + 1)}
+                />
+              </footer>
+            )}
+          </>
+        )}
 
         {/* █ MODALS █ */}
-        {modalType==="view"   && selectedUser && <ViewUserModal user={selectedUser} onClose={closeModal} />}
-        {modalType==="edit"   && selectedUser && <EditUserModal user={selectedUser} onClose={closeModal} showNotification={showNotification} />}
-        {modalType==="delete" && selectedUser && <DeleteUserModal onClose={closeModal} showNotification={showNotification} />}
-        {modalType==="add"    && <AddUserModal onClose={closeModal} showNotification={showNotification} />}
+        {modalType === "view" && selectedUser && (
+          <ViewUserModal user={selectedUser} onClose={closeModal} />
+        )}
+        {modalType === "edit" && selectedUser && (
+          <EditUserModal
+            user={selectedUser}
+            onClose={closeModal}
+            showNotification={showNotification}
+          />
+        )}
+        {modalType === "delete" && selectedUser && (
+          <DeleteUserModal
+            onClose={closeModal}
+            showNotification={showNotification}
+          />
+        )}
+        {modalType === "add" && (
+          <AddUserModal
+            onClose={closeModal}
+            showNotification={showNotification}
+          />
+        )}
       </section>
     </>
   );
@@ -241,7 +377,7 @@ export default function Dashboard() {
 /* ── small helpers ─────────────────────────────────────────── */
 const InfoPair = ({ label, value }) => (
   <div>
-    <dt className="inline font-medium">{label}: </dt>
+    <dt className="inline font-medium">{label}: </dt>
     <dd className="inline">{value}</dd>
   </div>
 );
@@ -268,14 +404,14 @@ const PageNumber = ({ number, active, onClick }) => (
 /* ── MODAL BASE ────────────────────────────────────────────── */
 function Modal({ children, onClose }) {
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-ls"
-    >
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-ls">
       <div className="bg-white rounded shadow-lg min-w-[550px] max-w-[100vw] p-6 relative">
         <button
           className="absolute top-3 right-3 text-2xl text-red-500 font-bold"
           onClick={onClose}
-        >×</button>
+        >
+          ×
+        </button>
         {children}
       </div>
     </div>
@@ -286,13 +422,15 @@ function Modal({ children, onClose }) {
 function ViewUserModal({ user, onClose }) {
   return (
     <Modal onClose={onClose}>
-      <h2 className="text-2xl font-bold mb-6 text-green-900 text-center">View User Details</h2>
+      <h2 className="text-2xl font-bold mb-6 text-green-900 text-center">
+        View User Details
+      </h2>
       <div className="space-y-4">
-        <InfoDisplay label="Name" value={user.name} />
-        <InfoDisplay label="Email" value={user.contact} />
-        <InfoDisplay label="Contact No" value="+94 776589765" />
+        <InfoDisplay label="Name" value={user.fullName} />
+        <InfoDisplay label="Email" value={user.email} />
+        <InfoDisplay label="Contact No" value={user.contactNo} />
         <InfoDisplay label="Role" value={user.role} />
-        <InfoDisplay label="User Name" value="Sugath123" />
+        <InfoDisplay label="NIC" value={user.nic} />
       </div>
     </Modal>
   );
@@ -309,16 +447,19 @@ const InfoDisplay = ({ label, value }) => (
 /* ── ② Edit User ───────────────────────────────────────────── */
 function EditUserModal({ user, onClose, showNotification }) {
   const [form, setForm] = useState({
-    name: user.name,
-    username: "Sugath123",
-    email: user.contact,
-    contact: "+94 776589765",
+    fullName: user.fullName,
+    email: user.email,
+    contactNo: user.contactNo,
+    role: user.role,
+    nic: user.nic,
   });
-  const updateField = e => setForm(f => ({ ...f, [e.target.name]: e.target.value }));
-  const handleSubmit = e => {
+
+  const updateField = (e) =>
+    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+  const handleSubmit = (e) => {
     e.preventDefault();
-    const { name, username, email, contact } = form;
-    if (!name || !username || !email || !contact) {
+    const { fullName, email, contactNo, role, nic } = form;
+    if (!fullName || !email || !contactNo || !role || !nic) {
       showNotification("warning", "All fields are required.");
       return;
     }
@@ -329,12 +470,40 @@ function EditUserModal({ user, onClose, showNotification }) {
 
   return (
     <Modal onClose={onClose}>
-      <h2 className="text-2xl font-bold mb-4 text-green-900 text-center">Edit User</h2>
+      <h2 className="text-2xl font-bold mb-4 text-green-900 text-center">
+        Edit User
+      </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <EditRow label="Name" name="name" value={form.name} onChange={updateField} />
-        <EditRow label="User Name" name="username" value={form.username} onChange={updateField} />
-        <EditRow label="Email" name="email" value={form.email} onChange={updateField} />
-        <EditRow label="Contact No" name="contact" value={form.contact} onChange={updateField} />
+        <EditRow
+          label="Name"
+          name="fullName"
+          value={form.fullName}
+          onChange={updateField}
+        />
+        <EditRow
+          label="Email"
+          name="email"
+          value={form.email}
+          onChange={updateField}
+        />
+        <EditRow
+          label="Contact No"
+          name="contactNo"
+          value={form.contactNo}
+          onChange={updateField}
+        />
+        <EditRow
+          label="Role"
+          name="role"
+          value={form.role}
+          onChange={updateField}
+        />
+        <EditRow
+          label="NIC"
+          name="nic"
+          value={form.nic}
+          onChange={updateField}
+        />
         <button className="w-full bg-green-700 text-white py-2 rounded font-semibold">
           Update User
         </button>
@@ -362,13 +531,17 @@ function DeleteUserModal({ onClose, showNotification }) {
 
   return (
     <Modal onClose={onClose}>
-      <h2 className="text-2xl font-bold mb-2 text-green-900 text-center">Delete User</h2>
+      <h2 className="text-2xl font-bold mb-2 text-green-900 text-center">
+        Delete User
+      </h2>
       <div className="flex flex-col items-center py-2">
         <svg className="mb-4" height="54" viewBox="0 0 50 54" fill="none">
           <rect x="9" y="17" width="32" height="30" rx="5" fill="#B91C1C" />
           <rect x="16" y="8" width="18" height="6" rx="2" fill="#B91C1C" />
         </svg>
-        <p className="mb-4 text-center">Are you sure you want to delete this user?</p>
+        <p className="mb-4 text-center">
+          Are you sure you want to delete this user?
+        </p>
         <button
           onClick={handleDelete}
           className="w-40 bg-red-700 text-white py-2 rounded font-semibold"
@@ -383,19 +556,20 @@ function DeleteUserModal({ onClose, showNotification }) {
 /* ── ④ Add New User ─────────────────────────────────────────── */
 function AddUserModal({ onClose, showNotification }) {
   const [form, setForm] = useState({
-    id: "",
-    name: "",
-    username: "",
+    fullName: "",
     email: "",
-    contact: "",
+    contactNo: "",
     role: "",
-    status: "Active",
+    nic: "",
+    password: "",
   });
-  const updateField = e => setForm(f => ({ ...f, [e.target.name]: e.target.value }));
-  const handleSubmit = e => {
+
+  const updateField = (e) =>
+    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+  const handleSubmit = (e) => {
     e.preventDefault();
-    const { id, name, username, email, contact, role } = form;
-    if (!id || !name || !username || !email || !contact || !role) {
+    const { fullName, email, contactNo, role, nic, password } = form;
+    if (!fullName || !email || !contactNo || !role || !nic || !password) {
       showNotification("warning", "All fields are required.");
       return;
     }
@@ -408,13 +582,43 @@ function AddUserModal({ onClose, showNotification }) {
     <Modal onClose={onClose}>
       <h2 className="text-2xl font-bold mb-4 text-green-900">Add New User</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <EditRow label="User ID" name="id" value={form.id} onChange={updateField} />
-        <EditRow label="Name" name="name" value={form.name} onChange={updateField} />
-        <EditRow label="User Name" name="username" value={form.username} onChange={updateField} />
-        <EditRow label="Email" name="email" value={form.email} onChange={updateField} />
-        <EditRow label="Contact No" name="contact" value={form.contact} onChange={updateField} />
-        <EditRow label="Role" name="role" value={form.role} onChange={updateField} />
-        <EditRow label="Status" name="status" value={form.status} onChange={updateField} />
+        <EditRow
+          label="Full Name"
+          name="fullName"
+          value={form.fullName}
+          onChange={updateField}
+        />
+        <EditRow
+          label="Email"
+          name="email"
+          value={form.email}
+          onChange={updateField}
+        />
+        <EditRow
+          label="Contact No"
+          name="contactNo"
+          value={form.contactNo}
+          onChange={updateField}
+        />
+        <EditRow
+          label="Role"
+          name="role"
+          value={form.role}
+          onChange={updateField}
+        />
+        <EditRow
+          label="NIC"
+          name="nic"
+          value={form.nic}
+          onChange={updateField}
+        />
+        <EditRow
+          label="Password"
+          name="password"
+          type="password"
+          value={form.password}
+          onChange={updateField}
+        />
         <button className="w-full bg-green-700 text-white py-2 rounded font-semibold">
           Create User
         </button>
