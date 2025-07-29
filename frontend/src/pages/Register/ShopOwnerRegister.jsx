@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { CheckCircle2 } from "lucide-react";
 import { createCustomer } from "../../services/authService";
 
 const ShopOwnerRegister = () => {
@@ -16,6 +17,7 @@ const ShopOwnerRegister = () => {
   });
 
   const [passwordError, setPasswordError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -57,7 +59,6 @@ const ShopOwnerRegister = () => {
     try {
       const customerData = await createCustomer(form, "CUSTOMER");
       console.log("Registration successful:", customerData);
-      alert("Registered!");
 
       // Clear form data after successful registration
       setForm({
@@ -75,6 +76,10 @@ const ShopOwnerRegister = () => {
 
       // Clear password error
       setPasswordError("");
+
+      // Show success notification
+      setSuccessMessage("Registration successful! Welcome to PayWasteX!");
+      setTimeout(() => setSuccessMessage(""), 4000); // Auto-hides after 4 seconds
     } catch (error) {
       console.error("Registration failed:", error);
       alert("Registration failed. Please try again.");
@@ -83,6 +88,16 @@ const ShopOwnerRegister = () => {
 
   return (
     <div className="min-h-screen bg-gray-200 flex flex-col">
+      {/* Success Notification */}
+      {successMessage && (
+        <div className="fixed top-20 right-4 z-50 animate-pulse">
+          <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-4 rounded-xl shadow-2xl flex items-center space-x-3">
+            <CheckCircle2 className="w-5 h-5" />
+            <span className="font-medium">{successMessage}</span>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="bg-green-700 py-6 px-4">
         <h2 className="text-white text-3xl font-bold text-center">
