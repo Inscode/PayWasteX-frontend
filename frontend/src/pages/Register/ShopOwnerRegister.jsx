@@ -58,6 +58,23 @@ const ShopOwnerRegister = () => {
       const customerData = await createCustomer(form, "CUSTOMER");
       console.log("Registration successful:", customerData);
       alert("Registered!");
+
+      // Clear form data after successful registration
+      setForm({
+        fullName: "",
+        nicOrRegNo: "",
+        email: "",
+        mobile: "",
+        password: "",
+        businessName: "",
+        businessType: "",
+        address: "",
+        city: "",
+        confirmPassword: "",
+      });
+
+      // Clear password error
+      setPasswordError("");
     } catch (error) {
       console.error("Registration failed:", error);
       alert("Registration failed. Please try again.");
