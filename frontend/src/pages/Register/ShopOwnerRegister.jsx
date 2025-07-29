@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { createCustomer } from "../../services/authService";
 
 const ShopOwnerRegister = () => {
   const [form, setForm] = useState({
@@ -7,29 +8,77 @@ const ShopOwnerRegister = () => {
     email: "",
     mobile: "",
     password: "",
-    shopName: "",
+    businessName: "",
     businessType: "",
     address: "",
     city: "",
     confirmPassword: "",
   });
 
-  //   const businessTypes = [
-  //     "Grocery",
-  //     "Bakery",
-  //     "Clothing",
-  //     "Pharmacy",
-  //     "Other",
-  //   ];
+  const [passwordError, setPasswordError] = useState("");
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+
+    // Real-time password validation when typing in confirm password field
+    if (name === "confirmPassword") {
+      if (value && form.password && value !== form.password) {
+        setPasswordError("Passwords do not match");
+      } else if (value && form.password && value === form.password) {
+        setPasswordError("");
+      }
+    }
+
+    // Clear error when typing in password field
+    if (name === "password") {
+      setPasswordError("");
+    }
   };
 
-  const handleSubmit = (e) => {
+  const validatePasswords = () => {
+    if (form.password !== form.confirmPassword) {
+      setPasswordError("Passwords do not match");
+      return false;
+    }
+    setPasswordError("");
+    return true;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: validation & submit logic here
-    alert("Registered!");
+
+    // Validate passwords before submitting
+    if (!validatePasswords()) {
+      return;
+    }
+
+    console.log("Input data:", form);
+    try {
+      const customerData = await createCustomer(form, "CUSTOMER");
+      console.log("Registration successful:", customerData);
+      alert("Registered!");
+
+      // Clear form data after successful registration
+      setForm({
+        fullName: "",
+        nicOrRegNo: "",
+        email: "",
+        mobile: "",
+        password: "",
+        businessName: "",
+        businessType: "",
+        address: "",
+        city: "",
+        confirmPassword: "",
+      });
+
+      // Clear password error
+      setPasswordError("");
+    } catch (error) {
+      console.error("Registration failed:", error);
+      alert("Registration failed. Please try again.");
+    }
   };
 
   return (
@@ -92,10 +141,15 @@ const ShopOwnerRegister = () => {
                   name="confirmPassword"
                   value={form.confirmPassword}
                   onChange={handleChange}
-                  className="border rounded px-4 py-2"
+                  className={`border rounded px-4 py-2 ${
+                    passwordError ? "border-red-500" : ""
+                  }`}
                   placeholder="Confirm Password"
                   required
                 />
+                {passwordError && (
+                  <p className="text-red-500 text-sm mt-1">{passwordError}</p>
+                )}
               </div>
             </div>
             {/* Shop & Location Information */}
@@ -106,11 +160,11 @@ const ShopOwnerRegister = () => {
               <div className="flex flex-col gap-4">
                 <input
                   type="text"
-                  name="shopName"
-                  value={form.shopName}
+                  name="businessName"
+                  value={form.businessName}
                   onChange={handleChange}
                   className="border rounded px-4 py-2"
-                  placeholder="Shop Name"
+                  placeholder="Business Name"
                   required
                 />
                 <input

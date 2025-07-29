@@ -81,8 +81,8 @@ export default function Login() {
         case "ADMIN":
           navigate("/admin/userManagement");
           break;
-        case "SHOPOWNER":
-          navigate("/shopOwner/dashboard");
+        case "CUSTOMER":
+          navigate("/customer/dashboard");
           break;
         case "RESPONSIBLEOFFICER":
           navigate("/responsibleOfficer/dashboard");
@@ -138,7 +138,6 @@ export default function Login() {
             ? "தமிழ்"
             : "English"}
         </button>
-
       </div>
 
       {/* Content */}
