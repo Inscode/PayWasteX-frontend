@@ -10,7 +10,7 @@ const RoleSelectionModal = ({ onClose }) => {
   // Handles the selection of a role and navigates to the respective registration page
   const handleSelect = (role) => {
     switch (role) {
-      case "shopOwner":
+      case "customer":
         navigate("/shopOwnerRegister");
         break;
       // case "responsibleOfficer":
@@ -49,7 +49,7 @@ const RoleSelectionModal = ({ onClose }) => {
             icon={<FaStore size={32} />}
             label="Customer"
             description="Register and manage your shop"
-            onClick={() => handleSelect("shopOwner")}
+            onClick={() => handleSelect("customer")}
             color="green"
           />
           {/* <RoleButton

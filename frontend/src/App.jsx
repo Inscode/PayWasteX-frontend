@@ -36,7 +36,7 @@ function AppRoutes() {
       {/* Reports accessible only by specific roles */}
       <Route
         element={
-          <PrivateRoute allowedRoles={["responsibleOfficer", "shopOwner"]} userRole={user?.role} />
+          <PrivateRoute allowedRoles={["responsibleOfficer", "customer"]} userRole={user?.role} />
         }
       >
         <Route element={<AppLayoutWithoutRoleButtons />}>
@@ -48,14 +48,14 @@ function AppRoutes() {
       <Route
         element={
           <PrivateRoute
-            allowedRoles={["ADMIN", "SHOPOWNER", "RESPONSIBLEOFFICER", "FEECOLLECTOR"]}
+            allowedRoles={["ADMIN", "CUSTOMER", "RESPONSIBLEOFFICER", "FEECOLLECTOR"]}
             userRole={user?.role}
           />
         }
       >
         <Route element={<AppLayout />}>
           <Route path="/admin/*" element={<AdminRoutes />} />
-          <Route path="/shopOwner/*" element={<ShopOwnerRoutes />} />
+          <Route path="/customer/*" element={<ShopOwnerRoutes />} />
           <Route path="/responsibleOfficer/*" element={<ResponsibleOfficerRoutes />} />
           <Route path="/feeCollector/*" element={<FeeCollectorRoutes />} />
         </Route>
