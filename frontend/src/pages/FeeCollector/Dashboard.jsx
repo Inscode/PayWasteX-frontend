@@ -1,21 +1,33 @@
-import React, { useState } from "react";
-import { 
-  MapPin, 
-  Building2, 
-  CreditCard, 
-  User, 
-  DollarSign, 
-  CheckCircle2, 
-  X, 
+import React, { useState, useEffect } from "react";
+import { fetchCustomersByZone } from "../../services/feeCollector";
+import {
+  MapPin,
+  Building2,
+  CreditCard,
+  User,
+  DollarSign,
+  CheckCircle2,
+  X,
   Wallet,
   TrendingUp,
   Users,
   Clock,
-  Send
+  Send,
 } from "lucide-react";
 
 const zones = [
-  "A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4", "C1", "C2", "C3", "C4"
+  "A1",
+  "A2",
+  "A3",
+  "A4",
+  "B1",
+  "B2",
+  "B3",
+  "B4",
+  "C1",
+  "C2",
+  "C3",
+  "C4",
 ];
 
 const sampleCards = Array(8).fill({
@@ -32,7 +44,7 @@ const sampleCards = Array(8).fill({
   },
   due: 2300.0,
   lastPayment: "2025-02-15",
-  status: "pending"
+  status: "pending",
 });
 
 const translations = {
@@ -52,7 +64,7 @@ const translations = {
     totalCustomers: "Total Customers",
     pendingPayments: "Pending Payments",
     todayCollection: "Today's Collection",
-    lastPayment: "Last Payment"
+    lastPayment: "Last Payment",
   },
   si: {
     name: "නම",
@@ -70,7 +82,7 @@ const translations = {
     totalCustomers: "මුළු පාරිභෝගිකයින්",
     pendingPayments: "අපේක්ෂිත ගෙවීම්",
     todayCollection: "අද එකතු කිරීම",
-    lastPayment: "අවසාන ගෙවීම"
+    lastPayment: "අවසාන ගෙවීම",
   },
   ta: {
     name: "பெயர்",
@@ -88,12 +100,12 @@ const translations = {
     totalCustomers: "மொத்த வாடிக்கையாளர்கள்",
     pendingPayments: "நிலுவையில் உள்ள பணம்",
     todayCollection: "இன்றைய வசூல்",
-    lastPayment: "கடைசி பணம்"
+    lastPayment: "கடைசி பணம்",
   },
 };
 
 export default function FeeCollectorDashboard() {
-  const [lang] = useState('en'); // Simplified for demo
+  const [lang] = useState("en"); // Simplified for demo
   const t = translations[lang] || translations.en;
 
   const [selectedZone, setSelectedZone] = useState("A1");
@@ -102,10 +114,40 @@ export default function FeeCollectorDashboard() {
   const [editedAmount, setEditedAmount] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [selectedCard, setSelectedCard] = useState(null);
+  const [customerData, setCustomerData] = useState([]);
+  const [loading, setLoading] = useState(true); // Track loading state
+  const [error, setError] = useState(null); // Track error state
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true); // Start loading
+      try {
+        const data = await fetchCustomersByZone(selectedZone); // Fetch data using the service
+        setCustomerData(data); // Store the fetched data
+        setError(null); // Reset error state
+      } catch (err) {
+        setError("Failed to fetch customer data."); // Set error state
+      } finally {
+        setLoading(false); // Stop loading
+      }
+    };
+
+    fetchData();
+  }, [selectedZone]); // Fetch data whenever `selectedZone` changes
+
+  if (loading) {
+    return <div>Loading...</div>; // Show loading state
+  }
+
+  if (error) {
+    return <div>{error}</div>; // Show error message
+  }
 
   const totalAmount = sampleCards.reduce((sum, card) => sum + card.due, 0);
   const totalCustomers = sampleCards.length;
-  const pendingPayments = sampleCards.filter(card => card.status === 'pending').length;
+  const pendingPayments = sampleCards.filter(
+    (card) => card.status === "pending"
+  ).length;
 
   const handlePayClick = (amount, cardIndex) => {
     setSelectedAmount(amount);
@@ -139,7 +181,9 @@ export default function FeeCollectorDashboard() {
               <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                 {t.dashboard}
               </h1>
-              <p className="text-slate-600 mt-1">Zone {selectedZone} - Collection Management</p>
+              <p className="text-slate-600 mt-1">
+                Zone {selectedZone} - Collection Management
+              </p>
             </div>
             <div className="flex items-center space-x-2 text-sm text-slate-500">
               <Clock className="w-4 h-4" />
@@ -155,8 +199,12 @@ export default function FeeCollectorDashboard() {
           <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-slate-600 text-sm font-medium">{t.totalCustomers}</p>
-                <p className="text-2xl font-bold text-slate-900 mt-1">{totalCustomers}</p>
+                <p className="text-slate-600 text-sm font-medium">
+                  {t.totalCustomers}
+                </p>
+                <p className="text-2xl font-bold text-slate-900 mt-1">
+                  {totalCustomers}
+                </p>
               </div>
               <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl">
                 <Users className="w-6 h-6 text-white" />
@@ -167,8 +215,12 @@ export default function FeeCollectorDashboard() {
           <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-slate-600 text-sm font-medium">{t.pendingPayments}</p>
-                <p className="text-2xl font-bold text-amber-600 mt-1">{pendingPayments}</p>
+                <p className="text-slate-600 text-sm font-medium">
+                  {t.pendingPayments}
+                </p>
+                <p className="text-2xl font-bold text-amber-600 mt-1">
+                  {pendingPayments}
+                </p>
               </div>
               <div className="p-3 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl">
                 <Wallet className="w-6 h-6 text-white" />
@@ -179,8 +231,12 @@ export default function FeeCollectorDashboard() {
           <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-slate-600 text-sm font-medium">{t.todayCollection}</p>
-                <p className="text-2xl font-bold text-green-600 mt-1">LKR 12,500</p>
+                <p className="text-slate-600 text-sm font-medium">
+                  {t.todayCollection}
+                </p>
+                <p className="text-2xl font-bold text-green-600 mt-1">
+                  LKR 12,500
+                </p>
               </div>
               <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-xl">
                 <TrendingUp className="w-6 h-6 text-white" />
@@ -192,7 +248,9 @@ export default function FeeCollectorDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-slate-600 text-sm font-medium">{t.total}</p>
-                <p className="text-2xl font-bold text-indigo-600 mt-1">LKR {totalAmount.toFixed(2)}</p>
+                <p className="text-2xl font-bold text-indigo-600 mt-1">
+                  LKR {totalAmount.toFixed(2)}
+                </p>
               </div>
               <div className="p-3 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl">
                 <DollarSign className="w-6 h-6 text-white" />
@@ -205,7 +263,9 @@ export default function FeeCollectorDashboard() {
         <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-xl mb-8">
           <div className="flex items-center mb-4">
             <MapPin className="w-5 h-5 text-indigo-600 mr-2" />
-            <h2 className="text-lg font-semibold text-slate-900">{t.zoneSelection}</h2>
+            <h2 className="text-lg font-semibold text-slate-900">
+              {t.zoneSelection}
+            </h2>
           </div>
           <div className="flex flex-wrap gap-3">
             {zones.map((zone) => (
@@ -226,7 +286,7 @@ export default function FeeCollectorDashboard() {
 
         {/* Customer Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-          {sampleCards.map((card, index) => (
+          {customerData.map((card, index) => (
             <div
               key={index}
               className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
@@ -237,10 +297,12 @@ export default function FeeCollectorDashboard() {
                   <div className="p-2 bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg">
                     <CreditCard className="w-4 h-4 text-slate-600" />
                   </div>
-                  <span className="font-bold text-slate-900 text-sm">{card.id}</span>
+                  <span className="font-bold text-slate-900 text-sm">
+                    {card.code}
+                  </span>
                 </div>
                 <div className="px-2 py-1 bg-amber-100 text-amber-800 text-xs font-medium rounded-full">
-                  Pending
+                  {card.status === "PAID" ? "Paid" : "Pending"}
                 </div>
               </div>
 
@@ -249,29 +311,43 @@ export default function FeeCollectorDashboard() {
                 <div className="flex items-start justify-between">
                   <div className="flex items-center space-x-2">
                     <User className="w-4 h-4 text-slate-500" />
-                    <span className="text-xs font-medium text-slate-600">{t.name}:</span>
+                    <span className="text-xs font-medium text-slate-600">
+                      {t.name}:
+                    </span>
                   </div>
-                  <span className="text-sm font-semibold text-slate-900 text-right">{card.name[lang]}</span>
+                  {/* <span className="text-sm font-semibold text-slate-900 text-right">{card.name[lang]}</span> */}
+                  <span className="text-sm font-semibold text-slate-900 text-right">
+                    {card.fullName}
+                  </span>
                 </div>
 
                 <div className="flex items-start justify-between">
                   <div className="flex items-center space-x-2">
                     <Building2 className="w-4 h-4 text-slate-500" />
-                    <span className="text-xs font-medium text-slate-600">{t.company}:</span>
+                    <span className="text-xs font-medium text-slate-600">
+                      {t.company}:
+                    </span>
                   </div>
-                  <span className="text-sm text-slate-700 text-right">{card.company[lang]}</span>
+                  {/* <span className="text-sm text-slate-700 text-right">{card.company[lang]}</span> */}
+                  <span className="text-sm text-slate-700 text-right">
+                    {card.businessName}
+                  </span>
                 </div>
 
                 <div className="flex items-center justify-between pt-2 border-t border-slate-200">
-                  <span className="text-xs font-medium text-slate-600">{t.due}:</span>
-                  <span className="text-lg font-bold text-red-600">LKR {card.due.toFixed(2)}</span>
+                  <span className="text-xs font-medium text-slate-600">
+                    {t.due}:
+                  </span>
+                  <span className="text-lg font-bold text-red-600">
+                    LKR {card.outstandingDue.toFixed(2)}
+                  </span>
                 </div>
               </div>
 
               {/* Action Button */}
               <button
                 className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
-                onClick={() => handlePayClick(card.due, index)}
+                onClick={() => handlePayClick(card.outstandingDue, index)}
               >
                 <Wallet className="w-4 h-4" />
                 <span>{t.pay}</span>
@@ -288,8 +364,12 @@ export default function FeeCollectorDashboard() {
                 <DollarSign className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 className="text-xl font-semibold text-slate-900">{t.total}</h3>
-                <p className="text-3xl font-bold text-indigo-600">LKR {totalAmount.toFixed(2)}</p>
+                <h3 className="text-xl font-semibold text-slate-900">
+                  {t.total}
+                </h3>
+                <p className="text-3xl font-bold text-indigo-600">
+                  LKR {totalAmount.toFixed(2)}
+                </p>
               </div>
             </div>
 
@@ -323,7 +403,9 @@ export default function FeeCollectorDashboard() {
                 <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg">
                   <Wallet className="w-5 h-5 text-white" />
                 </div>
-                <h2 className="text-xl font-bold text-slate-900">{t.paidAmount}</h2>
+                <h2 className="text-xl font-bold text-slate-900">
+                  {t.paidAmount}
+                </h2>
               </div>
               <button
                 onClick={() => setShowModal(false)}
