@@ -5,6 +5,7 @@ import BillManagement from "../pages/ResponsibleOfficer/BillManagement";
 import DirectPayment from "../pages/ResponsibleOfficer/DirectPayment";
 import Settings from "../pages/ResponsibleOfficer/Settings";
 import CustomerDetails from "../pages/ResponsibleOfficer/CustomerDetails";
+import ReportRoutes from "./ReportRoutes";
 export default function ResponsibleOfficerRoutes() {
   return (
     <Routes>
@@ -14,6 +15,7 @@ export default function ResponsibleOfficerRoutes() {
       <Route path="directpayments" element={<DirectPayment />} />
       <Route path="settings" element={<Settings />} />
       <Route path="customerdetails" element={<CustomerDetails />} />
+      <Route path="report/*" element={<ReportRoutes />} />
 
       
       
