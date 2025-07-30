@@ -2,6 +2,7 @@
 import React, { useCallback, useMemo, useState, useEffect } from "react";
 import { FiFilter } from "react-icons/fi";
 import { fetchAllUser } from "../../services/admin";
+import { adminRegister } from "../../services/authService";
 
 /* ── Notification Component ─────────────────────────────────── */
 function Notification({ type, message, onClose }) {
@@ -492,12 +493,19 @@ function EditUserModal({ user, onClose, showNotification }) {
           value={form.contactNo}
           onChange={updateField}
         />
-        <EditRow
-          label="Role"
-          name="role"
-          value={form.role}
-          onChange={updateField}
-        />
+        <div className="flex items-center gap-3">
+          <label className="font-bold w-32">Role</label>
+          <select
+            name="role"
+            value={form.role}
+            onChange={updateField}
+            className="flex-1 px-3 py-1 border border-gray-300 rounded"
+          >
+            <option value="">Select Role</option>
+            <option value="Responsible officer">Responsible officer</option>
+            <option value="Fee Collector officer">Fee Collector officer</option>
+          </select>
+        </div>
         <EditRow
           label="NIC"
           name="nic"
@@ -511,13 +519,28 @@ function EditUserModal({ user, onClose, showNotification }) {
     </Modal>
   );
 }
-const EditRow = ({ label, ...props }) => (
+const EditRow = ({ label, type = "text", options, ...props }) => (
   <div className="flex items-center gap-3">
     <label className="font-bold w-32">{label}</label>
-    <input
-      className="flex-1 px-3 py-1 border border-gray-300 rounded"
-      {...props}
-    />
+    {options ? (
+      <select
+        className="flex-1 px-3 py-1 border border-gray-300 rounded"
+        {...props}
+      >
+        <option value="">Select {label}</option>
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    ) : (
+      <input
+        type={type}
+        className="flex-1 px-3 py-1 border border-gray-300 rounded"
+        {...props}
+      />
+    )}
   </div>
 );
 
@@ -559,23 +582,64 @@ function AddUserModal({ onClose, showNotification }) {
     fullName: "",
     email: "",
     contactNo: "",
-    role: "",
+    role: "Responsible officer", // Default value
     nic: "",
     password: "",
   });
 
   const updateField = (e) =>
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const { fullName, email, contactNo, role, nic, password } = form;
+
     if (!fullName || !email || !contactNo || !role || !nic || !password) {
       showNotification("warning", "All fields are required.");
       return;
     }
-    // … perform your create call here …
-    showNotification("success", "User added successfully.");
-    onClose();
+
+    const transformedRole =
+      role === "Responsible officer" ? "RESPONSIBLEOFFICER" : role;
+
+    const userData = {
+      fullName,
+      email,
+      contactNo,
+      role: transformedRole,
+      nic,
+      password,
+    };
+    try {
+      // Call the adminRegister service
+      const response = await adminRegister(userData);
+      showNotification("success", "Registration successfully.");
+      onClose();
+    } catch (error) {
+      console.error("Error creating user:", error);
+      let errorMessage = "Failed to create user. Please try again.";
+
+      if (error.response) {
+        console.error("Error response:", error.response);
+        if (error.response.data && error.response.data.message) {
+          errorMessage = error.response.data.message;
+        } else if (error.response.status === 400) {
+          errorMessage = "Invalid data provided. Please check your inputs.";
+        } else if (error.response.status === 409) {
+          errorMessage = "User with this email or NIC already exists.";
+        } else if (error.response.status === 500) {
+          errorMessage = "Server error. Please try again later.";
+        }
+      } else if (error.request) {
+        console.error("Network error:", error.request);
+        errorMessage = "Network error. Please check your connection.";
+      } else {
+        console.error("Other error:", error.message);
+        errorMessage = error.message || "An unexpected error occurred.";
+      }
+
+      showNotification("danger", errorMessage);
+    }
   };
 
   return (
