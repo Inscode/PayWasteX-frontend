@@ -404,22 +404,22 @@ const Reports = () => {
             </Section>
 
             {/* Recent Downloads */}
-            <Section title="📁 Recent Downloads" subtitle="Recently generated reports">
+            {/* <Section title="📁 Recent Downloads" subtitle="Recently generated reports">
               <div className="space-y-3">
                 {recentDownloads.map((report, i) => (
                   <RecentReportItem key={i} report={report} />
                 ))}
               </div>
-            </Section>
+            </Section> */}
 
             {/* Report Stats */}
-            <Section title="📈 Report Statistics" subtitle="Usage overview">
+            {/* <Section title="📈 Report Statistics" subtitle="Usage overview">
               <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-4">
                 <StatItem label="Reports Generated Today" value="12" color="emerald" />
                 <StatItem label="Total Downloads" value="156" color="blue" />
                 <StatItem label="Most Popular" value="Collections Summary" color="purple" />
               </div>
-            </Section>
+            </Section> */}
           </div>
         </div>
       </div>
