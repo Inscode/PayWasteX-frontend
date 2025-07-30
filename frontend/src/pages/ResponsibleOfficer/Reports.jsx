@@ -127,34 +127,72 @@ const Reports = () => {
   const [zone, setZone] = useState("");
   const [loading, setLoading] = useState(null);
 
+  // Fixed navigation handler with correct paths
   const handleGenerateClick = (index) => {
-    switch (index) {
-      case 0:
-        navigate("/report/collection-summery");
-        break;
-      case 1:
-        navigate("/report/payers");
-        break;
-      case 2:
-        navigate("/report/non-payers");
-        break;
-      case 3:
-        navigate("/report/performance-summery");
-        break;
-      case 4:
-        navigate("/report/outstanding-balance");
-        break;
-      default:
-        alert("This report is not yet implemented.");
+    // Prepare filter parameters to pass to the report page
+    const filterParams = new URLSearchParams();
+    
+    if (startDate) filterParams.append('startDate', startDate.toISOString());
+    if (endDate) filterParams.append('endDate', endDate.toISOString());
+    if (collector) filterParams.append('collector', collector);
+    if (zone) filterParams.append('zone', zone);
+
+    const queryString = filterParams.toString();
+    const baseUrl = queryString ? '?' + queryString : '';
+
+    // Debug: Log the navigation attempt
+    console.log('Navigating to report index:', index);
+
+    try {
+      switch (index) {
+        case 0:
+          console.log('Navigating to: /report/collection-summery');
+          console.log('Current URL before navigation:', window.location.href);
+          navigate(`/report/collection-summery${baseUrl}`, {
+            state: { startDate, endDate, collector, zone }
+          });
+          console.log('Navigation completed, new URL should be:', window.location.origin + '/report/collection-summery');
+          break;
+        case 1:
+          console.log('Navigating to: /report/payers');
+          navigate(`/report/payers${baseUrl}`, {
+            state: { startDate, endDate, collector, zone }
+          });
+          break;
+        case 2:
+          console.log('Navigating to: /report/non-payers');
+          navigate(`/report/non-payers${baseUrl}`, {
+            state: { startDate, endDate, collector, zone }
+          });
+          break;
+        case 3:
+          console.log('Navigating to: /report/performance-summery');
+          navigate(`/report/performance-summery${baseUrl}`, {
+            state: { startDate, endDate, collector, zone }
+          });
+          break;
+        case 4:
+          console.log('Navigating to: /report/outstanding-balance');
+          navigate(`/report/outstanding-balance${baseUrl}`, {
+            state: { startDate, endDate, collector, zone }
+          });
+          break;
+        default:
+          console.warn(`Report index ${index} is not implemented yet.`);
+          alert("This report is not yet implemented.");
+      }
+    } catch (error) {
+      console.error("Navigation error:", error);
+      alert(`Navigation failed: ${error.message}`);
     }
   };
 
   const handleDownloadClick = async (index) => {
     const reportTypes = [
-      "collection-summary",
+      "collection-summery",
       "payers",
       "non-payers",
-      "performance-summary",
+      "performance-summery",
       "outstanding-balance",
     ];
 
@@ -162,17 +200,35 @@ const Reports = () => {
     setLoading(index);
 
     try {
-      const response = await fetch(`/api/report/download?type=${selectedType}`, {
+      // Build query parameters for the API call
+      const params = new URLSearchParams();
+      params.append('type', selectedType);
+      
+      if (startDate) params.append('startDate', startDate.toISOString());
+      if (endDate) params.append('endDate', endDate.toISOString());
+      if (collector) params.append('collector', collector);
+      if (zone) params.append('zone', zone);
+
+      const response = await fetch(`/api/report/download?${params.toString()}`, {
         method: "GET",
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
 
-      if (!response.ok) throw new Error("Failed to download");
+      if (!response.ok) {
+        throw new Error(`Failed to download: ${response.status} ${response.statusText}`);
+      }
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `${selectedType}.pdf`;
+      
+      // Generate filename with timestamp
+      const timestamp = new Date().toISOString().split('T')[0];
+      link.download = `${selectedType}_${timestamp}.pdf`;
+      
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -180,8 +236,8 @@ const Reports = () => {
 
       alert("Report downloaded successfully!");
     } catch (error) {
-      alert("Failed to download report.");
-      console.error(error);
+      console.error("Download error:", error);
+      alert(`Failed to download report: ${error.message}`);
     } finally {
       setLoading(null);
     }
