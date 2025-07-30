@@ -1,137 +1,321 @@
-import React, { useEffect, useRef } from "react";
-import { useLanguage } from "../../contexts/LanguageContext";
-
-const payers = [
-  { regNo: "ST1NWT1", name: "Senior Engineer (Northern) Railway Department", company: "Railway Tourist Bungalow", amount: "LKR 413.00" },
-  { regNo: "ST1NWT2", name: "Mahesh Kumara", company: "Rajarata Oil", amount: "LKR 295.00" },
-  { regNo: "ST1NWT3", name: "M S S M Hashan", company: "Kings’ Communication", amount: "LKR 295.00" },
-  { regNo: "ST1NWT4", name: "A A Rasik", company: "Star Grocery", amount: "LKR 590.00" },
-  { regNo: "ST1NWT5", name: "Sisira Nirmal", company: "Horana Wasana Bakery", amount: "LKR 250.00" },
-];
-
-const labels = {
-  en: {
-    total: "Total Collection",
-    pending: "Pending Dues",
-    defaulters: "Defaulters",
-    perMonth: "Per Month",
-    recentPayers: "Recent Payers",
-    regNo: "Reg No",
-    name: "Name",
-    company: "Company Name",
-    amount: "Monthly Full Payment",
-    currency: "LKR",
-  },
-  si: {
-    total: "මුළු එකතුව",
-    pending: "බකියාව",
-    defaulters: "නොගෙවූ අය",
-    perMonth: "මාසිකව",
-    recentPayers: "නවතම ගෙවීම්",
-    regNo: "ලියාපදිංචි අංකය",
-    name: "නම",
-    company: "සමාගම",
-    amount: "මාසික ගෙවීම්",
-    currency: "රු.",
-  },
-  ta: {
-    total: "மொத்த வசூல்",
-    pending: "நிலுவை",
-    defaulters: "செலுத்தாதவர்கள்",
-    perMonth: "மாதத்துக்கு",
-    recentPayers: "சமீபத்தில் செலுத்தியவர்கள்",
-    regNo: "பதிவு எண்",
-    name: "பெயர்",
-    company: "நிறுவனம்",
-    amount: "மாதாந்திர தொகை",
-    currency: "ரூ.",
-  },
-};
+// components/Dashboard.js
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { HiDownload, HiUserGroup, HiCash, HiMap, HiTrendingUp, HiClock, HiCheckCircle } from "react-icons/hi";
 
 const Dashboard = () => {
-  const { lang } = useLanguage();
-  const t = labels[lang] || labels.en;
+  const navigate = useNavigate();
 
-  const cardRef = useRef(null);
+  const collectors = [
+    { name: "Collector A", amount: "45,000.00", change: "+12.5%", trend: "up" },
+    { name: "Collector B", amount: "68,000.00", change: "+8.3%", trend: "up" },
+    { name: "Collector C", amount: "30,000.00", change: "-2.1%", trend: "down" },
+  ];
 
-  useEffect(() => {
-    const el = cardRef.current;
-    if (!el) return;
+  const zones = [
+    { zone: "A1", due: "10,000.00", priority: "high" },
+    { zone: "B1", due: "8,500.00", priority: "medium" },
+    { zone: "C2", due: "14,200.00", priority: "high" },
+    { zone: "D3", due: "3,600.00", priority: "low" },
+  ];
 
-    const scrollAmount = el.scrollWidth - el.clientWidth;
+  const recentActivities = [
+    { action: "Payment confirmed", collector: "Collector A", amount: "5,000", time: "2 min ago" },
+    { action: "New bill issued", zone: "Zone B1", amount: "2,500", time: "15 min ago" },
+    { action: "Report generated", type: "Monthly", time: "1 hour ago" },
+  ];
 
-    if (scrollAmount > 0) {
-      el.scrollTo({ left: 0, behavior: "auto" });
-      setTimeout(() => {
-        el.scrollTo({ left: scrollAmount, behavior: "smooth" });
-        setTimeout(() => {
-          el.scrollTo({ left: 0, behavior: "smooth" });
-        }, 1000);
-      }, 200);
-    }
-  }, []);
+  // Navigation handlers
+  const handleConfirmPayments = () => {
+    navigate('/responsibleOfficer/directpayments');
+  };
+
+  const handleIssueBill = () => {
+    navigate('/responsibleOfficer/billmanagement');
+  };
+
+  const handleGenerateReport = () => {
+    navigate('/responsibleOfficer/reports');
+  };
 
   return (
-    <div className="min-h-screen bg-white p-4 md:p-8 text-gray-800">
-      {/* Summary Cards with animation */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-  <div className="bg-blue-500 text-white rounded-lg p-4 shadow-md animate-slideInLeft">
-    <p className="font-semibold text-lg">{t.total}</p>
-    <p className="text-sm">{t.perMonth}</p>
-    <p className="text-right text-xl font-bold">{t.currency} 209000.00</p>
-  </div>
-  <div className="bg-yellow-300 text-yellow-900 rounded-lg p-4 shadow-md animate-slideInLeft delay-[100ms]">
-    <p className="font-semibold text-lg">{t.pending}</p>
-    <p className="text-sm">{t.perMonth}</p>
-    <p className="text-right text-xl font-bold">{t.currency} 20000.00</p>
-  </div>
-  <div className="bg-red-400 text-white rounded-lg p-4 shadow-md animate-slideInLeft delay-[200ms]">
-    <p className="font-semibold text-lg">{t.defaulters}</p>
-    <p className="text-sm">{t.perMonth}</p>
-    <p className="text-right text-xl font-bold">{t.currency} 178000.00</p>
-  </div>
-</div>
-
-
-      {/* Recent Payers Header */}
-      <h2 className="text-green-900 text-lg font-bold mb-4">{t.recentPayers}</h2>
-
-      {/* Desktop Table */}
-      <div className="hidden md:block bg-gray-100 rounded-lg shadow overflow-x-auto">
-        <table className="w-full text-left text-sm">
-          <thead className="bg-gray-200 text-gray-700 font-semibold">
-            <tr>
-              <th className="px-4 py-3">{t.regNo}</th>
-              <th className="px-4 py-3">{t.name}</th>
-              <th className="px-4 py-3">{t.company}</th>
-              <th className="px-4 py-3">{t.amount}</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white">
-            {payers.map((payer, index) => (
-              <tr key={index} className="border-t">
-                <td className="px-4 py-3">{payer.regNo}</td>
-                <td className="px-4 py-3">{payer.name}</td>
-                <td className="px-4 py-3">{payer.company}</td>
-                <td className="px-4 py-3">{payer.amount}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+      {/* Header */}
+      <div className="bg-white/70 backdrop-blur-sm border-b border-white/20 sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
+                <span className="text-white font-bold text-lg">RO</span>
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
+                <p className="text-sm text-gray-600">Responsible Officer Portal</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-4">
+              <div className="text-right">
+                <p className="text-sm text-gray-500">Last updated</p>
+                <p className="text-sm font-medium text-gray-800">2 minutes ago</p>
+              </div>
+              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Mobile Cards */}
-      <div className="md:hidden space-y-4">
-        {payers.map((payer, index) => (
-          <div key={index} className="bg-gray-100 rounded-lg shadow p-4 text-sm">
-            <p className="mb-1"><strong>{t.regNo}:</strong> {payer.regNo}</p>
-            <p className="mb-1"><strong>{t.name}:</strong> {payer.name}</p>
-            <p className="mb-1"><strong>{t.company}:</strong> {payer.company}</p>
-            <p><strong>{t.amount}:</strong> {payer.amount}</p>
+      <div className="max-w-7xl mx-auto p-6 space-y-8">
+        {/* Enhanced Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <StatCard 
+            title="Total Collection" 
+            value="209,000.00" 
+            icon={<HiCash />} 
+            color="emerald"
+            trend="+15.2%"
+            subtitle="This month"
+          />
+          <StatCard 
+            title="Pending Dues" 
+            value="20,000.00" 
+            icon={<HiClock />} 
+            color="amber"
+            trend="-8.5%"
+            subtitle="Overdue amount"
+          />
+          <StatCard 
+            title="Active Collectors" 
+            value="12" 
+            icon={<HiUserGroup />} 
+            color="blue"
+            trend="+2"
+            subtitle="Currently working"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+          {/* Collections Section */}
+          <div className="xl:col-span-2 space-y-8">
+            <Section title="💼 Collections by Fee Collector" subtitle="Performance overview">
+              <div className="grid sm:grid-cols-2 gap-6">
+                {collectors.map((c, i) => (
+                  <CollectorCard key={i} collector={c} />
+                ))}
+              </div>
+            </Section>
+
+            {/* Zone-wise Dues */}
+            <Section title="🗺️ Zone Management" subtitle="Outstanding amounts by area">
+              <div className="grid sm:grid-cols-2 gap-4">
+                {zones.map((z, i) => (
+                  <ZoneCard key={i} zone={z} />
+                ))}
+              </div>
+            </Section>
           </div>
-        ))}
+
+          {/* Sidebar */}
+          <div className="space-y-8">
+            {/* Recent Activity */}
+            <Section title="⚡ Recent Activity" subtitle="Latest updates">
+              <div className="space-y-3">
+                {recentActivities.map((activity, i) => (
+                  <ActivityItem key={i} activity={activity} />
+                ))}
+              </div>
+            </Section>
+
+            {/* Quick Actions */}
+            <Section title="⚙️ Quick Actions" subtitle="Common tasks">
+              <div className="space-y-3">
+                <ActionButton 
+                  icon={<HiCheckCircle />} 
+                  text="Direct Payments" 
+                  color="emerald" 
+                  onClick={handleConfirmPayments}
+                />
+                <ActionButton 
+                  icon={<HiDownload />} 
+                  text="Issue Bill" 
+                  color="blue" 
+                  onClick={handleIssueBill}
+                />
+                <ActionButton 
+                  icon={<HiTrendingUp />} 
+                  text="Generate Report" 
+                  color="purple" 
+                  onClick={handleGenerateReport}
+                />
+              </div>
+            </Section>
+
+            {/* Download Reports */}
+            <Section title="📁 Reports" subtitle="Download data">
+              <div className="space-y-3">
+                <ReportButton text="Monthly Collection" color="emerald" size="small" />
+                <ReportButton text="Defaulters List" color="red" size="small" />
+                <ReportButton text="Zone Analysis" color="blue" size="small" />
+              </div>
+            </Section>
+          </div>
+        </div>
       </div>
     </div>
+  );
+};
+
+// All your existing components (StatCard, CollectorCard, etc.) remain the same
+const StatCard = ({ title, value, icon, color, trend, subtitle }) => {
+  const colorClasses = {
+    emerald: "from-emerald-500 to-teal-600",
+    amber: "from-amber-500 to-orange-600", 
+    blue: "from-blue-500 to-indigo-600",
+  };
+
+  return (
+    <div className="group relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl -z-10" 
+           style={{background: `linear-gradient(to right, ${color === 'emerald' ? '#10b981, #0d9488' : color === 'amber' ? '#f59e0b, #ea580c' : '#3b82f6, #4f46e5'})`}}></div>
+      
+      <div className={`bg-gradient-to-r ${colorClasses[color]} p-6 rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 text-white relative`}>
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            <p className="text-white/80 text-sm font-medium mb-1">{title}</p>
+            <p className="text-3xl font-bold mb-1">LKR {value}</p>
+            <div className="flex items-center space-x-2">
+              <span className="text-xs bg-white/20 px-2 py-1 rounded-full">{trend}</span>
+              <span className="text-white/70 text-xs">{subtitle}</span>
+            </div>
+          </div>
+          <div className="text-4xl opacity-80 transform group-hover:scale-110 transition-transform duration-300">
+            {icon}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const CollectorCard = ({ collector }) => (
+  <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 group">
+    <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center space-x-3">
+        <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+          <span className="text-white font-semibold text-sm">{collector.name.split(' ')[1]}</span>
+        </div>
+        <div>
+          <h3 className="font-semibold text-gray-800">{collector.name}</h3>
+          <p className="text-xs text-gray-500">Fee Collector</p>
+        </div>
+      </div>
+      <div className={`text-xs px-2 py-1 rounded-full ${collector.trend === 'up' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+        {collector.change}
+      </div>
+    </div>
+    <div className="text-right">
+      <p className="text-2xl font-bold text-emerald-600">LKR {collector.amount}</p>
+      <p className="text-xs text-gray-500">Total collected</p>
+    </div>
+  </div>
+);
+
+const ZoneCard = ({ zone }) => {
+  const priorityColors = {
+    high: "border-red-200 bg-red-50",
+    medium: "border-amber-200 bg-amber-50", 
+    low: "border-green-200 bg-green-50"
+  };
+
+  const priorityDots = {
+    high: "bg-red-500",
+    medium: "bg-amber-500",
+    low: "bg-green-500"
+  };
+
+  return (
+    <div className={`border-2 ${priorityColors[zone.priority]} p-4 rounded-xl hover:shadow-md transition-all duration-300`}>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <HiMap className="text-xl text-gray-600" />
+          <div>
+            <h4 className="font-semibold text-gray-800">Zone {zone.zone}</h4>
+            <div className="flex items-center space-x-2">
+              <div className={`w-2 h-2 rounded-full ${priorityDots[zone.priority]}`}></div>
+              <span className="text-xs text-gray-600 capitalize">{zone.priority} priority</span>
+            </div>
+          </div>
+        </div>
+        <div className="text-right">
+          <p className="font-bold text-red-600">LKR {zone.due}</p>
+          <p className="text-xs text-gray-500">Outstanding</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ActivityItem = ({ activity }) => (
+  <div className="flex items-start space-x-3 p-3 bg-white rounded-lg border border-gray-100">
+    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mt-0.5">
+      <HiCheckCircle className="text-blue-600 w-4 h-4" />
+    </div>
+    <div className="flex-1 min-w-0">
+      <p className="text-sm font-medium text-gray-800">{activity.action}</p>
+      <p className="text-xs text-gray-600">
+        {activity.collector && `by ${activity.collector}`}
+        {activity.zone && `in ${activity.zone}`}
+        {activity.type && `${activity.type} report`}
+        {activity.amount && ` • LKR ${activity.amount}`}
+      </p>
+      <p className="text-xs text-gray-400 mt-1">{activity.time}</p>
+    </div>
+  </div>
+);
+
+const ActionButton = ({ icon, text, color, onClick }) => {
+  const colorClasses = {
+    emerald: "bg-emerald-500 hover:bg-emerald-600",
+    blue: "bg-blue-500 hover:bg-blue-600",
+    purple: "bg-purple-500 hover:bg-purple-600"
+  };
+
+  return (
+    <button 
+      onClick={onClick}
+      className={`w-full ${colorClasses[color]} text-white p-3 rounded-lg font-medium hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center space-x-2`}
+    >
+      {icon}
+      <span>{text}</span>
+    </button>
+  );
+};
+
+const Section = ({ title, subtitle, children }) => (
+  <div>
+    <div className="mb-6">
+      <h2 className="text-xl font-bold text-gray-800 mb-1">{title}</h2>
+      {subtitle && <p className="text-sm text-gray-600">{subtitle}</p>}
+    </div>
+    {children}
+  </div>
+);
+
+const ReportButton = ({ text, color, size = "normal" }) => {
+  const colorClasses = {
+    emerald: "text-emerald-700 border-emerald-200 bg-emerald-50 hover:bg-emerald-100",
+    red: "text-red-700 border-red-200 bg-red-50 hover:bg-red-100",
+    blue: "text-blue-700 border-blue-200 bg-blue-50 hover:bg-blue-100",
+  };
+
+  const sizeClasses = size === "small" ? "p-3" : "p-4";
+
+  return (
+    <button className={`w-full border ${colorClasses[color]} ${sizeClasses} rounded-lg hover:shadow-md transition-all duration-200 flex justify-between items-center group`}>
+      <span className="font-medium text-sm">{text}</span>
+      <HiDownload className="w-4 h-4 group-hover:translate-y-0.5 transition-transform duration-200" />
+    </button>
   );
 };
 

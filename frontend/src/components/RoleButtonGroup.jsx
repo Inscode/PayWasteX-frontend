@@ -6,8 +6,11 @@ export default function RoleButtonGroup() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
+  // If user is not available, don't render the component
   if (!user) return null;
 
+  // Define tabs based on user roles
   const roleTabs = {
     ADMIN: [
       { label: "User Management", path: "/admin/userManagement" },
@@ -22,35 +25,47 @@ export default function RoleButtonGroup() {
     RESPONSIBLEOFFICER: [
       { label: "Dashboard", path: "/responsibleOfficer/dashboard" },
       { label: "Bill Management", path: "/responsibleOfficer/billmanagement" },
-      { label: "Payment Confirmation", path: "/responsibleOfficer/paymentconfirmation" },
+      { label: "Direct Payments", path: "/responsibleOfficer/directpayments" },
       { label: "Reports", path: "/responsibleOfficer/reports" },
+      {
+        label: "Customer Details",
+        path: "/responsibleOfficer/customerdetails",
+      },
+      { label: "Settings", path: "/responsibleOfficer/settings" },
     ],
-    FEECOLLECTOR: [
-      { label: "Dashboard", path: "/feeCollector/dashboard" },
-    ],
+    FEECOLLECTOR: [{ label: "Dashboard", path: "/feeCollector/dashboard" }],
   };
 
   const tabs = roleTabs[user.role] || [];
-
-  const [selected, setSelected] = useState(location.pathname);
-  useEffect(() => setSelected(location.pathname), [location.pathname]);
-
-  const handleSelect = (e) => navigate(e.target.value);
   const isSingleTab = tabs.length === 1;
 
+  // State to manage the selected tab, initialized with current path
+  const [selected, setSelected] = useState(location.pathname);
+
+  // Update selected tab when location changes
+  useEffect(() => {
+    setSelected(location.pathname);
+  }, [location.pathname]);
+
+  // Handle navigation on dropdown selection (mobile)
+  const handleSelect = (e) => {
+    navigate(e.target.value);
+  };
+
   return (
-    <div className="mt-12 md:mt-4 px-3">
-      {/* Mobile dropdown */}
+    <div className="mt-12 px-3 md:mt-4">
+      {/* Mobile Dropdown for Navigation */}
       <div className="md:hidden">
         <select
-          value={selected}
+          value={selected} // Controlled component
           onChange={handleSelect}
+          aria-label="Select navigation page" // Added for accessibility
           className="
-            w-full 
-            bg-[#c5ecd4] text-green-800 font-semibold text-sm
-            px-3 py-2 rounded-lg shadow-sm 
-            border border-green-300
-            focus:outline-none
+            w-full
+            rounded-lg border border-green-300 bg-[#c5ecd4] px-3 py-2
+            text-sm font-semibold text-green-800 shadow-sm outline-none
+            focus:border-green-500 focus:ring-1 focus:ring-green-500
+            cursor-pointer
           "
         >
           {tabs.map((tab) => (
@@ -61,36 +76,38 @@ export default function RoleButtonGroup() {
         </select>
       </div>
 
-      {/* Desktop tab group */}
-      <div className={`
-      hidden md:flex 
-      w-full justify-center
-      ${isSingleTab ? "" : "bg-[#c5ecd4] rounded-[16px] shadow-sm overflow-hidden border border-green-300 min-h-[48px] max-w-2xl mx-auto"}
-      `}>
-
-
-        {tabs.map((tab, i) => {
+      {/* Desktop Tab Group */}
+      <div
+        className={`
+    hidden md:flex
+    ${
+      isSingleTab
+        ? "w-fit mx-auto rounded-xl border border-green-300 bg-[#c5ecd4] p-2 shadow-sm" // Single tab styling
+        : "w-fit mx-auto rounded-xl border border-green-300 bg-[#c5ecd4] p-1 shadow-sm" // Tab group styling
+    }
+    items-center gap-1 // Use gap instead of space-x for better control
+  `}
+      >
+        {tabs.map((tab) => {
           const isActive = location.pathname === tab.path;
           return (
-            <div key={tab.path} className={`${isSingleTab ? "" : "flex-1 flex items-center justify-center relative"}`}>
-
-
-              <button
+            <button
+              key={tab.path}
               onClick={() => navigate(tab.path)}
+              aria-current={isActive ? "page" : undefined}
               className={`
-              ${isSingleTab ? "bg-[#c5ecd4] border border-green-300 px-6 py-2 rounded-[16px]" : ""}
-              whitespace-nowrap text-sm md:text-base font-semibold text-green-800 transition 
-              ${isActive ? "underline underline-offset-4 decoration-2" : ""}
-              `}
+          relative px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out
+          ${
+            isActive
+              ? "bg-white text-green-900 shadow-sm border border-green-200" // Active: white background with subtle border
+              : "text-green-800 hover:bg-white/40 hover:text-green-900 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-1"
+          }
+          whitespace-nowrap min-w-fit cursor-pointer
+          transform hover:scale-[1.02] active:scale-[0.98] // Subtle scale effects
+        `}
             >
               {tab.label}
             </button>
-
-              {!isSingleTab && i < tabs.length - 1 && (
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 h-2/3 w-[1px] bg-green-500" />
-            )}
-
-            </div>
           );
         })}
       </div>

@@ -10,12 +10,12 @@ const RoleSelectionModal = ({ onClose }) => {
   // Handles the selection of a role and navigates to the respective registration page
   const handleSelect = (role) => {
     switch (role) {
-      case "shopOwner":
+      case "customer":
         navigate("/shopOwnerRegister");
         break;
-      case "responsibleOfficer":
-        navigate("/responsibleOfficerRegister");
-        break;
+      // case "responsibleOfficer":
+      //   navigate("/responsibleOfficerRegister");
+      //   break;
       case "feeCollector": // New case for Fee Collector registration
         navigate("/feeCollectorRegister");
         break;
@@ -47,18 +47,18 @@ const RoleSelectionModal = ({ onClose }) => {
         <div className="flex flex-col gap-6">
           <RoleButton
             icon={<FaStore size={32} />}
-            label="Store Owner"
+            label="Customer"
             description="Register and manage your shop"
-            onClick={() => handleSelect("shopOwner")}
+            onClick={() => handleSelect("customer")}
             color="green"
           />
-          <RoleButton
+          {/* <RoleButton
             icon={<FaUserShield size={32} />}
             label="Responsible Officer"
             description="Oversee operations and ensure compliance"
             onClick={() => handleSelect("responsibleOfficer")}
             color="purple"
-          />
+          /> */}
           <RoleButton
             icon={<FaMoneyBillWave size={32} />} // Icon representing money/collection
             label="Fee Collector"
@@ -83,22 +83,44 @@ const RoleSelectionModal = ({ onClose }) => {
 // RoleButton sub-component for individual role options
 const RoleButton = ({ icon, label, description, onClick, color }) => {
   // Base classes applied to all role buttons for consistent styling
-  const baseClasses = "flex items-center gap-5 px-6 py-4 rounded-xl shadow-lg transition-all duration-300 transform hover:-translate-y-1 hover:scale-105 active:scale-95 active:shadow-md";
+  const baseClasses =
+    "flex items-center gap-5 px-6 py-4 rounded-xl shadow-lg transition-all duration-300 transform hover:-translate-y-1 hover:scale-105 active:scale-95 active:shadow-md";
 
   // Classes for the icon's background, dynamically set based on the 'color' prop
   const iconBgClasses = `p-3 rounded-full ${
-    color === "blue" ? "bg-blue-600/20 text-blue-400" :
-    color === "green" ? "bg-green-600/20 text-green-400" :
-    color === "purple" ? "bg-purple-600/20 text-purple-400" :
-    color === "orange" ? "bg-orange-600/20 text-orange-400" : "" // Added orange color
+    color === "blue"
+      ? "bg-blue-600/20 text-blue-400"
+      : color === "green"
+      ? "bg-green-600/20 text-green-400"
+      : color === "purple"
+      ? "bg-purple-600/20 text-purple-400"
+      : color === "orange"
+      ? "bg-orange-600/20 text-orange-400"
+      : "" // Added orange color
   }`;
 
   // Classes for the button's background and border, dynamically set based on the 'color' prop
   const buttonBgClasses = `
-    ${color === "blue" ? "bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30" : ""}
-    ${color === "green" ? "bg-green-500/10 hover:bg-green-500/20 border border-green-500/30" : ""}
-    ${color === "purple" ? "bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30" : ""}
-    ${color === "orange" ? "bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/30" : ""} // Added orange color
+    ${
+      color === "blue"
+        ? "bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30"
+        : ""
+    }
+    ${
+      color === "green"
+        ? "bg-green-500/10 hover:bg-green-500/20 border border-green-500/30"
+        : ""
+    }
+    ${
+      color === "purple"
+        ? "bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30"
+        : ""
+    }
+    ${
+      color === "orange"
+        ? "bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/30"
+        : ""
+    } // Added orange color
   `;
 
   return (
@@ -107,13 +129,12 @@ const RoleButton = ({ icon, label, description, onClick, color }) => {
       className={`${baseClasses} ${buttonBgClasses} flex-grow`}
     >
       {/* Icon container with dynamic background color */}
-      <div className={iconBgClasses}>
-        {icon}
-      </div>
+      <div className={iconBgClasses}>{icon}</div>
       {/* Text content for the button (label and description) */}
       <div className="flex flex-col items-start">
         <span className="font-bold text-xl mb-1">{label}</span>
-        <span className="text-gray-300 text-sm">{description}</span> {/* Display description */}
+        <span className="text-gray-300 text-sm">{description}</span>{" "}
+        {/* Display description */}
       </div>
     </button>
   );
