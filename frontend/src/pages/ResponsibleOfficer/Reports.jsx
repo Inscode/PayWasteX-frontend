@@ -127,34 +127,72 @@ const Reports = () => {
   const [zone, setZone] = useState("");
   const [loading, setLoading] = useState(null);
 
+  // Fixed navigation handler with correct paths
   const handleGenerateClick = (index) => {
-    switch (index) {
-      case 0:
-        navigate("/report/collection-summery");
-        break;
-      case 1:
-        navigate("/report/payers");
-        break;
-      case 2:
-        navigate("/report/non-payers");
-        break;
-      case 3:
-        navigate("/report/performance-summery");
-        break;
-      case 4:
-        navigate("/report/outstanding-balance");
-        break;
-      default:
-        alert("This report is not yet implemented.");
+    // Prepare filter parameters to pass to the report page
+    const filterParams = new URLSearchParams();
+    
+    if (startDate) filterParams.append('startDate', startDate.toISOString());
+    if (endDate) filterParams.append('endDate', endDate.toISOString());
+    if (collector) filterParams.append('collector', collector);
+    if (zone) filterParams.append('zone', zone);
+
+    const queryString = filterParams.toString();
+    const baseUrl = queryString ? '?' + queryString : '';
+
+    // Debug: Log the navigation attempt
+    console.log('Navigating to report index:', index);
+
+    try {
+      switch (index) {
+        case 0:
+          console.log('Navigating to: /report/collection-summery');
+          console.log('Current URL before navigation:', window.location.href);
+          navigate(`/responsibleOfficer/reports/collection-summery${baseUrl}`, {
+            state: { startDate, endDate, collector, zone }
+          });
+          console.log('Navigation completed, new URL should be:', window.location.origin + '/report/collection-summery');
+          break;
+        case 1:
+          console.log('Navigating to: /report/payers');
+          navigate(`/responsibleOfficer/reports/payers${baseUrl}`, {
+            state: { startDate, endDate, collector, zone }
+          });
+          break;
+        case 2:
+          console.log('Navigating to: /report/non-payers');
+          navigate(`/responsibleOfficer/reports/non-payers${baseUrl}`, {
+            state: { startDate, endDate, collector, zone }
+          });
+          break;
+        case 3:
+          console.log('Navigating to: /report/performance-summery');
+          navigate(`/responsibleOfficer/reports/performance-summery${baseUrl}`, {
+            state: { startDate, endDate, collector, zone }
+          });
+          break;
+        case 4:
+          console.log('Navigating to: /report/outstanding-balance');
+          navigate(`/responsibleOfficer/reports/outstanding-balance${baseUrl}`, {
+            state: { startDate, endDate, collector, zone }
+          });
+          break;
+        default:
+          console.warn(`Report index ${index} is not implemented yet.`);
+          alert("This report is not yet implemented.");
+      }
+    } catch (error) {
+      console.error("Navigation error:", error);
+      alert(`Navigation failed: ${error.message}`);
     }
   };
 
   const handleDownloadClick = async (index) => {
     const reportTypes = [
-      "collection-summary",
+      "collection-summery",
       "payers",
       "non-payers",
-      "performance-summary",
+      "performance-summery",
       "outstanding-balance",
     ];
 
@@ -162,17 +200,35 @@ const Reports = () => {
     setLoading(index);
 
     try {
-      const response = await fetch(`/api/report/download?type=${selectedType}`, {
+      // Build query parameters for the API call
+      const params = new URLSearchParams();
+      params.append('type', selectedType);
+      
+      if (startDate) params.append('startDate', startDate.toISOString());
+      if (endDate) params.append('endDate', endDate.toISOString());
+      if (collector) params.append('collector', collector);
+      if (zone) params.append('zone', zone);
+
+      const response = await fetch(`/api/report/download?${params.toString()}`, {
         method: "GET",
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
 
-      if (!response.ok) throw new Error("Failed to download");
+      if (!response.ok) {
+        throw new Error(`Failed to download: ${response.status} ${response.statusText}`);
+      }
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `${selectedType}.pdf`;
+      
+      // Generate filename with timestamp
+      const timestamp = new Date().toISOString().split('T')[0];
+      link.download = `${selectedType}_${timestamp}.pdf`;
+      
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -180,8 +236,8 @@ const Reports = () => {
 
       alert("Report downloaded successfully!");
     } catch (error) {
-      alert("Failed to download report.");
-      console.error(error);
+      console.error("Download error:", error);
+      alert(`Failed to download report: ${error.message}`);
     } finally {
       setLoading(null);
     }
@@ -231,7 +287,7 @@ const Reports = () => {
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
               {/* Date Range */}
               <div className="lg:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-3 flex items-center">
+                <label className="block text-sm font-medium text-gray-700 mb-3 items-center">
                   <HiCalendar className="mr-2 text-blue-600" />
                   {t.dateRange}
                 </label>
@@ -260,7 +316,7 @@ const Reports = () => {
 
               {/* Collector */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3 flex items-center">
+                <label className="block text-sm font-medium text-gray-700 mb-3 items-center">
                   <HiUser className="mr-2 text-purple-600" />
                   {t.collector}
                 </label>
@@ -280,7 +336,7 @@ const Reports = () => {
 
               {/* Zone */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3 flex items-center">
+                <label className="block text-sm font-medium text-gray-700 mb-3 items-center">
                   <HiLocationMarker className="mr-2 text-green-600" />
                   {t.zone}
                 </label>
@@ -348,22 +404,22 @@ const Reports = () => {
             </Section>
 
             {/* Recent Downloads */}
-            <Section title="📁 Recent Downloads" subtitle="Recently generated reports">
+            {/* <Section title="📁 Recent Downloads" subtitle="Recently generated reports">
               <div className="space-y-3">
                 {recentDownloads.map((report, i) => (
                   <RecentReportItem key={i} report={report} />
                 ))}
               </div>
-            </Section>
+            </Section> */}
 
             {/* Report Stats */}
-            <Section title="📈 Report Statistics" subtitle="Usage overview">
+            {/* <Section title="📈 Report Statistics" subtitle="Usage overview">
               <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-4">
                 <StatItem label="Reports Generated Today" value="12" color="emerald" />
                 <StatItem label="Total Downloads" value="156" color="blue" />
                 <StatItem label="Most Popular" value="Collections Summary" color="purple" />
               </div>
-            </Section>
+            </Section> */}
           </div>
         </div>
       </div>

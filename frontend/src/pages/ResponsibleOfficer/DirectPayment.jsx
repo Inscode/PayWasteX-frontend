@@ -1,5 +1,19 @@
 import React, { useState } from "react";
-import { HiCreditCard, HiCheckCircle, HiClock, HiUser, HiOfficeBuilding, HiCalendar, HiCurrencyDollar, HiDocumentText, HiSearch, HiFilter } from "react-icons/hi";
+import { 
+  CreditCard, 
+  CheckCircle, 
+  Clock, 
+  User, 
+  Building, 
+  Calendar, 
+  DollarSign, 
+  FileText, 
+  Search, 
+  Filter,
+  Hash,
+  UserCheck,
+  Receipt
+} from "lucide-react";
 
 const useLanguage = () => ({ lang: 'en' }); // Mock hook for demo
 
@@ -26,6 +40,10 @@ const labels = {
     thisMonth: "This Month",
     processing: "Processing...",
     success: "Payment confirmed successfully!",
+    billid: "Bill ID",
+    ownername: "Customer Name",
+    companyname: "Company Name",
+    registerno: "Register No",
   },
   si: {
     title: "ගෙවීම් තහවුරු කිරීම",
@@ -71,6 +89,20 @@ const dummyData = [
   { id: 13, company: "Victory Electronics", owner: "Shanaka Dilshan", amount: "720.00", date: "01 Apr 2025", status: "confirmed", zone: "C1" },
 ];
 
+// Registration database for auto-fill
+const registrationDatabase = {
+  "REG001": { company: "Railway Tourist Bungalow", owner: "M S D Priyantha" },
+  "REG002": { company: "Sunset Hotel", owner: "Nirosha Perera" },
+  "REG003": { company: "Ocean View Café", owner: "Tharindu Silva" },
+  "REG004": { company: "Green Leaf Spa", owner: "Harsha Bandara" },
+  "REG005": { company: "Central Bookstore", owner: "Sajith Karunaratne" },
+  "REG006": { company: "Golden Bakery", owner: "Menaka Gunasekara" },
+  "REG007": { company: "Lanka Motors", owner: "Dulaj Fernando" },
+  "REG008": { company: "Colombo Print House", owner: "Sachini Madushani" },
+  "REG009": { company: "Lotus Pharmacy", owner: "Sanduni Wickrama" },
+  "REG010": { company: "Fashion World", owner: "Dinesh Priyankara" },
+};
+
 const zones = ["A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3"];
 const collectors = ["Mr. Prasad Perera", "Mrs. Silva Fernando", "Ms. Jayawardena", "Mr. Bandara"];
 
@@ -87,7 +119,11 @@ const PaymentConfirmation = () => {
     zone: "",
     collector: "",
     amount: "",
-    receipt: ""
+    receipt: "",
+    registerno: "",
+    billid: "",
+    ownername: "",
+    companyname: ""
   });
 
   const perPage = 5;
@@ -116,7 +152,16 @@ const PaymentConfirmation = () => {
     setTimeout(() => {
       setIsProcessing(false);
       setShowSuccess(true);
-      setFormData({ zone: "", collector: "", amount: "", receipt: "" });
+      setFormData({ 
+        zone: "", 
+        collector: "", 
+        amount: "", 
+        receipt: "",
+        registerno: "",
+        billid: "",
+        ownername: "",
+        companyname: ""
+      });
       
       setTimeout(() => setShowSuccess(false), 3000);
     }, 1500);
@@ -124,6 +169,27 @@ const PaymentConfirmation = () => {
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    
+    // Auto-fill when registration number is entered
+    if (field === 'registerno') {
+      const registrationData = registrationDatabase[value.toUpperCase()];
+      if (registrationData) {
+        setFormData(prev => ({
+          ...prev,
+          [field]: value,
+          companyname: registrationData.company,
+          ownername: registrationData.owner
+        }));
+      } else {
+        // Clear auto-filled fields if registration not found
+        setFormData(prev => ({
+          ...prev,
+          [field]: value,
+          companyname: "",
+          ownername: ""
+        }));
+      }
+    }
   };
 
   // Calculate statistics
@@ -139,7 +205,7 @@ const PaymentConfirmation = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
-                <HiCreditCard className="text-white w-6 h-6" />
+                <CreditCard className="text-white w-6 h-6" />
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">{t.title}</h1>
@@ -165,21 +231,21 @@ const PaymentConfirmation = () => {
           <StatCard
             title={t.totalConfirmed || "Total Confirmed"}
             value={totalConfirmed}
-            icon={<HiCheckCircle />}
+            icon={<CheckCircle />}
             color="emerald"
             subtitle="All time confirmations"
           />
           <StatCard
             title={t.todayPayments || "Today's Payments"}
             value={todayPayments}
-            icon={<HiClock />}
+            icon={<Clock />}
             color="blue"
             subtitle="Payments received today"
           />
           <StatCard
             title={t.pendingConfirm || "Pending Confirmation"}
             value={pendingConfirm}
-            icon={<HiDocumentText />}
+            icon={<FileText />}
             color="amber"
             subtitle="Awaiting confirmation"
           />
@@ -189,7 +255,7 @@ const PaymentConfirmation = () => {
         {showSuccess && (
           <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-6 flex items-center space-x-4 animate-fade-in">
             <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center">
-              <HiCheckCircle className="w-6 h-6 text-emerald-600" />
+              <CheckCircle className="w-6 h-6 text-emerald-600" />
             </div>
             <div>
               <h3 className="font-semibold text-emerald-800">{t.success || "Success!"}</h3>
@@ -209,7 +275,7 @@ const PaymentConfirmation = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700 flex items-center space-x-2">
-                  <HiOfficeBuilding className="w-4 h-4" />
+                  <Building className="w-4 h-4" />
                   <span>{t.zone}</span>
                 </label>
                 <select 
@@ -226,24 +292,73 @@ const PaymentConfirmation = () => {
 
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700 flex items-center space-x-2">
-                  <HiUser className="w-4 h-4" />
-                  <span>{t.collector}</span>
+                  <Hash className="w-4 h-4" />
+                  <span>{t.registerno}</span>
                 </label>
-                <select 
-                  value={formData.collector}
-                  onChange={(e) => handleInputChange('collector', e.target.value)}
+                <input 
+                  type="text" 
+                  value={formData.registerno}
+                  onChange={(e) => handleInputChange('registerno', e.target.value)}
+                  placeholder="Enter Register No (e.g., REG001)"
                   className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all duration-200"
-                >
-                  <option value="">Select collector...</option>
-                  {collectors.map(collector => (
-                    <option key={collector} value={collector}>{collector}</option>
-                  ))}
-                </select>
+                />
               </div>
 
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700 flex items-center space-x-2">
-                  <HiCurrencyDollar className="w-4 h-4" />
+                  <FileText className="w-4 h-4" />
+                  <span>{t.billid}</span>
+                </label>
+                <input 
+                  type="text" 
+                  value={formData.billid}
+                  onChange={(e) => handleInputChange('billid', e.target.value)}
+                  placeholder="Enter bill ID"
+                  className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all duration-200"
+                />
+              </div>
+
+               <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700 flex items-center space-x-2">
+                  <UserCheck className="w-4 h-4" />
+                  <span>{t.ownername}</span>
+                </label>
+                <input 
+                  type="text" 
+                  value={formData.ownername}
+                  onChange={(e) => handleInputChange('ownername', e.target.value)}
+                  placeholder="Customer Name (Auto-filled)"
+                  readOnly={!!formData.ownername && registrationDatabase[formData.registerno?.toUpperCase()]}
+                  className={`w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all duration-200 ${
+                    !!formData.ownername && registrationDatabase[formData.registerno?.toUpperCase()]
+                      ? 'bg-gray-50 cursor-not-allowed'
+                      : ''
+                  }`}
+                />
+              </div>
+
+               <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700 flex items-center space-x-2">
+                  <Building className="w-4 h-4" />
+                  <span>{t.companyname}</span>
+                </label>
+                <input 
+                  type="text" 
+                  value={formData.companyname}
+                  onChange={(e) => handleInputChange('companyname', e.target.value)}
+                  placeholder="Company Name (Auto-filled)"
+                  readOnly={!!formData.companyname && registrationDatabase[formData.registerno?.toUpperCase()]}
+                  className={`w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all duration-200 ${
+                    !!formData.companyname && registrationDatabase[formData.registerno?.toUpperCase()]
+                      ? 'bg-gray-50 cursor-not-allowed'
+                      : ''
+                  }`}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700 flex items-center space-x-2">
+                  <DollarSign className="w-4 h-4" />
                   <span>{t.amount}</span>
                 </label>
                 <input 
@@ -257,7 +372,7 @@ const PaymentConfirmation = () => {
 
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700 flex items-center space-x-2">
-                  <HiDocumentText className="w-4 h-4" />
+                  <Receipt className="w-4 h-4" />
                   <span>{t.receipt}</span>
                 </label>
                 <input 
@@ -273,7 +388,7 @@ const PaymentConfirmation = () => {
             <div className="mt-6">
               <button 
                 onClick={handleConfirmPayment}
-                disabled={isProcessing || !formData.zone || !formData.collector || !formData.amount || !formData.receipt}
+                disabled={isProcessing || !formData.zone || !formData.amount || !formData.receipt}
                 className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-8 py-3 rounded-xl font-semibold hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center space-x-2"
               >
                 {isProcessing ? (
@@ -283,124 +398,13 @@ const PaymentConfirmation = () => {
                   </>
                 ) : (
                   <>
-                    <HiCheckCircle className="w-5 h-5" />
+                    <CheckCircle className="w-5 h-5" />
                     <span>{t.confirm}</span>
                   </>
                 )}
               </button>
             </div>
           </div>
-        </div>
-
-        {/* Payment History */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
-          <div className="p-6 border-b border-gray-100">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-              <div>
-                <h2 className="text-xl font-bold text-gray-800">{t.history}</h2>
-                <p className="text-gray-600">Track all confirmed payments</p>
-              </div>
-              
-              <div className="flex flex-col sm:flex-row gap-4">
-                {/* Search */}
-                <div className="relative">
-                  <HiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <input
-                    type="text"
-                    placeholder={t.searchPlaceholder || "Search..."}
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none"
-                  />
-                </div>
-
-                {/* Date Filter */}
-                <div className="relative">
-                  <HiFilter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <select
-                    value={dateFilter}
-                    onChange={(e) => setDateFilter(e.target.value)}
-                    className="pl-10 pr-8 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none bg-white"
-                  >
-                    <option value="all">{t.allDates || "All Dates"}</option>
-                    <option value="week">{t.thisWeek || "This Week"}</option>
-                    <option value="month">{t.thisMonth || "This Month"}</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Desktop Table */}
-          <div className="hidden lg:block overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{t.company}</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{t.owner}</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{t.paid}</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{t.date}</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {paginatedData.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50 transition-colors duration-200">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
-                          <HiOfficeBuilding className="w-4 h-4 text-white" />
-                        </div>
-                        <div className="text-sm font-medium text-gray-900">{item.company}</div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-600">{item.owner}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-semibold text-gray-900">LKR {item.amount}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-600">{item.date}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <StatusBadge status={item.status} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Mobile Cards */}
-          <div className="lg:hidden p-6 space-y-4">
-            {paginatedData.map((item) => (
-              <PaymentCard key={item.id} item={item} t={t} />
-            ))}
-          </div>
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="p-6 border-t border-gray-100">
-              <div className="flex justify-center">
-                <div className="flex space-x-2">
-                  {Array.from({ length: totalPages }, (_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setCurrentPage(i + 1)}
-                      className={`w-10 h-10 rounded-lg font-semibold transition-all duration-200 ${
-                        currentPage === i + 1
-                          ? "bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg transform -translate-y-0.5"
-                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                      }`}
-                    >
-                      {i + 1}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>
@@ -440,13 +444,13 @@ const StatusBadge = ({ status }) => {
     confirmed: {
       bg: "bg-emerald-100",
       text: "text-emerald-800",
-      icon: <HiCheckCircle className="w-4 h-4" />,
+      icon: <CheckCircle className="w-4 h-4" />,
       label: "Confirmed"
     },
     pending: {
       bg: "bg-amber-100",
       text: "text-amber-800",
-      icon: <HiClock className="w-4 h-4" />,
+      icon: <Clock className="w-4 h-4" />,
       label: "Pending"
     }
   };
@@ -466,7 +470,7 @@ const PaymentCard = ({ item, t }) => (
     <div className="flex justify-between items-start mb-3">
       <div className="flex items-center space-x-3">
         <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
-          <HiOfficeBuilding className="w-5 h-5 text-white" />
+          <Building className="w-5 h-5 text-white" />
         </div>
         <div>
           <h3 className="font-semibold text-gray-800">{item.company}</h3>
