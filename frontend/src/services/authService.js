@@ -21,3 +21,13 @@ export const createCustomer = async (customerData, role = "CUSTOMER") => {
     throw error;
   }
 };
+
+export const adminRegister = async (customerData) => {
+  try {
+    const dataWithRole = { ...customerData,  };
+    const response = await api.post("/auth/user-register", dataWithRole);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
