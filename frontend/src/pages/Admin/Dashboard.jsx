@@ -582,7 +582,7 @@ function AddUserModal({ onClose, showNotification }) {
     fullName: "",
     email: "",
     contactNo: "",
-    role: "",
+    role: "Responsible officer", // Default value
     nic: "",
     password: "",
   });
@@ -599,13 +599,8 @@ function AddUserModal({ onClose, showNotification }) {
       return;
     }
 
-    // Transform role values for API
     const transformedRole =
-      role === "Responsible officer"
-        ? "RESPONSIBLEOFFICER"
-        : role === "Fee Collector officer"
-        ? "FEECOLLECTOR"
-        : role;
+      role === "Responsible officer" ? "RESPONSIBLEOFFICER" : role;
 
     const userData = {
       fullName,
@@ -669,19 +664,12 @@ function AddUserModal({ onClose, showNotification }) {
           value={form.contactNo}
           onChange={updateField}
         />
-        <div className="flex items-center gap-3">
-          <label className="font-bold w-32">Role</label>
-          <select
-            name="role"
-            value={form.role}
-            onChange={updateField}
-            className="flex-1 px-3 py-1 border border-gray-300 rounded"
-          >
-            <option value="">Select Role</option>
-            <option value="Responsible officer">Responsible officer</option>
-            <option value="Fee Collector officer">Fee Collector officer</option>
-          </select>
-        </div>
+        <EditRow
+          label="Role"
+          name="role"
+          value={form.role}
+          onChange={updateField}
+        />
         <EditRow
           label="NIC"
           name="nic"
