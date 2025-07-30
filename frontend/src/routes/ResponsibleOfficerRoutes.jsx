@@ -15,7 +15,7 @@ export default function ResponsibleOfficerRoutes() {
       <Route path="directpayments" element={<DirectPayment />} />
       <Route path="settings" element={<Settings />} />
       <Route path="customerdetails" element={<CustomerDetails />} />
-      <Route path="report/*" element={<ReportRoutes />} />
+      <Route path="reports/*" element={<ReportRoutes />} />
 
       
       

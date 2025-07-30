@@ -148,32 +148,32 @@ const Reports = () => {
         case 0:
           console.log('Navigating to: /report/collection-summery');
           console.log('Current URL before navigation:', window.location.href);
-          navigate(`/report/collection-summery${baseUrl}`, {
+          navigate(`/responsibleOfficer/reports/collection-summery${baseUrl}`, {
             state: { startDate, endDate, collector, zone }
           });
           console.log('Navigation completed, new URL should be:', window.location.origin + '/report/collection-summery');
           break;
         case 1:
           console.log('Navigating to: /report/payers');
-          navigate(`/report/payers${baseUrl}`, {
+          navigate(`/responsibleOfficer/reports/payers${baseUrl}`, {
             state: { startDate, endDate, collector, zone }
           });
           break;
         case 2:
           console.log('Navigating to: /report/non-payers');
-          navigate(`/report/non-payers${baseUrl}`, {
+          navigate(`/responsibleOfficer/reports/non-payers${baseUrl}`, {
             state: { startDate, endDate, collector, zone }
           });
           break;
         case 3:
           console.log('Navigating to: /report/performance-summery');
-          navigate(`/report/performance-summery${baseUrl}`, {
+          navigate(`/responsibleOfficer/reports/performance-summery${baseUrl}`, {
             state: { startDate, endDate, collector, zone }
           });
           break;
         case 4:
           console.log('Navigating to: /report/outstanding-balance');
-          navigate(`/report/outstanding-balance${baseUrl}`, {
+          navigate(`/responsibleOfficer/reports/outstanding-balance${baseUrl}`, {
             state: { startDate, endDate, collector, zone }
           });
           break;
@@ -287,7 +287,7 @@ const Reports = () => {
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
               {/* Date Range */}
               <div className="lg:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-3 flex items-center">
+                <label className="block text-sm font-medium text-gray-700 mb-3 items-center">
                   <HiCalendar className="mr-2 text-blue-600" />
                   {t.dateRange}
                 </label>
@@ -316,7 +316,7 @@ const Reports = () => {
 
               {/* Collector */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3 flex items-center">
+                <label className="block text-sm font-medium text-gray-700 mb-3 items-center">
                   <HiUser className="mr-2 text-purple-600" />
                   {t.collector}
                 </label>
@@ -336,7 +336,7 @@ const Reports = () => {
 
               {/* Zone */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3 flex items-center">
+                <label className="block text-sm font-medium text-gray-700 mb-3 items-center">
                   <HiLocationMarker className="mr-2 text-green-600" />
                   {t.zone}
                 </label>
@@ -404,22 +404,22 @@ const Reports = () => {
             </Section>
 
             {/* Recent Downloads */}
-            <Section title="📁 Recent Downloads" subtitle="Recently generated reports">
+            {/* <Section title="📁 Recent Downloads" subtitle="Recently generated reports">
               <div className="space-y-3">
                 {recentDownloads.map((report, i) => (
                   <RecentReportItem key={i} report={report} />
                 ))}
               </div>
-            </Section>
+            </Section> */}
 
             {/* Report Stats */}
-            <Section title="📈 Report Statistics" subtitle="Usage overview">
+            {/* <Section title="📈 Report Statistics" subtitle="Usage overview">
               <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-4">
                 <StatItem label="Reports Generated Today" value="12" color="emerald" />
                 <StatItem label="Total Downloads" value="156" color="blue" />
                 <StatItem label="Most Popular" value="Collections Summary" color="purple" />
               </div>
-            </Section>
+            </Section> */}
           </div>
         </div>
       </div>
