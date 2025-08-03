@@ -1,7 +1,7 @@
 // src/pages/AdminUserManagement.jsx
 import React, { useCallback, useMemo, useState, useEffect } from "react";
 import { FiFilter } from "react-icons/fi";
-import { fetchAllUser } from "../../services/admin";
+import { fetchAllUser, deleteUser } from "../../services/admin";
 import { adminRegister } from "../../services/authService";
 
 /* ── Notification Component ─────────────────────────────────── */
@@ -360,6 +360,7 @@ export default function Dashboard() {
         )}
         {modalType === "delete" && selectedUser && (
           <DeleteUserModal
+            user={selectedUser}
             onClose={closeModal}
             showNotification={showNotification}
           />
@@ -545,11 +546,40 @@ const EditRow = ({ label, type = "text", options, ...props }) => (
 );
 
 /* ── ③ Delete User ─────────────────────────────────────────── */
-function DeleteUserModal({ onClose, showNotification }) {
-  const handleDelete = () => {
-    // … perform your delete call here …
-    showNotification("danger", "User deleted successfully.");
-    onClose();
+function DeleteUserModal({ user, onClose, showNotification }) {
+  const handleDelete = async () => {
+    // Log the user ID to console
+    console.log("Deleting user with ID:", user.id);
+
+    try {
+      // Call the deleteUser service
+      await deleteUser(user.id);
+      showNotification("success", "User deleted successfully.");
+      onClose();
+
+      // Optionally refresh the users list
+      // You might want to call a refresh function here or trigger a re-fetch
+    } catch (error) {
+      console.error("Error deleting user:", error);
+
+      let errorMessage = "Failed to delete user. Please try again.";
+
+      if (error.response) {
+        if (error.response.data && error.response.data.message) {
+          errorMessage = error.response.data.message;
+        } else if (error.response.status === 404) {
+          errorMessage = "User not found.";
+        } else if (error.response.status === 403) {
+          errorMessage = "You don't have permission to delete this user.";
+        } else if (error.response.status === 500) {
+          errorMessage = "Server error. Please try again later.";
+        }
+      } else if (error.request) {
+        errorMessage = "Network error. Please check your connection.";
+      }
+
+      showNotification("danger", errorMessage);
+    }
   };
 
   return (
@@ -564,6 +594,9 @@ function DeleteUserModal({ onClose, showNotification }) {
         </svg>
         <p className="mb-4 text-center">
           Are you sure you want to delete this user?
+        </p>
+        <p className="mb-4 text-center text-gray-600">
+          User: {user.fullName} (ID: {user.id})
         </p>
         <button
           onClick={handleDelete}
