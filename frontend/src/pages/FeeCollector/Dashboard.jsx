@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { fetchCustomersByZone } from "../../services/feeCollector";
+import {
+  fetchCustomersByZone,
+  fetchDashboardSummary,
+} from "../../services/feeCollector";
 import {
   MapPin,
   Building2,
@@ -117,6 +120,12 @@ export default function FeeCollectorDashboard() {
   const [customerData, setCustomerData] = useState([]);
   const [loading, setLoading] = useState(true); // Track loading state
   const [error, setError] = useState(null); // Track error state
+  const [dashboardSummary, setDashboardSummary] = useState({
+    totalCustomers: 0,
+    pendingPayments: 0,
+    todaysCollections: 0,
+    totalCollections: 0,
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -135,19 +144,23 @@ export default function FeeCollectorDashboard() {
     fetchData();
   }, [selectedZone]); // Fetch data whenever `selectedZone` changes
 
-  if (loading) {
-    return <div>Loading...</div>; // Show loading state
-  }
+  useEffect(() => {
+    const loadDashboardSummary = async () => {
+      try {
+        const data = await fetchDashboardSummary();
+        setDashboardSummary(data);
+      } catch (err) {
+        console.error("Failed to fetch dashboard summary:", err);
+      }
+    };
+    loadDashboardSummary();
+  }, []);
 
-  if (error) {
-    return <div>{error}</div>; // Show error message
-  }
-
-  const totalAmount = sampleCards.reduce((sum, card) => sum + card.due, 0);
-  const totalCustomers = sampleCards.length;
-  const pendingPayments = sampleCards.filter(
-    (card) => card.status === "pending"
-  ).length;
+  // const totalAmount = sampleCards.reduce((sum, card) => sum + card.due, 0);
+  // const totalCustomers = sampleCards.length;
+  // const pendingPayments = sampleCards.filter(
+  //   (card) => card.status === "pending"
+  // ).length;
 
   const handlePayClick = (amount, cardIndex) => {
     setSelectedAmount(amount);
@@ -203,7 +216,7 @@ export default function FeeCollectorDashboard() {
                   {t.totalCustomers}
                 </p>
                 <p className="text-2xl font-bold text-slate-900 mt-1">
-                  {totalCustomers}
+                  {dashboardSummary.totalCustomers}
                 </p>
               </div>
               <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl">
@@ -219,7 +232,7 @@ export default function FeeCollectorDashboard() {
                   {t.pendingPayments}
                 </p>
                 <p className="text-2xl font-bold text-amber-600 mt-1">
-                  {pendingPayments}
+                  {dashboardSummary.pendingPayments}
                 </p>
               </div>
               <div className="p-3 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl">
@@ -235,7 +248,7 @@ export default function FeeCollectorDashboard() {
                   {t.todayCollection}
                 </p>
                 <p className="text-2xl font-bold text-green-600 mt-1">
-                  LKR 12,500
+                  LKR {dashboardSummary.todaysCollections.toFixed(2)}
                 </p>
               </div>
               <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-xl">
@@ -249,7 +262,7 @@ export default function FeeCollectorDashboard() {
               <div>
                 <p className="text-slate-600 text-sm font-medium">{t.total}</p>
                 <p className="text-2xl font-bold text-indigo-600 mt-1">
-                  LKR {totalAmount.toFixed(2)}
+                  LKR {dashboardSummary.totalCollections.toFixed(2)}
                 </p>
               </div>
               <div className="p-3 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl">
@@ -368,7 +381,7 @@ export default function FeeCollectorDashboard() {
                   {t.total}
                 </h3>
                 <p className="text-3xl font-bold text-indigo-600">
-                  LKR {totalAmount.toFixed(2)}
+                  LKR {dashboardSummary.todaysCollections.toFixed(2)}
                 </p>
               </div>
             </div>
