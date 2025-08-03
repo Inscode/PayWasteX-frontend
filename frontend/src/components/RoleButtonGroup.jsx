@@ -18,10 +18,10 @@ export default function RoleButtonGroup() {
       { label: "Audit Logs", path: "/admin/auditLogs" },
       { label: "System Settings", path: "/admin/systemSettings" },
     ],
-    SHOPOWNER: [
-      { label: "Dashboard", path: "/customer/dashboard" },
-      { label: "Billing History", path: "/customer/bills" },
-    ],
+    // SHOPOWNER: [
+    //   { label: "Dashboard", path: "/customer/dashboard" },
+    //   { label: "Billing History", path: "/customer/bills" },
+    // ],
     RESPONSIBLEOFFICER: [
       { label: "Dashboard", path: "/responsibleOfficer/dashboard" },
       { label: "Bill Management", path: "/responsibleOfficer/billmanagement" },
