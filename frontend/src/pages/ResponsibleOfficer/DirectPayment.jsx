@@ -1,21 +1,22 @@
 import React, { useState } from "react";
-import { 
-  CreditCard, 
-  CheckCircle, 
-  Clock, 
-  User, 
-  Building, 
-  Calendar, 
-  DollarSign, 
-  FileText, 
-  Search, 
+import { directCustomerPayment } from "../../services/responsibleOfficer";
+import {
+  CreditCard,
+  CheckCircle,
+  Clock,
+  User,
+  Building,
+  Calendar,
+  DollarSign,
+  FileText,
+  Search,
   Filter,
   Hash,
   UserCheck,
-  Receipt
+  Receipt,
 } from "lucide-react";
 
-const useLanguage = () => ({ lang: 'en' }); // Mock hook for demo
+const useLanguage = () => ({ lang: "en" }); // Mock hook for demo
 
 const labels = {
   en: {
@@ -74,42 +75,151 @@ const labels = {
 };
 
 const dummyData = [
-  { id: 1, company: "Railway Tourist Bungalow", owner: "M S D Priyantha", amount: "413.00", date: "12 Apr 2025", status: "confirmed", zone: "A1" },
-  { id: 2, company: "Sunset Hotel", owner: "Nirosha Perera", amount: "500.00", date: "10 Apr 2025", status: "confirmed", zone: "A2" },
-  { id: 3, company: "Ocean View Café", owner: "Tharindu Silva", amount: "350.00", date: "11 Apr 2025", status: "confirmed", zone: "B1" },
-  { id: 4, company: "Green Leaf Spa", owner: "Harsha Bandara", amount: "600.00", date: "13 Apr 2025", status: "pending", zone: "A1" },
-  { id: 5, company: "Central Bookstore", owner: "Sajith Karunaratne", amount: "290.00", date: "09 Apr 2025", status: "confirmed", zone: "C1" },
-  { id: 6, company: "Golden Bakery", owner: "Menaka Gunasekara", amount: "275.00", date: "08 Apr 2025", status: "confirmed", zone: "B2" },
-  { id: 7, company: "Lanka Motors", owner: "Dulaj Fernando", amount: "750.00", date: "07 Apr 2025", status: "confirmed", zone: "A3" },
-  { id: 8, company: "Colombo Print House", owner: "Sachini Madushani", amount: "430.00", date: "06 Apr 2025", status: "pending", zone: "B1" },
-  { id: 9, company: "Lotus Pharmacy", owner: "Sanduni Wickrama", amount: "315.00", date: "05 Apr 2025", status: "confirmed", zone: "C2" },
-  { id: 10, company: "Fashion World", owner: "Dinesh Priyankara", amount: "800.00", date: "04 Apr 2025", status: "confirmed", zone: "A2" },
-  { id: 11, company: "Rainbow Florist", owner: "Thisaru Weerasinghe", amount: "220.00", date: "03 Apr 2025", status: "confirmed", zone: "B3" },
-  { id: 12, company: "City Tech Solutions", owner: "Gayan Dissanayake", amount: "1000.00", date: "02 Apr 2025", status: "pending", zone: "A1" },
-  { id: 13, company: "Victory Electronics", owner: "Shanaka Dilshan", amount: "720.00", date: "01 Apr 2025", status: "confirmed", zone: "C1" },
+  {
+    id: 1,
+    company: "Railway Tourist Bungalow",
+    owner: "M S D Priyantha",
+    amount: "413.00",
+    date: "12 Apr 2025",
+    status: "confirmed",
+    zone: "A1",
+  },
+  {
+    id: 2,
+    company: "Sunset Hotel",
+    owner: "Nirosha Perera",
+    amount: "500.00",
+    date: "10 Apr 2025",
+    status: "confirmed",
+    zone: "A2",
+  },
+  {
+    id: 3,
+    company: "Ocean View Café",
+    owner: "Tharindu Silva",
+    amount: "350.00",
+    date: "11 Apr 2025",
+    status: "confirmed",
+    zone: "B1",
+  },
+  {
+    id: 4,
+    company: "Green Leaf Spa",
+    owner: "Harsha Bandara",
+    amount: "600.00",
+    date: "13 Apr 2025",
+    status: "pending",
+    zone: "A1",
+  },
+  {
+    id: 5,
+    company: "Central Bookstore",
+    owner: "Sajith Karunaratne",
+    amount: "290.00",
+    date: "09 Apr 2025",
+    status: "confirmed",
+    zone: "C1",
+  },
+  {
+    id: 6,
+    company: "Golden Bakery",
+    owner: "Menaka Gunasekara",
+    amount: "275.00",
+    date: "08 Apr 2025",
+    status: "confirmed",
+    zone: "B2",
+  },
+  {
+    id: 7,
+    company: "Lanka Motors",
+    owner: "Dulaj Fernando",
+    amount: "750.00",
+    date: "07 Apr 2025",
+    status: "confirmed",
+    zone: "A3",
+  },
+  {
+    id: 8,
+    company: "Colombo Print House",
+    owner: "Sachini Madushani",
+    amount: "430.00",
+    date: "06 Apr 2025",
+    status: "pending",
+    zone: "B1",
+  },
+  {
+    id: 9,
+    company: "Lotus Pharmacy",
+    owner: "Sanduni Wickrama",
+    amount: "315.00",
+    date: "05 Apr 2025",
+    status: "confirmed",
+    zone: "C2",
+  },
+  {
+    id: 10,
+    company: "Fashion World",
+    owner: "Dinesh Priyankara",
+    amount: "800.00",
+    date: "04 Apr 2025",
+    status: "confirmed",
+    zone: "A2",
+  },
+  {
+    id: 11,
+    company: "Rainbow Florist",
+    owner: "Thisaru Weerasinghe",
+    amount: "220.00",
+    date: "03 Apr 2025",
+    status: "confirmed",
+    zone: "B3",
+  },
+  {
+    id: 12,
+    company: "City Tech Solutions",
+    owner: "Gayan Dissanayake",
+    amount: "1000.00",
+    date: "02 Apr 2025",
+    status: "pending",
+    zone: "A1",
+  },
+  {
+    id: 13,
+    company: "Victory Electronics",
+    owner: "Shanaka Dilshan",
+    amount: "720.00",
+    date: "01 Apr 2025",
+    status: "confirmed",
+    zone: "C1",
+  },
 ];
 
 // Registration database for auto-fill
 const registrationDatabase = {
-  "REG001": { company: "Railway Tourist Bungalow", owner: "M S D Priyantha" },
-  "REG002": { company: "Sunset Hotel", owner: "Nirosha Perera" },
-  "REG003": { company: "Ocean View Café", owner: "Tharindu Silva" },
-  "REG004": { company: "Green Leaf Spa", owner: "Harsha Bandara" },
-  "REG005": { company: "Central Bookstore", owner: "Sajith Karunaratne" },
-  "REG006": { company: "Golden Bakery", owner: "Menaka Gunasekara" },
-  "REG007": { company: "Lanka Motors", owner: "Dulaj Fernando" },
-  "REG008": { company: "Colombo Print House", owner: "Sachini Madushani" },
-  "REG009": { company: "Lotus Pharmacy", owner: "Sanduni Wickrama" },
-  "REG010": { company: "Fashion World", owner: "Dinesh Priyankara" },
+  REG001: { company: "Railway Tourist Bungalow", owner: "M S D Priyantha" },
+  REG002: { company: "Sunset Hotel", owner: "Nirosha Perera" },
+  REG003: { company: "Ocean View Café", owner: "Tharindu Silva" },
+  REG004: { company: "Green Leaf Spa", owner: "Harsha Bandara" },
+  REG005: { company: "Central Bookstore", owner: "Sajith Karunaratne" },
+  REG006: { company: "Golden Bakery", owner: "Menaka Gunasekara" },
+  REG007: { company: "Lanka Motors", owner: "Dulaj Fernando" },
+  REG008: { company: "Colombo Print House", owner: "Sachini Madushani" },
+  REG009: { company: "Lotus Pharmacy", owner: "Sanduni Wickrama" },
+  REG010: { company: "Fashion World", owner: "Dinesh Priyankara" },
 };
 
 const zones = ["A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3"];
-const collectors = ["Mr. Prasad Perera", "Mrs. Silva Fernando", "Ms. Jayawardena", "Mr. Bandara"];
+const collectors = [
+  "Mr. Prasad Perera",
+  "Mrs. Silva Fernando",
+  "Ms. Jayawardena",
+  "Mr. Bandara",
+];
 
 const PaymentConfirmation = () => {
   const { lang } = useLanguage();
   const t = labels[lang] || labels.en;
-  
+
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [dateFilter, setDateFilter] = useState("all");
@@ -123,18 +233,19 @@ const PaymentConfirmation = () => {
     registerno: "",
     billid: "",
     ownername: "",
-    companyname: ""
+    companyname: "",
   });
 
   const perPage = 5;
 
   // Filter data based on search and date
   let filteredData = dummyData;
-  
+
   if (searchTerm) {
-    filteredData = filteredData.filter(item =>
-      item.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.owner.toLowerCase().includes(searchTerm.toLowerCase())
+    filteredData = filteredData.filter(
+      (item) =>
+        item.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.owner.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }
 
@@ -146,56 +257,131 @@ const PaymentConfirmation = () => {
   const totalPages = Math.ceil(filteredData.length / perPage);
 
   const handleConfirmPayment = async () => {
+    // Validate required fields
+    if (!formData.zone || !formData.amount || !formData.receipt) {
+      console.error("Missing required fields");
+      return;
+    }
+
+    // Log form data before processing
+    console.log("Confirming payment with data:", formData);
+    console.log("Form validation status:", {
+      hasZone: !!formData.zone,
+      hasAmount: !!formData.amount,
+      hasReceipt: !!formData.receipt,
+      isValid: !!(formData.zone && formData.amount && formData.receipt),
+    });
+
     setIsProcessing(true);
-    
-    // Simulate API call
-    setTimeout(() => {
+
+    try {
+      // Prepare payment data for API
+      const paymentData = {
+        zone: formData.zone,
+        collector: formData.collector,
+        amount: parseFloat(formData.amount),
+        receiptNumber: formData.receipt,
+        registrationNumber: formData.registerno,
+        billId: formData.billid,
+        customerName: formData.ownername,
+        companyName: formData.companyname,
+      };
+
+      console.log("Sending payment data to API:", paymentData);
+
+      // Call the API service
+      const response = await directCustomerPayment(paymentData);
+
+      console.log("Payment confirmation response:", response);
+      console.log("Payment confirmation completed successfully");
+
       setIsProcessing(false);
       setShowSuccess(true);
-      setFormData({ 
-        zone: "", 
-        collector: "", 
-        amount: "", 
+
+      // Log before clearing form
+      console.log("Clearing form data...");
+      setFormData({
+        zone: "",
+        collector: "",
+        amount: "",
         receipt: "",
         registerno: "",
         billid: "",
         ownername: "",
-        companyname: ""
+        companyname: "",
       });
-      
-      setTimeout(() => setShowSuccess(false), 3000);
-    }, 1500);
+
+      setTimeout(() => {
+        setShowSuccess(false);
+        console.log("Success message hidden");
+      }, 3000);
+    } catch (error) {
+      console.error("Payment confirmation failed:", error);
+      setIsProcessing(false);
+
+      // Handle specific error cases
+      if (error.response) {
+        console.error("API Error Response:", error.response.data);
+      } else if (error.request) {
+        console.error("Network Error:", error.request);
+      } else {
+        console.error("Error:", error.message);
+      }
+    }
   };
 
   const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    
+    // Log the input change
+    console.log(`Input changed - Field: ${field}, Value: ${value}`);
+
+    setFormData((prev) => {
+      const newFormData = { ...prev, [field]: value };
+      console.log("Updated form data:", newFormData);
+      return newFormData;
+    });
+
     // Auto-fill when registration number is entered
-    if (field === 'registerno') {
+    if (field === "registerno") {
       const registrationData = registrationDatabase[value.toUpperCase()];
       if (registrationData) {
-        setFormData(prev => ({
-          ...prev,
-          [field]: value,
-          companyname: registrationData.company,
-          ownername: registrationData.owner
-        }));
+        console.log("Registration found:", registrationData);
+        setFormData((prev) => {
+          const autoFilledData = {
+            ...prev,
+            [field]: value,
+            companyname: registrationData.company,
+            ownername: registrationData.owner,
+          };
+          console.log("Auto-filled form data:", autoFilledData);
+          return autoFilledData;
+        });
       } else {
+        console.log("Registration not found for:", value.toUpperCase());
         // Clear auto-filled fields if registration not found
-        setFormData(prev => ({
-          ...prev,
-          [field]: value,
-          companyname: "",
-          ownername: ""
-        }));
+        setFormData((prev) => {
+          const clearedData = {
+            ...prev,
+            [field]: value,
+            companyname: "",
+            ownername: "",
+          };
+          console.log("Cleared auto-fill data:", clearedData);
+          return clearedData;
+        });
       }
     }
   };
 
   // Calculate statistics
-  const totalConfirmed = dummyData.filter(item => item.status === 'confirmed').length;
-  const todayPayments = dummyData.filter(item => item.date === "13 Apr 2025").length;
-  const pendingConfirm = dummyData.filter(item => item.status === 'pending').length;
+  const totalConfirmed = dummyData.filter(
+    (item) => item.status === "confirmed"
+  ).length;
+  const todayPayments = dummyData.filter(
+    (item) => item.date === "13 Apr 2025"
+  ).length;
+  const pendingConfirm = dummyData.filter(
+    (item) => item.status === "pending"
+  ).length;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-teal-100">
@@ -209,7 +395,9 @@ const PaymentConfirmation = () => {
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">{t.title}</h1>
-                <p className="text-gray-600">Verify and confirm payment transactions</p>
+                <p className="text-gray-600">
+                  Verify and confirm payment transactions
+                </p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
@@ -258,8 +446,12 @@ const PaymentConfirmation = () => {
               <CheckCircle className="w-6 h-6 text-emerald-600" />
             </div>
             <div>
-              <h3 className="font-semibold text-emerald-800">{t.success || "Success!"}</h3>
-              <p className="text-emerald-600 text-sm">Payment has been confirmed and recorded.</p>
+              <h3 className="font-semibold text-emerald-800">
+                {t.success || "Success!"}
+              </h3>
+              <p className="text-emerald-600 text-sm">
+                Payment has been confirmed and recorded.
+              </p>
             </div>
           </div>
         )}
@@ -267,10 +459,14 @@ const PaymentConfirmation = () => {
         {/* Payment Confirmation Form */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="bg-gradient-to-r from-emerald-500 to-teal-600 p-6">
-            <h2 className="text-xl font-bold text-white mb-2">Direct Customer Payment</h2>
-            <p className="text-emerald-100">Enter payment details to confirm transaction</p>
+            <h2 className="text-xl font-bold text-white mb-2">
+              Direct Customer Payment
+            </h2>
+            <p className="text-emerald-100">
+              Enter payment details to confirm transaction
+            </p>
           </div>
-          
+
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
@@ -278,14 +474,16 @@ const PaymentConfirmation = () => {
                   <Building className="w-4 h-4" />
                   <span>{t.zone}</span>
                 </label>
-                <select 
+                <select
                   value={formData.zone}
-                  onChange={(e) => handleInputChange('zone', e.target.value)}
+                  onChange={(e) => handleInputChange("zone", e.target.value)}
                   className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all duration-200"
                 >
                   <option value="">Select zone...</option>
-                  {zones.map(zone => (
-                    <option key={zone} value={zone}>Zone {zone}</option>
+                  {zones.map((zone) => (
+                    <option key={zone} value={zone}>
+                      Zone {zone}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -295,10 +493,12 @@ const PaymentConfirmation = () => {
                   <Hash className="w-4 h-4" />
                   <span>{t.registerno}</span>
                 </label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={formData.registerno}
-                  onChange={(e) => handleInputChange('registerno', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("registerno", e.target.value)
+                  }
                   placeholder="Enter Register No (e.g., REG001)"
                   className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all duration-200"
                 />
@@ -309,49 +509,61 @@ const PaymentConfirmation = () => {
                   <FileText className="w-4 h-4" />
                   <span>{t.billid}</span>
                 </label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={formData.billid}
-                  onChange={(e) => handleInputChange('billid', e.target.value)}
+                  onChange={(e) => handleInputChange("billid", e.target.value)}
                   placeholder="Enter bill ID"
                   className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all duration-200"
                 />
               </div>
 
-               <div className="space-y-2">
+              <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700 flex items-center space-x-2">
                   <UserCheck className="w-4 h-4" />
                   <span>{t.ownername}</span>
                 </label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={formData.ownername}
-                  onChange={(e) => handleInputChange('ownername', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("ownername", e.target.value)
+                  }
                   placeholder="Customer Name (Auto-filled)"
-                  readOnly={!!formData.ownername && registrationDatabase[formData.registerno?.toUpperCase()]}
+                  readOnly={
+                    !!formData.ownername &&
+                    registrationDatabase[formData.registerno?.toUpperCase()]
+                  }
                   className={`w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all duration-200 ${
-                    !!formData.ownername && registrationDatabase[formData.registerno?.toUpperCase()]
-                      ? 'bg-gray-50 cursor-not-allowed'
-                      : ''
+                    !!formData.ownername &&
+                    registrationDatabase[formData.registerno?.toUpperCase()]
+                      ? "bg-gray-50 cursor-not-allowed"
+                      : ""
                   }`}
                 />
               </div>
 
-               <div className="space-y-2">
+              <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700 flex items-center space-x-2">
                   <Building className="w-4 h-4" />
                   <span>{t.companyname}</span>
                 </label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={formData.companyname}
-                  onChange={(e) => handleInputChange('companyname', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("companyname", e.target.value)
+                  }
                   placeholder="Company Name (Auto-filled)"
-                  readOnly={!!formData.companyname && registrationDatabase[formData.registerno?.toUpperCase()]}
+                  readOnly={
+                    !!formData.companyname &&
+                    registrationDatabase[formData.registerno?.toUpperCase()]
+                  }
                   className={`w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all duration-200 ${
-                    !!formData.companyname && registrationDatabase[formData.registerno?.toUpperCase()]
-                      ? 'bg-gray-50 cursor-not-allowed'
-                      : ''
+                    !!formData.companyname &&
+                    registrationDatabase[formData.registerno?.toUpperCase()]
+                      ? "bg-gray-50 cursor-not-allowed"
+                      : ""
                   }`}
                 />
               </div>
@@ -361,10 +573,10 @@ const PaymentConfirmation = () => {
                   <DollarSign className="w-4 h-4" />
                   <span>{t.amount}</span>
                 </label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={formData.amount}
-                  onChange={(e) => handleInputChange('amount', e.target.value)}
+                  onChange={(e) => handleInputChange("amount", e.target.value)}
                   placeholder="Enter amount (LKR)"
                   className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all duration-200"
                 />
@@ -375,10 +587,10 @@ const PaymentConfirmation = () => {
                   <Receipt className="w-4 h-4" />
                   <span>{t.receipt}</span>
                 </label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={formData.receipt}
-                  onChange={(e) => handleInputChange('receipt', e.target.value)}
+                  onChange={(e) => handleInputChange("receipt", e.target.value)}
                   placeholder="Receipt number"
                   className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all duration-200"
                 />
@@ -386,9 +598,14 @@ const PaymentConfirmation = () => {
             </div>
 
             <div className="mt-6">
-              <button 
+              <button
                 onClick={handleConfirmPayment}
-                disabled={isProcessing || !formData.zone || !formData.amount || !formData.receipt}
+                disabled={
+                  isProcessing ||
+                  !formData.zone ||
+                  !formData.amount ||
+                  !formData.receipt
+                }
                 className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-8 py-3 rounded-xl font-semibold hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center space-x-2"
               >
                 {isProcessing ? (
@@ -420,10 +637,22 @@ const StatCard = ({ title, value, icon, color, subtitle }) => {
 
   return (
     <div className="group relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl -z-10"
-           style={{background: `linear-gradient(to right, ${color === 'emerald' ? '#10b981, #0d9488' : color === 'blue' ? '#3b82f6, #4f46e5' : '#f59e0b, #ea580c'})`}}></div>
-      
-      <div className={`bg-gradient-to-r ${colorClasses[color]} p-6 rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 text-white relative`}>
+      <div
+        className="absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl -z-10"
+        style={{
+          background: `linear-gradient(to right, ${
+            color === "emerald"
+              ? "#10b981, #0d9488"
+              : color === "blue"
+              ? "#3b82f6, #4f46e5"
+              : "#f59e0b, #ea580c"
+          })`,
+        }}
+      ></div>
+
+      <div
+        className={`bg-gradient-to-r ${colorClasses[color]} p-6 rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 text-white relative`}
+      >
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <p className="text-white/80 text-sm font-medium mb-1">{title}</p>
@@ -445,20 +674,22 @@ const StatusBadge = ({ status }) => {
       bg: "bg-emerald-100",
       text: "text-emerald-800",
       icon: <CheckCircle className="w-4 h-4" />,
-      label: "Confirmed"
+      label: "Confirmed",
     },
     pending: {
       bg: "bg-amber-100",
       text: "text-amber-800",
       icon: <Clock className="w-4 h-4" />,
-      label: "Pending"
-    }
+      label: "Pending",
+    },
   };
 
   const config = statusConfig[status] || statusConfig.pending;
 
   return (
-    <span className={`inline-flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-medium ${config.bg} ${config.text}`}>
+    <span
+      className={`inline-flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-medium ${config.bg} ${config.text}`}
+    >
       {config.icon}
       <span>{config.label}</span>
     </span>
