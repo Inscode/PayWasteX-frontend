@@ -32,6 +32,8 @@ export default function RoleButtonGroup() {
         path: "/responsibleOfficer/customerdetails",
       },
       { label: "Settings", path: "/responsibleOfficer/settings" },
+
+      {label: "Assign To Collect", path: "/responsibleOfficer/assigntocollect"}
     ],
     FEECOLLECTOR: [{ label: "Dashboard", path: "/feeCollector/dashboard" }],
   };
