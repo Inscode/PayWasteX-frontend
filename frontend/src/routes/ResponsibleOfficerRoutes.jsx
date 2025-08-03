@@ -6,6 +6,7 @@ import DirectPayment from "../pages/ResponsibleOfficer/DirectPayment";
 import Settings from "../pages/ResponsibleOfficer/Settings";
 import CustomerDetails from "../pages/ResponsibleOfficer/CustomerDetails";
 import ReportRoutes from "./ReportRoutes";
+import AssignToCollect from "../pages/ResponsibleOfficer/AssignToCollect";
 export default function ResponsibleOfficerRoutes() {
   return (
     <Routes>
@@ -16,6 +17,8 @@ export default function ResponsibleOfficerRoutes() {
       <Route path="settings" element={<Settings />} />
       <Route path="customerdetails" element={<CustomerDetails />} />
       <Route path="reports/*" element={<ReportRoutes />} />
+      <Route path="assigntocollect" element={<AssignToCollect />} />
+      
 
       
       
