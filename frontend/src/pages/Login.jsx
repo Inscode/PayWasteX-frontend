@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { useLanguage } from "../contexts/LanguageContext"; // ✅ Use language context
+import { useLanguage } from "../contexts/LanguageContext";
 import wasteB from "../assets/wasteB.png";
 import logo from "../assets/logoGBin.png";
 import RoleSelectionModal from "../components/RoleSelectionModal";
@@ -81,8 +81,8 @@ export default function Login() {
         case "ADMIN":
           navigate("/admin/userManagement");
           break;
-        case "SHOPOWNER":
-          navigate("/shopOwner/dashboard");
+        case "CUSTOMER":
+          navigate("/customer/dashboard");
           break;
         case "RESPONSIBLEOFFICER":
           navigate("/responsibleOfficer/dashboard");
@@ -138,7 +138,6 @@ export default function Login() {
             ? "தமிழ்"
             : "English"}
         </button>
-
       </div>
 
       {/* Content */}

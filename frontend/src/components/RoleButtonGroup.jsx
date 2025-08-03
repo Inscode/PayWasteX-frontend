@@ -18,19 +18,24 @@ export default function RoleButtonGroup() {
       { label: "Audit Logs", path: "/admin/auditLogs" },
       { label: "System Settings", path: "/admin/systemSettings" },
     ],
-    SHOPOWNER: [
-      { label: "Dashboard", path: "/shopOwner/dashboard" },
-      { label: "Billing History", path: "/shopOwner/bills" },
-    ],
+    // SHOPOWNER: [
+    //   { label: "Dashboard", path: "/customer/dashboard" },
+    //   { label: "Billing History", path: "/customer/bills" },
+    // ],
     RESPONSIBLEOFFICER: [
       { label: "Dashboard", path: "/responsibleOfficer/dashboard" },
       { label: "Bill Management", path: "/responsibleOfficer/billmanagement" },
-      { label: "Payment Confirmation", path: "/responsibleOfficer/paymentconfirmation" },
+      { label: "Direct Payments", path: "/responsibleOfficer/directpayments" },
       { label: "Reports", path: "/responsibleOfficer/reports" },
+      {
+        label: "Customer Details",
+        path: "/responsibleOfficer/customerdetails",
+      },
+      { label: "Settings", path: "/responsibleOfficer/settings" },
+
+      {label: "Collector Assign", path: "/responsibleOfficer/assigntocollect"}
     ],
-    FEECOLLECTOR: [
-      { label: "Dashboard", path: "/feeCollector/dashboard" },
-    ],
+    FEECOLLECTOR: [{ label: "Dashboard", path: "/feeCollector/dashboard" }],
   };
 
   const tabs = roleTabs[user.role] || [];
@@ -76,14 +81,14 @@ export default function RoleButtonGroup() {
       {/* Desktop Tab Group */}
       <div
         className={`
-          hidden md:flex
-          w-full justify-center
-          ${isSingleTab
-            ? "max-w-xs rounded-2xl border border-green-300 bg-[#c5ecd4] p-2 shadow-sm" // Styling for a single button
-            : "mx-auto max-w-2xl rounded-2xl border border-green-300 bg-[#c5ecd4] p-1 shadow-sm" // Styling for tab group
-          }
-          items-center space-x-1 // Added for spacing between tabs if not single
-        `}
+    hidden md:flex
+    ${
+      isSingleTab
+        ? "w-fit mx-auto rounded-xl border border-green-300 bg-[#c5ecd4] p-2 shadow-sm" // Single tab styling
+        : "w-fit mx-auto rounded-xl border border-green-300 bg-[#c5ecd4] p-1 shadow-sm" // Tab group styling
+    }
+    items-center gap-1 // Use gap instead of space-x for better control
+  `}
       >
         {tabs.map((tab) => {
           const isActive = location.pathname === tab.path;
@@ -91,20 +96,19 @@ export default function RoleButtonGroup() {
             <button
               key={tab.path}
               onClick={() => navigate(tab.path)}
-              aria-current={isActive ? "page" : undefined} // Added for accessibility
+              aria-current={isActive ? "page" : undefined}
               className={`
-                relative flex-1 rounded-xl px-4 py-2 text-center text-sm font-semibold transition-all duration-300 ease-in-out
-                ${isActive
-                  ? "bg-white text-green-900 shadow-md" // Active tab style: highlighted background, darker text, shadow
-                  : "text-green-800 hover:bg-white/50 hover:text-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2" // Inactive tab style: hover effect, focus ring for accessibility
-                }
-                ${isSingleTab ? "w-full" : ""} // Ensure single tab takes full width of its container
-                whitespace-nowrap // Prevents text wrapping
-                cursor-pointer // Explicitly show pointer on hover
-              `}
+          relative px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out
+          ${
+            isActive
+              ? "bg-white text-green-900 shadow-sm border border-green-200" // Active: white background with subtle border
+              : "text-green-800 hover:bg-white/40 hover:text-green-900 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-1"
+          }
+          whitespace-nowrap min-w-fit cursor-pointer
+          transform hover:scale-[1.02] active:scale-[0.98] // Subtle scale effects
+        `}
             >
               {tab.label}
-              {/* Removed the bottom span indicator to eliminate the "underline" look */}
             </button>
           );
         })}

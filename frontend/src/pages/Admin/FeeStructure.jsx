@@ -1,13 +1,11 @@
 import React, { useState } from "react";
-import { useLanguage } from "../../contexts/LanguageContext";
-import { useNavigate } from "react-router-dom";
+import { Edit3, Plus, Check, X, Building, Store, Hotel, Package } from "lucide-react";
 
 export default function FeeStructurePage() {
   const [successMessage, setSuccessMessage] = useState("");
   const [editIndex, setEditIndex] = useState(null);
   const [editData, setEditData] = useState({});
-  const { lang } = useLanguage();
-  const navigate = useNavigate();
+  const [lang] = useState("en"); // Default to English
 
   const translations = {
     en: {
@@ -81,6 +79,25 @@ export default function FeeStructurePage() {
     { premises: "Hotel", category: "Large Scale", amount: 413.0 },
   ]);
 
+  const [newFeeData, setNewFeeData] = useState({
+    premises: "",
+    category: "",
+    amount: "",
+    billingFrequency: "",
+    effectiveDate: ""
+  });
+
+  const getIcon = (premises) => {
+    const icons = {
+      Company: Building,
+      Grocery: Store,
+      Shop: Package,
+      Hotel: Hotel
+    };
+    const IconComponent = icons[premises] || Building;
+    return <IconComponent className="w-5 h-5" />;
+  };
+
   const handleEditClick = (index) => {
     setEditIndex(index);
     setEditData(tableData[index]);
@@ -100,186 +117,321 @@ export default function FeeStructurePage() {
   };
 
   const handleNewFeeStructure = () => {
+    if (newFeeData.premises && newFeeData.category && newFeeData.amount) {
+      const newFee = {
+        premises: newFeeData.premises,
+        category: newFeeData.category,
+        amount: parseFloat(newFeeData.amount)
+      };
+      setTableData([...tableData, newFee]);
+      setNewFeeData({
+        premises: "",
+        category: "",
+        amount: "",
+        billingFrequency: "",
+        effectiveDate: ""
+      });
+    }
     setSuccessMessage(t.success);
     setTimeout(() => setSuccessMessage(""), 3000);
   };
 
   return (
-    <div className="min-h-screen bg-white px-6 py-8">
-      <h1 className="text-2xl font-bold text-green-800 mb-6">{t.title}</h1>
-
-      {/* Desktop Table View */}
-      <div className="hidden md:block overflow-x-auto">
-        <table className="min-w-full bg-gray-50 border border-gray-300 rounded">
-          <thead className="bg-gray-100">
-            <tr className="text-left text-gray-700 font-semibold">
-              <th className="px-4 py-2 border-b">{t.premises}</th>
-              <th className="px-4 py-2 border-b">{t.category}</th>
-              <th className="px-4 py-2 border-b">{t.amount}</th>
-              <th className="px-4 py-2 border-b">{t.status}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tableData.map((row, index) => (
-              <tr key={index} className="hover:bg-gray-100">
-                <td className="px-4 py-2">{row.premises}</td>
-                <td className="px-4 py-2">
-                  {t[row.category.toLowerCase().replace(" ", "")] || row.category}
-                </td>
-                <td className="px-4 py-2">LKR {row.amount.toFixed(2)}</td>
-                <td
-                  className="px-4 py-2 text-blue-600 font-medium cursor-pointer hover:underline"
-                  onClick={() => handleEditClick(index)}
-                >
-                  {t.edit}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 px-6 py-8">
+      {/* Header with gradient and shadow */}
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 bg-clip-text text-transparent mb-2">
+          {t.title}
+        </h1>
+        <div className="h-1 w-24 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"></div>
       </div>
 
-      {/* Mobile Card View */}
-      <div className="md:hidden space-y-4">
+      {/* Desktop Table View with glassmorphism */}
+      <div className="hidden md:block mb-8">
+        <div className="backdrop-blur-md bg-white/70 border border-white/20 rounded-2xl shadow-xl overflow-hidden">
+          <table className="w-full">
+            <thead>
+              <tr className="bg-gradient-to-r from-indigo-500/10 to-purple-500/10 backdrop-blur-sm">
+                <th className="px-6 py-4 text-left font-semibold text-slate-700 border-b border-white/20">
+                  {t.premises}
+                </th>
+                <th className="px-6 py-4 text-left font-semibold text-slate-700 border-b border-white/20">
+                  {t.category}
+                </th>
+                <th className="px-6 py-4 text-left font-semibold text-slate-700 border-b border-white/20">
+                  {t.amount}
+                </th>
+                <th className="px-6 py-4 text-left font-semibold text-slate-700 border-b border-white/20">
+                  {t.status}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {tableData.map((row, index) => (
+                <tr 
+                  key={index} 
+                  className="group hover:bg-gradient-to-r hover:from-indigo-50/50 hover:to-purple-50/50 transition-all duration-300 border-b border-white/10 last:border-b-0"
+                >
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-gradient-to-br from-indigo-100 to-purple-100 text-indigo-600">
+                        {getIcon(row.premises)}
+                      </div>
+                      <span className="font-medium text-slate-700">{row.premises}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      row.category === "Small Scale" 
+                        ? "bg-emerald-100 text-emerald-700" 
+                        : "bg-blue-100 text-blue-700"
+                    }`}>
+                      {t[row.category.toLowerCase().replace(" ", "")] || row.category}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="font-bold text-lg text-slate-800">
+                      LKR {row.amount.toFixed(2)}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <button
+                      onClick={() => handleEditClick(index)}
+                      className="group flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                    >
+                      <Edit3 className="w-4 h-4" />
+                      <span className="font-medium">{t.edit}</span>
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Mobile Card View with modern cards */}
+      <div className="md:hidden space-y-4 mb-8">
         {tableData.map((row, index) => (
           <div
             key={index}
-            className="bg-gray-100 border border-gray-300 rounded-lg p-4 shadow-sm"
+            className="group backdrop-blur-md bg-white/70 border border-white/20 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
           >
-            <div className="mb-2">
-              <span className="font-semibold text-gray-700">{t.premises}: </span>
-              {row.premises}
-            </div>
-            <div className="mb-2">
-              <span className="font-semibold text-gray-700">{t.category}: </span>
-              {t[row.category.toLowerCase().replace(" ", "")] || row.category}
-            </div>
-            <div className="mb-2">
-              <span className="font-semibold text-gray-700">{t.amount}: </span>
-              LKR {row.amount.toFixed(2)}
-            </div>
-            <div>
-              <span className="font-semibold text-gray-700">{t.status}: </span>
-              <span
-                className="text-blue-600 font-medium cursor-pointer hover:underline"
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-indigo-100 to-purple-100 text-indigo-600">
+                  {getIcon(row.premises)}
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-800 text-lg">{row.premises}</h3>
+                  <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium mt-1 ${
+                    row.category === "Small Scale" 
+                      ? "bg-emerald-100 text-emerald-700" 
+                      : "bg-blue-100 text-blue-700"
+                  }`}>
+                    {t[row.category.toLowerCase().replace(" ", "")] || row.category}
+                  </span>
+                </div>
+              </div>
+              <button
                 onClick={() => handleEditClick(index)}
+                className="p-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105 shadow-lg"
               >
-                {t.edit}
+                <Edit3 className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="pt-4 border-t border-white/20">
+              <span className="text-2xl font-bold text-slate-800">
+                LKR {row.amount.toFixed(2)}
               </span>
             </div>
           </div>
         ))}
       </div>
 
-      {/* New Fee Structure Form */}
-      <h2 className="text-xl font-bold text-green-800 mt-10 mb-4">{t.newTitle}</h2>
-      <div className="bg-gray-100 rounded p-4 space-y-4">
-        <div className="flex flex-wrap gap-4">
-          <input
-            type="text"
-            placeholder={t.premises}
-            className="flex-1 min-w-[200px] px-4 py-2 border border-gray-300 rounded"
-          />
-          <select className="flex-1 min-w-[200px] px-4 py-2 border border-gray-300 rounded">
-            <option value="">{t.selectCategory}</option>
-            <option value="Small Scale">{t.smallScale}</option>
-            <option value="Large Scale">{t.largeScale}</option>
-          </select>
-          <input
-            type="number"
-            placeholder={t.amount}
-            className="flex-1 min-w-[200px] px-4 py-2 border border-gray-300 rounded"
-          />
+      {/* New Fee Structure Form with glassmorphism */}
+      <div className="backdrop-blur-md bg-white/70 border border-white/20 rounded-2xl shadow-xl p-8 mb-8">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-100 to-teal-100 text-emerald-600">
+            <Plus className="w-6 h-6" />
+          </div>
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+            {t.newTitle}
+          </h2>
         </div>
-        <div className="flex flex-wrap gap-4 items-center">
-          <select className="flex-1 min-w-[200px] px-4 py-2 border border-gray-300 rounded">
-            <option value="">{t.billingFrequency}</option>
-            <option value="Monthly">{t.monthly}</option>
-            <option value="Quarterly">{t.quarterly}</option>
-          </select>
-          <input
-            type="date"
-            className="flex-1 min-w-[200px] px-4 py-2 border border-gray-300 rounded"
-          />
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-slate-700">{t.premises}</label>
+            <input
+              type="text"
+              value={newFeeData.premises}
+              onChange={(e) => setNewFeeData({...newFeeData, premises: e.target.value})}
+              placeholder={t.premises}
+              className="w-full px-4 py-3 bg-white/50 border border-white/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent transition-all duration-300 placeholder-slate-400"
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-slate-700">{t.category}</label>
+            <select 
+              value={newFeeData.category}
+              onChange={(e) => setNewFeeData({...newFeeData, category: e.target.value})}
+              className="w-full px-4 py-3 bg-white/50 border border-white/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent transition-all duration-300"
+            >
+              <option value="">{t.selectCategory}</option>
+              <option value="Small Scale">{t.smallScale}</option>
+              <option value="Large Scale">{t.largeScale}</option>
+            </select>
+          </div>
+          
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-slate-700">{t.amount}</label>
+            <input
+              type="number"
+              value={newFeeData.amount}
+              onChange={(e) => setNewFeeData({...newFeeData, amount: e.target.value})}
+              placeholder={t.amount}
+              className="w-full px-4 py-3 bg-white/50 border border-white/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent transition-all duration-300 placeholder-slate-400"
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-slate-700">{t.billingFrequency}</label>
+            <select 
+              value={newFeeData.billingFrequency}
+              onChange={(e) => setNewFeeData({...newFeeData, billingFrequency: e.target.value})}
+              className="w-full px-4 py-3 bg-white/50 border border-white/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent transition-all duration-300"
+            >
+              <option value="">{t.billingFrequency}</option>
+              <option value="Monthly">{t.monthly}</option>
+              <option value="Quarterly">{t.quarterly}</option>
+            </select>
+          </div>
+          
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-slate-700">Effective Date</label>
+            <input
+              type="date"
+              value={newFeeData.effectiveDate}
+              onChange={(e) => setNewFeeData({...newFeeData, effectiveDate: e.target.value})}
+              className="w-full px-4 py-3 bg-white/50 border border-white/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent transition-all duration-300"
+            />
+          </div>
         </div>
-        <div className="flex justify-center mt-4">
+        
+        <div className="flex justify-center">
           <button
             onClick={handleNewFeeStructure}
-            className="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 font-bold px-6 py-2 rounded"
+            className="group flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold rounded-xl hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
           >
+            <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
             {t.addButton}
           </button>
         </div>
       </div>
 
-      {/* Edit Modal */}
+      {/* Edit Modal with modern design */}
       {editIndex !== null && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow-xl w-96">
-            <h2 className="text-xl font-bold text-center text-green-800 mb-4">
-              {t.edit} {t.title}
-            </h2>
-            <div className="space-y-3">
-              <input
-                type="text"
-                value={editData.premises}
-                readOnly
-                className="w-full px-4 py-2 border rounded"
-              />
-              <input
-                type="text"
-                value={editData.category}
-                readOnly
-                className="w-full px-4 py-2 border rounded"
-              />
-              <input
-                type="number"
-                value={editData.amount}
-                onChange={(e) =>
-                  setEditData({
-                    ...editData,
-                    amount: parseFloat(e.target.value) || 0,
-                  })
-                }
-                className="w-full px-4 py-2 border rounded"
-              />
-              <input
-                type="date"
-                value={editData.effectiveDate || ""}
-                onChange={(e) =>
-                  setEditData({ ...editData, effectiveDate: e.target.value })
-                }
-                className="w-full px-4 py-2 border rounded"
-              />
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="backdrop-blur-md bg-white/90 border border-white/20 rounded-2xl shadow-2xl w-full max-w-md transform transition-all duration-300 scale-100">
+            <div className="p-8">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-indigo-100 to-purple-100 text-indigo-600">
+                  <Edit3 className="w-6 h-6" />
+                </div>
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                  {t.edit} {t.title}
+                </h2>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-700">{t.premises}</label>
+                  <input
+                    type="text"
+                    value={editData.premises}
+                    readOnly
+                    className="w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-xl text-slate-600"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-700">{t.category}</label>
+                  <input
+                    type="text"
+                    value={editData.category}
+                    readOnly
+                    className="w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-xl text-slate-600"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-700">{t.amount}</label>
+                  <input
+                    type="number"
+                    value={editData.amount}
+                    onChange={(e) =>
+                      setEditData({
+                        ...editData,
+                        amount: parseFloat(e.target.value) || 0,
+                      })
+                    }
+                    className="w-full px-4 py-3 bg-white/50 border border-white/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent transition-all duration-300"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-700">Effective Date</label>
+                  <input
+                    type="date"
+                    value={editData.effectiveDate || ""}
+                    onChange={(e) =>
+                      setEditData({ ...editData, effectiveDate: e.target.value })
+                    }
+                    className="w-full px-4 py-3 bg-white/50 border border-white/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent transition-all duration-300"
+                  />
+                </div>
+              </div>
+              
+              <div className="flex gap-4 mt-8">
+                <button
+                  onClick={handleUpdate}
+                  className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold rounded-xl hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                >
+                  <Check className="w-4 h-4" />
+                  {t.update}
+                </button>
+                <button
+                  onClick={handleCancel}
+                  className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-rose-500 to-pink-500 text-white font-bold rounded-xl hover:from-rose-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                >
+                  <X className="w-4 h-4" />
+                  {t.cancel}
+                </button>
+              </div>
             </div>
-            <div className="flex justify-between mt-6 gap-4">
-        <button
-        onClick={handleUpdate}
-        className="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded h-10"
-        >
-        {t.update}
-        </button>
-        <button
-        onClick={handleCancel}
-        className="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
-        >
-        {t.cancel}
-        </button>
-        </div>
-
-            
           </div>
         </div>
       )}
 
-      {/* Toast Message */}
+      {/* Toast Message with modern styling */}
       {successMessage && (
-        <div className="fixed top-15 right-4 z-50">
-          <div className=" text-yellow-800 px-4  font-medium">
-            {successMessage}
+        <div className="fixed top-8 right-8 z-50 animate-pulse">
+          <div className="backdrop-blur-md bg-emerald-500/90 border border-emerald-400/20 text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3">
+            <div className="p-1 bg-white/20 rounded-full">
+              <Check className="w-4 h-4" />
+            </div>
+            <span className="font-medium">{successMessage}</span>
           </div>
         </div>
       )}
+
+      {/* Floating background elements */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-cyan-400/20 rounded-full blur-3xl animate-pulse"></div>
+      </div>
     </div>
   );
 }

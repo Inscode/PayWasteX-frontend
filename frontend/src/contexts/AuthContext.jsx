@@ -16,6 +16,7 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true); // Add loading state
   const refreshTimeout = useRef(null);
 
   const scheduleSilentRefresh = (token) => {
@@ -46,13 +47,45 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     (async () => {
       try {
+        // First check if we have an access token in sessionStorage
+        const existingToken = sessionStorage.getItem("accessToken");
+        const userInfo = sessionStorage.getItem("userInfo");
+
+        if (existingToken && userInfo) {
+          try {
+            // Try to decode the existing token to get user info
+            const decoded = jwtDecode(existingToken);
+            const currentTime = Date.now() / 1000;
+
+            // If token is still valid (not expired)
+            if (decoded.exp > currentTime) {
+              const parsedUserInfo = JSON.parse(userInfo);
+              setUser(parsedUserInfo);
+              scheduleSilentRefresh(existingToken);
+              setLoading(false);
+              return;
+            }
+          } catch (decodeError) {
+            console.log("Token decode failed, trying refresh...");
+          }
+        }
+
+        // If no valid token, try to refresh
         const { data } = await svcRefresh();
         sessionStorage.setItem("accessToken", data.token);
+        sessionStorage.setItem(
+          "userInfo",
+          JSON.stringify({ id: data.userId, role: data.role })
+        );
         setUser({ id: data.userId, role: data.role });
         scheduleSilentRefresh(data.token);
-      } catch {
+      } catch (error) {
+        console.log("Refresh failed:", error);
         setUser(null);
         sessionStorage.removeItem("accessToken");
+        sessionStorage.removeItem("userInfo");
+      } finally {
+        setLoading(false);
       }
     })();
 
@@ -64,7 +97,15 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     const { data } = await svcLogin(credentials);
     sessionStorage.setItem("accessToken", data.token);
+
+    // Also store user info in sessionStorage as backup
+    sessionStorage.setItem(
+      "userInfo",
+      JSON.stringify({ id: data.userId, role: data.role })
+    );
+
     setUser({ id: data.userId, role: data.role });
+    setLoading(false); // Ensure loading is false after login
     scheduleSilentRefresh(data.token);
     return data; // ✅ return the login response
   };
@@ -72,12 +113,13 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     await svcLogout();
     sessionStorage.removeItem("accessToken");
+    sessionStorage.removeItem("userInfo"); // Also remove user info
     setUser(null);
     if (refreshTimeout.current) clearTimeout(refreshTimeout.current);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

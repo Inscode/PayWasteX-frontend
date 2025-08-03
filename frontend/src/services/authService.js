@@ -11,3 +11,23 @@ export const refresh = () => {
 export const logout = () => {
   return api.post("/auth/logout");
 };
+
+export const createCustomer = async (customerData, role = "CUSTOMER") => {
+  try {
+    const dataWithRole = { ...customerData, role };
+    const response = await api.post("auth/customer-register", dataWithRole);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const adminRegister = async (customerData) => {
+  try {
+    const dataWithRole = { ...customerData,  };
+    const response = await api.post("/auth/user-register", dataWithRole);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { HiSearch, HiFilter, HiDocumentText, HiEye, HiPencil, HiClock, HiCheckCircle, HiExclamation } from "react-icons/hi";
+import { Search, Filter, FileText, Eye, Edit3, Clock, CheckCircle, AlertTriangle, Calendar, User, MapPin, X, Check } from "lucide-react";
 
 const useLanguage = () => ({ lang: 'en' }); // Mock hook for demo
 
@@ -22,6 +22,16 @@ const labels = {
     paid: "Paid",
     pendingStatus: "Pending",
     overdueStatus: "Overdue",
+    dateRange: "Date Range",
+    startDate: "Start Date",
+    endDate: "End Date",
+    collector: "Collector",
+    zone: "Zone/Category",
+    clearFilters: "Clear All Filters",
+    billmanagement: "Bill Management",
+    confirmPayment: "Confirm Payment",
+    paymentConfirmed: "Payment Confirmed",
+    confirmationRequired: "Payment confirmation required from responsible officer",
   },
 };
 
@@ -78,28 +88,90 @@ const initialData = [
     dueDate: "2025-04-30",
     collector: "Ms. Jayawardena",
   },
+  {
+    invoiceNo: "INV1005",
+    regNo: "ST1NWT5",
+    name: "Emma Wilson",
+    company: "Seaside Resort",
+    time: "22/04/2025 - 02/05/2025",
+    status: "pending",
+    zone: "A3",
+    amount: "LKR 650.00",
+    billDate: "2025-04-22",
+    dueDate: "2025-05-02",
+    collector: "Mr. Kumara",
+  },
+  {
+    invoiceNo: "INV1006",
+    regNo: "ST1NWT6",
+    name: "Michael Brown",
+    company: "Garden Hotel",
+    time: "25/04/2025 - 05/05/2025",
+    status: "overdue",
+    zone: "B2",
+    amount: "LKR 520.00",
+    billDate: "2025-04-25",
+    dueDate: "2025-05-05",
+    collector: "Mrs. Wickramasinghe",
+  },
+  {
+    invoiceNo: "INV1007",
+    regNo: "ST1NWT7",
+    name: "Lisa Davis",
+    company: "Ocean View Resort",
+    time: "28/04/2025 - 08/05/2025",
+    status: "paid",
+    zone: "A4",
+    amount: "LKR 890.00",
+    billDate: "2025-04-28",
+    dueDate: "2025-05-08",
+    collector: "Mr. Rajapaksa",
+  },
 ];
 
 const zones = ["A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4", "C1", "C2", "C3", "C4"];
+
+const collectors = [
+  "Mr. Prasad Perera",
+  "Mrs. Silva", 
+  "Mr. Fernando",
+  "Ms. Jayawardena",
+  "Mr. Kumara",
+  "Mrs. Wickramasinghe",
+  "Mr. Rajapaksa",
+  "Ms. Dissanayake"
+];
 
 const BillManagement = () => {
   const { lang } = useLanguage();
   const t = labels[lang] || labels.en;
 
   const [bills, setBills] = useState(initialData);
-  const [selectedZone, setSelectedZone] = useState("A1");
+  const [selectedZone, setSelectedZone] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedBill, setSelectedBill] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [confirmedPayments, setConfirmedPayments] = useState(new Set());
+  
+  // New filter states
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [selectedCollector, setSelectedCollector] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   const perPage = 6;
   
-  // Enhanced filtering
-  let filteredData = bills.filter((d) => d.zone === selectedZone);
+  // Filter to show only pending payments
+  let filteredData = bills.filter(bill => bill.status === "pending");
   
+  // Zone filter
+  if (selectedZone) {
+    filteredData = filteredData.filter((d) => d.zone === selectedZone);
+  }
+  
+  // Search filter
   if (searchTerm) {
     filteredData = filteredData.filter((bill) =>
       bill.invoiceNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -108,12 +180,58 @@ const BillManagement = () => {
     );
   }
   
-  if (statusFilter !== "all") {
-    filteredData = filteredData.filter((bill) => bill.status === statusFilter);
+  // Date range filter
+  if (startDate && endDate) {
+    filteredData = filteredData.filter((bill) => {
+      const billDate = new Date(bill.billDate);
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      return billDate >= start && billDate <= end;
+    });
   }
+  
+  // Collector filter
+  if (selectedCollector) {
+    filteredData = filteredData.filter((bill) => bill.collector === selectedCollector);
+  }
+  
+  // Category filter (using zone as category)
+  if (selectedCategory) {
+    filteredData = filteredData.filter((bill) => bill.zone === selectedCategory);
+  }
+  
+  // Check if any filters are active
+  const hasActiveFilters = selectedZone || searchTerm || 
+                          startDate || endDate || selectedCollector || selectedCategory;
+  
+  // Clear all filters function
+  const clearAllFilters = () => {
+    setSelectedZone("");
+    setSearchTerm("");
+    setStartDate("");
+    setEndDate("");
+    setSelectedCollector("");
+    setSelectedCategory("");
+    setCurrentPage(1);
+  };
 
   const totalPages = Math.ceil(filteredData.length / perPage);
   const paginatedData = filteredData.slice((currentPage - 1) * perPage, currentPage * perPage);
+
+  const handleConfirmPayment = (invoiceNo) => {
+    const newConfirmedPayments = new Set(confirmedPayments);
+    newConfirmedPayments.add(invoiceNo);
+    setConfirmedPayments(newConfirmedPayments);
+    
+    // Update bill status to paid
+    setBills(prevBills =>
+      prevBills.map(bill =>
+        bill.invoiceNo === invoiceNo
+          ? { ...bill, status: "paid" }
+          : bill
+      )
+    );
+  };
 
   const handleSave = (updatedBill) => {
     setBills((prevBills) =>
@@ -124,19 +242,6 @@ const BillManagement = () => {
     setIsModalOpen(false);
   };
 
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'paid':
-        return <HiCheckCircle className="w-4 h-4" />;
-      case 'pending':
-        return <HiClock className="w-4 h-4" />;
-      case 'overdue':
-        return <HiExclamation className="w-4 h-4" />;
-      default:
-        return <HiClock className="w-4 h-4" />;
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
       {/* Header */}
@@ -144,103 +249,156 @@ const BillManagement = () => {
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
-                <HiDocumentText className="text-white w-6 h-6" />
+              <div className="w-12 h-12 bg-gradient-to-r from-amber-500 to-orange-600 rounded-xl flex items-center justify-center">
+                <Clock className="text-white w-6 h-6" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-gray-800">Bill Management</h1>
-                <p className="text-gray-600">Manage and track all billing operations</p>
+                <h1 className="text-3xl font-bold text-gray-800">{t.billmanagement}</h1>
+                <p className="text-gray-600">{t.confirmationRequired}</p>
               </div>
             </div>
-            <button className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200">
+            {/* <button className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200">
               {t.issue}
-            </button>
+            </button> */}
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto p-6 space-y-8">
-        {/* Enhanced Summary Cards */}
+        {/* Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           <SummaryCard
             title={t.total}
             value={bills.length}
-            icon={<HiDocumentText />}
+            icon={<FileText />}
             color="blue"
             subtitle="All invoices"
           />
           <SummaryCard
             title={t.pending}
             value={bills.filter(d => d.status === "pending").length}
-            icon={<HiClock />}
+            icon={<Clock />}
             color="amber"
-            subtitle="Awaiting payment"
+            subtitle="Awaiting confirmation"
           />
           <SummaryCard
             title={t.overdue}
             value={bills.filter(d => d.status === "overdue").length}
-            icon={<HiExclamation />}
+            icon={<AlertTriangle />}
             color="red"
             subtitle="Past due date"
           />
         </div>
 
-        {/* Search and Filters */}
+        {/* Advanced Search and Filters */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-          <div className="flex flex-col lg:flex-row gap-4 mb-6">
-            {/* Search Bar */}
-            <div className="flex-1 relative">
-              <HiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search by invoice, name, or company..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200"
-              />
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg font-semibold text-gray-800 flex items-center">
+              <Filter className="mr-2 text-blue-600" />
+              Filter Options
+            </h2>
+            {hasActiveFilters && (
+              <button
+                onClick={clearAllFilters}
+                className="inline-flex items-center px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-all"
+              >
+                <X className="mr-2 w-4 h-4" />
+                {t.clearFilters}
+              </button>
+            )}
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
+            {/* Date Range Filter */}
+            <div className="lg:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-3 items-center">
+                <Calendar className="mr-2 text-blue-600 w-4 h-4" />
+                {t.dateRange}
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  placeholder={t.startDate}
+                />
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  placeholder={t.endDate}
+                />
+              </div>
             </div>
 
-            {/* Status Filter */}
-            <div className="relative">
-              <HiFilter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            {/* Collector Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3 items-center">
+                <User className="mr-2 text-purple-600 w-4 h-4" />
+                {t.collector}
+              </label>
               <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="pl-10 pr-8 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white min-w-[150px]"
+                value={selectedCollector}
+                onChange={(e) => setSelectedCollector(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
               >
-                <option value="all">All Status</option>
-                <option value="paid">Paid</option>
-                <option value="pending">Pending</option>
-                <option value="overdue">Overdue</option>
+                <option value="">All Collectors</option>
+                {collectors.map((collector, i) => (
+                  <option key={i} value={collector}>
+                    {collector}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Zone/Category Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3 items-center">
+                <MapPin className="mr-2 text-green-600 w-4 h-4" />
+                {t.zone}
+              </label>
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
+              >
+                <option value="">All Zones</option>
+                {zones.map((zone, i) => (
+                  <option key={i} value={zone}>
+                    Zone {zone}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
 
-          {/* Zone Filters */}
-          <div className="flex flex-wrap gap-2">
-            {zones.map((zone) => (
-              <button
-                key={zone}
-                onClick={() => {
-                  setSelectedZone(zone);
-                  setCurrentPage(1);
-                }}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:-translate-y-0.5 ${
-                  selectedZone === zone
-                    ? "bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg"
-                    : "bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200"
-                }`}
-              >
-                Zone {zone}
-              </button>
-            ))}
+          {/* Search Row */}
+          <div className="flex flex-col lg:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Search by Invoice No, Name, or Company..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              />
+            </div>
           </div>
         </div>
 
         {/* Results Info */}
         <div className="flex items-center justify-between text-sm text-gray-600">
-          <div>
-            Showing {paginatedData.length} of {filteredData.length} bills in Zone {selectedZone}
+          <div className="flex items-center space-x-4">
+            <span>Showing {paginatedData.length} of {filteredData.length} pending payments</span>
+            {hasActiveFilters && (
+              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
+                <Filter className="w-3 h-3 mr-1" />
+                Filtered
+              </span>
+            )}
           </div>
           <div>
             Page {currentPage} of {totalPages}
@@ -258,9 +416,8 @@ const BillManagement = () => {
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{t.name}</th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{t.company}</th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{t.time}</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{t.amount}</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{t.action}</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -282,9 +439,6 @@ const BillManagement = () => {
                       <div className="text-sm text-gray-600">{item.time}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <StatusBadge status={item.status} t={t} />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-semibold text-gray-900">{item.amount}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
@@ -297,17 +451,14 @@ const BillManagement = () => {
                           className="bg-blue-100 text-blue-700 p-2 rounded-lg hover:bg-blue-200 transition-colors duration-200"
                           title="View Bill"
                         >
-                          <HiEye className="w-4 h-4" />
+                          <Eye className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => {
-                            setSelectedBill(item);
-                            setIsModalOpen(true);
-                          }}
-                          className="bg-emerald-100 text-emerald-700 p-2 rounded-lg hover:bg-emerald-200 transition-colors duration-200"
-                          title="Edit Bill"
+                          onClick={() => handleConfirmPayment(item.invoiceNo)}
+                          className="bg-green-100 text-green-700 p-2 rounded-lg hover:bg-green-200 transition-colors duration-200 flex items-center space-x-1"
+                          title="Confirm Payment"
                         >
-                          <HiPencil className="w-4 h-4" />
+                          <Check className="w-4 h-4" />
                         </button>
                       </div>
                     </td>
@@ -321,14 +472,11 @@ const BillManagement = () => {
         {/* Mobile/Tablet Cards */}
         <div className="lg:hidden grid gap-4">
           {paginatedData.map((item, idx) => (
-            <BillCard
+            <PendingBillCard
               key={idx}
               item={item}
               t={t}
-              onEdit={() => {
-                setSelectedBill(item);
-                setIsModalOpen(true);
-              }}
+              onConfirmPayment={() => handleConfirmPayment(item.invoiceNo)}
               onView={() => {
                 setSelectedBill(item);
                 setIsViewModalOpen(true);
@@ -361,40 +509,62 @@ const BillManagement = () => {
         {/* Empty State */}
         {paginatedData.length === 0 && (
           <div className="bg-white rounded-2xl p-12 text-center border border-gray-100">
-            <HiDocumentText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-600 mb-2">No bills found</h3>
-            <p className="text-gray-500">Try adjusting your search or filter criteria</p>
+            <Clock className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-600 mb-2">No pending payments found</h3>
+            <p className="text-gray-500">All payments have been confirmed or try adjusting your filter criteria</p>
           </div>
         )}
       </div>
 
-      {/* Mock Modals (replace with your actual modals) */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
-            <h3 className="text-lg font-semibold mb-4">Edit Bill - {selectedBill?.invoiceNo}</h3>
-            <p className="text-gray-600 mb-4">Edit bill modal would go here</p>
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="bg-gray-500 text-white px-4 py-2 rounded-lg"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
-
+      {/* View Modal */}
       {isViewModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 max-w-md w-full">
-            <h3 className="text-lg font-semibold mb-4">View Bill - {selectedBill?.invoiceNo}</h3>
-            <p className="text-gray-600 mb-4">View bill modal would go here</p>
-            <button
-              onClick={() => setIsViewModalOpen(false)}
-              className="bg-gray-500 text-white px-4 py-2 rounded-lg"
-            >
-              Close
-            </button>
+            <h3 className="text-lg font-semibold mb-4">Bill Details - {selectedBill?.invoiceNo}</h3>
+            <div className="space-y-3">
+              <div className="flex justify-between">
+                <span className="text-gray-600">Reg No:</span>
+                <span className="font-medium">{selectedBill?.regNo}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Name:</span>
+                <span className="font-medium">{selectedBill?.name}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Company:</span>
+                <span className="font-medium">{selectedBill?.company}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Period:</span>
+                <span className="font-medium">{selectedBill?.time}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Amount:</span>
+                <span className="font-bold text-lg">{selectedBill?.amount}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Collector:</span>
+                <span className="font-medium">{selectedBill?.collector}</span>
+              </div>
+            </div>
+            <div className="flex space-x-3 mt-6">
+              <button
+                onClick={() => setIsViewModalOpen(false)}
+                className="flex-1 bg-gray-500 text-white px-4 py-2 rounded-lg"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => {
+                  handleConfirmPayment(selectedBill.invoiceNo);
+                  setIsViewModalOpen(false);
+                }}
+                className="flex-1 bg-green-500 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2"
+              >
+                <Check className="w-4 h-4" />
+                <span>Confirm Payment</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -409,10 +579,16 @@ const SummaryCard = ({ title, value, icon, color, subtitle }) => {
     red: "from-red-500 to-rose-600",
   };
 
+  const backgroundColors = {
+    blue: '#3b82f6, #4f46e5',
+    amber: '#f59e0b, #ea580c',
+    red: '#ef4444, #f43f5e'
+  };
+
   return (
     <div className="group relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl -z-10"
-           style={{background: `linear-gradient(to right, ${color === 'blue' ? '#3b82f6, #4f46e5' : color === 'amber' ? '#f59e0b, #ea580c' : '#ef4444, #f43f5e'})`}}></div>
+           style={{background: `linear-gradient(to right, ${backgroundColors[color]})`}}></div>
       
       <div className={`bg-gradient-to-r ${colorClasses[color]} p-6 rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 text-white relative`}>
         <div className="flex items-start justify-between">
@@ -430,51 +606,22 @@ const SummaryCard = ({ title, value, icon, color, subtitle }) => {
   );
 };
 
-const StatusBadge = ({ status, t }) => {
-  const statusConfig = {
-    paid: {
-      bg: "bg-green-100",
-      text: "text-green-800",
-      icon: <HiCheckCircle className="w-4 h-4" />,
-      label: t.paid
-    },
-    pending: {
-      bg: "bg-amber-100",
-      text: "text-amber-800",
-      icon: <HiClock className="w-4 h-4" />,
-      label: t.pendingStatus
-    },
-    overdue: {
-      bg: "bg-red-100",
-      text: "text-red-800",
-      icon: <HiExclamation className="w-4 h-4" />,
-      label: t.overdueStatus
-    }
-  };
-
-  const config = statusConfig[status] || statusConfig.pending;
-
-  return (
-    <span className={`inline-flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-medium ${config.bg} ${config.text}`}>
-      {config.icon}
-      <span>{config.label}</span>
-    </span>
-  );
-};
-
-const BillCard = ({ item, t, onEdit, onView }) => (
+const PendingBillCard = ({ item, t, onConfirmPayment, onView }) => (
   <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300">
     <div className="flex justify-between items-start mb-4">
       <div className="flex items-center space-x-3">
-        <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
-          <HiDocumentText className="text-white w-5 h-5" />
+        <div className="w-10 h-10 bg-gradient-to-r from-amber-500 to-orange-600 rounded-lg flex items-center justify-center">
+          <Clock className="text-white w-5 h-5" />
         </div>
         <div>
           <h3 className="font-semibold text-gray-800">{item.invoiceNo}</h3>
           <p className="text-sm text-gray-600">{item.regNo}</p>
         </div>
       </div>
-      <StatusBadge status={item.status} t={t} />
+      <span className="inline-flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+        <Clock className="w-4 h-4" />
+        <span>Pending</span>
+      </span>
     </div>
 
     <div className="space-y-3 mb-4">
@@ -501,15 +648,15 @@ const BillCard = ({ item, t, onEdit, onView }) => (
         onClick={onView}
         className="flex-1 bg-blue-50 text-blue-700 py-2 px-4 rounded-lg font-medium hover:bg-blue-100 transition-colors duration-200 flex items-center justify-center space-x-2"
       >
-        <HiEye className="w-4 h-4" />
+        <Eye className="w-4 h-4" />
         <span>{t.view}</span>
       </button>
       <button
-        onClick={onEdit}
-        className="flex-1 bg-emerald-50 text-emerald-700 py-2 px-4 rounded-lg font-medium hover:bg-emerald-100 transition-colors duration-200 flex items-center justify-center space-x-2"
+        onClick={onConfirmPayment}
+        className="flex-1 bg-green-50 text-green-700 py-2 px-4 rounded-lg font-medium hover:bg-green-100 transition-colors duration-200 flex items-center justify-center space-x-2"
       >
-        <HiPencil className="w-4 h-4" />
-        <span>{t.edit}</span>
+        <Check className="w-4 h-4" />
+        <span>Confirm</span>
       </button>
     </div>
   </div>
