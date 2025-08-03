@@ -19,8 +19,8 @@ export default function RoleButtonGroup() {
       { label: "System Settings", path: "/admin/systemSettings" },
     ],
     SHOPOWNER: [
-      { label: "Dashboard", path: "/shopOwner/dashboard" },
-      { label: "Billing History", path: "/shopOwner/bills" },
+      { label: "Dashboard", path: "/customer/dashboard" },
+      { label: "Billing History", path: "/customer/bills" },
     ],
     RESPONSIBLEOFFICER: [
       { label: "Dashboard", path: "/responsibleOfficer/dashboard" },
