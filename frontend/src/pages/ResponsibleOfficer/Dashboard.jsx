@@ -150,6 +150,7 @@ const Dashboard = () => {
             color="blue"
             trend="+2"
             subtitle="Currently working"
+            currency={false}
           />
         </div>
 
@@ -264,7 +265,15 @@ const Dashboard = () => {
 };
 
 // All your existing components (StatCard, CollectorCard, etc.) remain the same
-const StatCard = ({ title, value, icon, color, trend, subtitle }) => {
+const StatCard = ({
+  title,
+  value,
+  icon,
+  color,
+  trend,
+  subtitle,
+  currency = true,
+}) => {
   const colorClasses = {
     emerald: "from-emerald-500 to-teal-600",
     amber: "from-amber-500 to-orange-600",
@@ -292,7 +301,9 @@ const StatCard = ({ title, value, icon, color, trend, subtitle }) => {
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <p className="text-white/80 text-sm font-medium mb-1">{title}</p>
-            <p className="text-3xl font-bold mb-1">LKR {value}</p>
+            <p className="text-3xl font-bold mb-1">
+              {currency ? `LKR ${value}` : value}
+            </p>
             <div className="flex items-center space-x-2">
               <span className="text-xs bg-white/20 px-2 py-1 rounded-full">
                 {trend}
