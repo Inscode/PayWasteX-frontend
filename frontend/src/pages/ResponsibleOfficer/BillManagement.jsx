@@ -311,7 +311,7 @@ const BillManagement = () => {
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
             {/* Date Range Filter */}
             <div className="lg:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-3 flex items-center">
+              <label className="block text-sm font-medium text-gray-700 mb-3 items-center">
                 <Calendar className="mr-2 text-blue-600 w-4 h-4" />
                 {t.dateRange}
               </label>
@@ -335,7 +335,7 @@ const BillManagement = () => {
 
             {/* Collector Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3 flex items-center">
+              <label className="block text-sm font-medium text-gray-700 mb-3 items-center">
                 <User className="mr-2 text-purple-600 w-4 h-4" />
                 {t.collector}
               </label>
@@ -355,7 +355,7 @@ const BillManagement = () => {
 
             {/* Zone/Category Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3 flex items-center">
+              <label className="block text-sm font-medium text-gray-700 mb-3 items-center">
                 <MapPin className="mr-2 text-green-600 w-4 h-4" />
                 {t.zone}
               </label>
