@@ -24,9 +24,9 @@ export const deleteUser = async (userId) => {
   }
 };
 
-  export const editUser = async (userId) => {
+  export const editUser = async (userId, form) => {
   try {
-    const response = await api.put(`api/admin/update?id=${userId}`);
+    const response = await api.put(`api/admin/update?id=${userId}`, form);
     console.log("Updated user:", response.data);
     return response.data;
   } catch (error) {

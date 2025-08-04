@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo, useState, useEffect } from "react";
-import { fetchAllUser,deleteUser,editUser } from "../../services/admin";
-
+import { fetchAllUser, deleteUser, editUser } from "../../services/admin";
 
 const adminRegister = async (userData) => {
   console.log("Creating user:", userData);
@@ -557,16 +556,25 @@ function EditUserModal({ user, onClose, showNotification }) {
 
   const updateField = (e) =>
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     const { fullName, email, contactNo, role, nic } = form;
     if (!fullName || !email || !contactNo || !role || !nic) {
       showNotification("warning", "All fields are required.");
       return;
     }
-    // … perform your update call here …
-    showNotification("success", "User updated successfully.");
-    onClose();
+
+    try {
+      // Call the editUser service
+      await editUser(user.id, form);
+      showNotification("success", "User updated successfully.");
+      onClose();
+    } catch (error) {
+      console.error("Error updating user:", error);
+      showNotification("danger", "Failed to update user. Please try again.");
+    }
   };
 
   return (
@@ -676,17 +684,11 @@ const EditRow = ({ label, type = "text", options, ...props }) => (
 /* ── ③ Delete User ─────────────────────────────────────────── */
 function DeleteUserModal({ user, onClose, showNotification }) {
   const handleDelete = async () => {
-    // Log the user ID to console
-    console.log("Deleting user with ID:", user.id);
-
     try {
       // Call the deleteUser service
       await deleteUser(user.id);
       showNotification("success", "User deleted successfully.");
       onClose();
-
-      // Optionally refresh the users list
-      // You might want to call a refresh function here or trigger a re-fetch
     } catch (error) {
       console.error("Error deleting user:", error);
 
