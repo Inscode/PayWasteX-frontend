@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState, useEffect } from "react";
-
+import { fetchAllUser } from "../../services/admin";
 
 const deleteUser = async (userId) => {
   console.log("Deleting user:", userId);
@@ -193,23 +193,45 @@ export default function Dashboard() {
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl shadow-lg">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+              <svg
+                className="w-6 h-6 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"
+                />
               </svg>
             </div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
               User Management
             </h1>
           </div>
-          <p className="text-gray-600 text-lg">Manage system users and their permissions</p>
+          <p className="text-gray-600 text-lg">
+            Manage system users and their permissions
+          </p>
         </div>
 
         {/* █ HEADER ROW █ */}
         <header className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-sm mb-8">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="relative flex-grow sm:flex-grow-0 sm:basis-1/3">
-              <svg className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+              <svg
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+                />
               </svg>
               <input
                 placeholder="User ID, Name or Email"
@@ -226,8 +248,18 @@ export default function Dashboard() {
                         text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200 shadow-lg 
                         hover:shadow-xl transform hover:-translate-y-0.5 flex items-center gap-2"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                />
               </svg>
               Add New User
             </button>
@@ -308,7 +340,10 @@ export default function Dashboard() {
                       "Status",
                       "Action",
                     ].map((h) => (
-                      <th key={h} className="px-6 py-4 text-left font-bold text-sm uppercase tracking-wider">
+                      <th
+                        key={h}
+                        className="px-6 py-4 text-left font-bold text-sm uppercase tracking-wider"
+                      >
                         {h}
                       </th>
                     ))}
@@ -330,7 +365,9 @@ export default function Dashboard() {
                           <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center text-white font-semibold">
                             {u.fullName.charAt(0)}
                           </div>
-                          <span className="font-medium text-gray-900">{u.fullName}</span>
+                          <span className="font-medium text-gray-900">
+                            {u.fullName}
+                          </span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -451,7 +488,9 @@ const PageNumber = ({ number, active, onClick }) => (
   <button
     onClick={onClick}
     className={`w-10 h-10 rounded-xl text-sm font-semibold transition-all duration-200 ${
-      active ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg" : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
+      active
+        ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg"
+        : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
     }`}
   >
     {number}
@@ -486,7 +525,9 @@ function ViewUserModal({ user, onClose }) {
         <h2 className="text-2xl font-bold mb-2 text-gray-900">
           View User Details
         </h2>
-        <p className="text-gray-600">Complete information for {user.fullName}</p>
+        <p className="text-gray-600">
+          Complete information for {user.fullName}
+        </p>
       </div>
       <div className="space-y-4">
         <InfoDisplay label="Name" value={user.fullName} />
@@ -536,13 +577,21 @@ function EditUserModal({ user, onClose, showNotification }) {
     <Modal onClose={onClose}>
       <div className="text-center mb-6">
         <div className="w-16 h-16 bg-gradient-to-r from-emerald-600 to-green-600 rounded-2xl mx-auto mb-4 flex items-center justify-center">
-          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          <svg
+            className="w-8 h-8 text-white"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+            />
           </svg>
         </div>
-        <h2 className="text-2xl font-bold mb-2 text-gray-900">
-          Edit User
-        </h2>
+        <h2 className="text-2xl font-bold mb-2 text-gray-900">Edit User</h2>
         <p className="text-gray-600">Update user information</p>
       </div>
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -591,7 +640,7 @@ function EditUserModal({ user, onClose, showNotification }) {
           >
             Cancel
           </button>
-          <button 
+          <button
             type="submit"
             className="flex-1 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg"
           >
@@ -669,22 +718,32 @@ function DeleteUserModal({ user, onClose, showNotification }) {
     <Modal onClose={onClose}>
       <div className="text-center">
         <div className="w-16 h-16 bg-red-100 rounded-2xl mx-auto mb-4 flex items-center justify-center">
-          <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          <svg
+            className="w-8 h-8 text-red-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            />
           </svg>
         </div>
-        <h2 className="text-2xl font-bold mb-2 text-gray-900">
-          Delete User
-        </h2>
+        <h2 className="text-2xl font-bold mb-2 text-gray-900">Delete User</h2>
         <p className="text-gray-600 mb-6">
-          Are you sure you want to delete this user? This action cannot be undone.
+          Are you sure you want to delete this user? This action cannot be
+          undone.
         </p>
         <div className="bg-gray-50 rounded-xl p-4 mb-6">
           <p className="text-sm text-gray-700">
             <span className="font-semibold">User:</span> {user.fullName}
           </p>
           <p className="text-sm text-gray-700">
-            <span className="font-semibold">ID:</span> U{user.id.toString().padStart(3, "0")}
+            <span className="font-semibold">ID:</span> U
+            {user.id.toString().padStart(3, "0")}
           </p>
         </div>
         <div className="flex gap-4">
@@ -776,8 +835,18 @@ function AddUserModal({ onClose, showNotification }) {
     <Modal onClose={onClose}>
       <div className="text-center mb-6">
         <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl mx-auto mb-4 flex items-center justify-center">
-          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          <svg
+            className="w-8 h-8 text-white"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+            />
           </svg>
         </div>
         <h2 className="text-2xl font-bold mb-2 text-gray-900">Add New User</h2>
@@ -829,7 +898,7 @@ function AddUserModal({ onClose, showNotification }) {
           >
             Cancel
           </button>
-          <button 
+          <button
             type="submit"
             className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg"
           >
