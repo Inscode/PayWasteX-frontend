@@ -1,7 +1,22 @@
-import React, { useState } from "react";
-import { Search, Filter, FileText, Eye, Edit3, Clock, CheckCircle, AlertTriangle, Calendar, User, MapPin, X, Check } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import {
+  Search,
+  Filter,
+  FileText,
+  Eye,
+  Edit3,
+  Clock,
+  CheckCircle,
+  AlertTriangle,
+  Calendar,
+  User,
+  MapPin,
+  X,
+  Check,
+} from "lucide-react";
+import { billManagementCard } from "../../services/responsibleOfficer";
 
-const useLanguage = () => ({ lang: 'en' }); // Mock hook for demo
+const useLanguage = () => ({ lang: "en" }); // Mock hook for demo
 
 const labels = {
   en: {
@@ -31,7 +46,8 @@ const labels = {
     billmanagement: "Bill Management",
     confirmPayment: "Confirm Payment",
     paymentConfirmed: "Payment Confirmed",
-    confirmationRequired: "Payment confirmation required from responsible officer",
+    confirmationRequired:
+      "Payment confirmation required from responsible officer",
   },
 };
 
@@ -129,17 +145,30 @@ const initialData = [
   },
 ];
 
-const zones = ["A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4", "C1", "C2", "C3", "C4"];
+const zones = [
+  "A1",
+  "A2",
+  "A3",
+  "A4",
+  "B1",
+  "B2",
+  "B3",
+  "B4",
+  "C1",
+  "C2",
+  "C3",
+  "C4",
+];
 
 const collectors = [
   "Mr. Prasad Perera",
-  "Mrs. Silva", 
+  "Mrs. Silva",
   "Mr. Fernando",
   "Ms. Jayawardena",
   "Mr. Kumara",
   "Mrs. Wickramasinghe",
   "Mr. Rajapaksa",
-  "Ms. Dissanayake"
+  "Ms. Dissanayake",
 ];
 
 const BillManagement = () => {
@@ -154,32 +183,69 @@ const BillManagement = () => {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [confirmedPayments, setConfirmedPayments] = useState(new Set());
-  
+
   // New filter states
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [selectedCollector, setSelectedCollector] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const [summaryData, setSummaryData] = useState({
+    totalBills: 0,
+    totalPendingPayment: 0,
+    totalOverdueBills: 0,
+  });
+
+  useEffect(() => {
+    const fetchSummaryData = async () => {
+      try {
+        setLoading(true);
+        const response = await billManagementCard();
+        if (response) {
+          setSummaryData({
+            totalBills: parseInt(response.totalBills) || 0,
+            totalPendingPayment: parseInt(response.totalPendingPayment) || 0,
+            totalOverdueBills: parseInt(response.totalOverdueBills) || 0,
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching summary data:", error);
+        setError("Failed to load summary data");
+        setSummaryData({
+          totalBills: 0,
+          totalPendingPayment: 0,
+          totalOverdueBills: 0,
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSummaryData();
+  }, []);
+
   const perPage = 6;
-  
+
   // Filter to show only pending payments
-  let filteredData = bills.filter(bill => bill.status === "pending");
-  
+  let filteredData = bills.filter((bill) => bill.status === "pending");
+
   // Zone filter
   if (selectedZone) {
     filteredData = filteredData.filter((d) => d.zone === selectedZone);
   }
-  
+
   // Search filter
   if (searchTerm) {
-    filteredData = filteredData.filter((bill) =>
-      bill.invoiceNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      bill.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      bill.company.toLowerCase().includes(searchTerm.toLowerCase())
+    filteredData = filteredData.filter(
+      (bill) =>
+        bill.invoiceNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        bill.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        bill.company.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }
-  
+
   // Date range filter
   if (startDate && endDate) {
     filteredData = filteredData.filter((bill) => {
@@ -189,21 +255,30 @@ const BillManagement = () => {
       return billDate >= start && billDate <= end;
     });
   }
-  
+
   // Collector filter
   if (selectedCollector) {
-    filteredData = filteredData.filter((bill) => bill.collector === selectedCollector);
+    filteredData = filteredData.filter(
+      (bill) => bill.collector === selectedCollector
+    );
   }
-  
+
   // Category filter (using zone as category)
   if (selectedCategory) {
-    filteredData = filteredData.filter((bill) => bill.zone === selectedCategory);
+    filteredData = filteredData.filter(
+      (bill) => bill.zone === selectedCategory
+    );
   }
-  
+
   // Check if any filters are active
-  const hasActiveFilters = selectedZone || searchTerm || 
-                          startDate || endDate || selectedCollector || selectedCategory;
-  
+  const hasActiveFilters =
+    selectedZone ||
+    searchTerm ||
+    startDate ||
+    endDate ||
+    selectedCollector ||
+    selectedCategory;
+
   // Clear all filters function
   const clearAllFilters = () => {
     setSelectedZone("");
@@ -216,19 +291,20 @@ const BillManagement = () => {
   };
 
   const totalPages = Math.ceil(filteredData.length / perPage);
-  const paginatedData = filteredData.slice((currentPage - 1) * perPage, currentPage * perPage);
+  const paginatedData = filteredData.slice(
+    (currentPage - 1) * perPage,
+    currentPage * perPage
+  );
 
   const handleConfirmPayment = (invoiceNo) => {
     const newConfirmedPayments = new Set(confirmedPayments);
     newConfirmedPayments.add(invoiceNo);
     setConfirmedPayments(newConfirmedPayments);
-    
+
     // Update bill status to paid
-    setBills(prevBills =>
-      prevBills.map(bill =>
-        bill.invoiceNo === invoiceNo
-          ? { ...bill, status: "paid" }
-          : bill
+    setBills((prevBills) =>
+      prevBills.map((bill) =>
+        bill.invoiceNo === invoiceNo ? { ...bill, status: "paid" } : bill
       )
     );
   };
@@ -253,7 +329,9 @@ const BillManagement = () => {
                 <Clock className="text-white w-6 h-6" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-gray-800">{t.billmanagement}</h1>
+                <h1 className="text-3xl font-bold text-gray-800">
+                  {t.billmanagement}
+                </h1>
                 <p className="text-gray-600">{t.confirmationRequired}</p>
               </div>
             </div>
@@ -269,21 +347,21 @@ const BillManagement = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           <SummaryCard
             title={t.total}
-            value={bills.length}
+            value={summaryData.totalBills}
             icon={<FileText />}
             color="blue"
             subtitle="All invoices"
           />
           <SummaryCard
             title={t.pending}
-            value={bills.filter(d => d.status === "pending").length}
+            value={summaryData.totalPendingPayment}
             icon={<Clock />}
             color="amber"
             subtitle="Awaiting confirmation"
           />
           <SummaryCard
             title={t.overdue}
-            value={bills.filter(d => d.status === "overdue").length}
+            value={summaryData.totalOverdueBills}
             icon={<AlertTriangle />}
             color="red"
             subtitle="Past due date"
@@ -307,7 +385,7 @@ const BillManagement = () => {
               </button>
             )}
           </div>
-          
+
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
             {/* Date Range Filter */}
             <div className="lg:col-span-2">
@@ -392,7 +470,10 @@ const BillManagement = () => {
         {/* Results Info */}
         <div className="flex items-center justify-between text-sm text-gray-600">
           <div className="flex items-center space-x-4">
-            <span>Showing {paginatedData.length} of {filteredData.length} pending payments</span>
+            <span>
+              Showing {paginatedData.length} of {filteredData.length} pending
+              payments
+            </span>
             {hasActiveFilters && (
               <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
                 <Filter className="w-3 h-3 mr-1" />
@@ -411,35 +492,60 @@ const BillManagement = () => {
             <table className="w-full">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{t.invoiceNo}</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{t.regNo}</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{t.name}</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{t.company}</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{t.time}</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{t.amount}</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Action</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    {t.invoiceNo}
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    {t.regNo}
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    {t.name}
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    {t.company}
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    {t.time}
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    {t.amount}
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Action
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {paginatedData.map((item, idx) => (
-                  <tr key={idx} className="hover:bg-gray-50 transition-colors duration-200">
+                  <tr
+                    key={idx}
+                    className="hover:bg-gray-50 transition-colors duration-200"
+                  >
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{item.invoiceNo}</div>
+                      <div className="text-sm font-medium text-gray-900">
+                        {item.invoiceNo}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-600">{item.regNo}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{item.name}</div>
+                      <div className="text-sm font-medium text-gray-900">
+                        {item.name}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-600">{item.company}</div>
+                      <div className="text-sm text-gray-600">
+                        {item.company}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-600">{item.time}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-semibold text-gray-900">{item.amount}</div>
+                      <div className="text-sm font-semibold text-gray-900">
+                        {item.amount}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       <div className="flex space-x-2">
@@ -510,8 +616,13 @@ const BillManagement = () => {
         {paginatedData.length === 0 && (
           <div className="bg-white rounded-2xl p-12 text-center border border-gray-100">
             <Clock className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-600 mb-2">No pending payments found</h3>
-            <p className="text-gray-500">All payments have been confirmed or try adjusting your filter criteria</p>
+            <h3 className="text-lg font-semibold text-gray-600 mb-2">
+              No pending payments found
+            </h3>
+            <p className="text-gray-500">
+              All payments have been confirmed or try adjusting your filter
+              criteria
+            </p>
           </div>
         )}
       </div>
@@ -520,7 +631,9 @@ const BillManagement = () => {
       {isViewModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 max-w-md w-full">
-            <h3 className="text-lg font-semibold mb-4">Bill Details - {selectedBill?.invoiceNo}</h3>
+            <h3 className="text-lg font-semibold mb-4">
+              Bill Details - {selectedBill?.invoiceNo}
+            </h3>
             <div className="space-y-3">
               <div className="flex justify-between">
                 <span className="text-gray-600">Reg No:</span>
@@ -540,7 +653,9 @@ const BillManagement = () => {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Amount:</span>
-                <span className="font-bold text-lg">{selectedBill?.amount}</span>
+                <span className="font-bold text-lg">
+                  {selectedBill?.amount}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Collector:</span>
@@ -580,17 +695,23 @@ const SummaryCard = ({ title, value, icon, color, subtitle }) => {
   };
 
   const backgroundColors = {
-    blue: '#3b82f6, #4f46e5',
-    amber: '#f59e0b, #ea580c',
-    red: '#ef4444, #f43f5e'
+    blue: "#3b82f6, #4f46e5",
+    amber: "#f59e0b, #ea580c",
+    red: "#ef4444, #f43f5e",
   };
 
   return (
     <div className="group relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl -z-10"
-           style={{background: `linear-gradient(to right, ${backgroundColors[color]})`}}></div>
-      
-      <div className={`bg-gradient-to-r ${colorClasses[color]} p-6 rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 text-white relative`}>
+      <div
+        className="absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl -z-10"
+        style={{
+          background: `linear-gradient(to right, ${backgroundColors[color]})`,
+        }}
+      ></div>
+
+      <div
+        className={`bg-gradient-to-r ${colorClasses[color]} p-6 rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 text-white relative`}
+      >
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <p className="text-white/80 text-sm font-medium mb-1">{title}</p>
@@ -631,7 +752,9 @@ const PendingBillCard = ({ item, t, onConfirmPayment, onView }) => (
       </div>
       <div className="flex justify-between">
         <span className="text-sm text-gray-600">{t.company}:</span>
-        <span className="text-sm font-medium text-gray-800">{item.company}</span>
+        <span className="text-sm font-medium text-gray-800">
+          {item.company}
+        </span>
       </div>
       <div className="flex justify-between">
         <span className="text-sm text-gray-600">{t.time}:</span>
