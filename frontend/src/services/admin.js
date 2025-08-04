@@ -23,3 +23,14 @@ export const deleteUser = async (userId) => {
     throw error;
   }
 };
+
+  export const editUser = async (userId) => {
+  try {
+    const response = await api.put(`api/admin/update?id=${userId}`);
+    console.log("Updated user:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating user:", error);
+    throw error;
+  }
+};

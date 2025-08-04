@@ -1,10 +1,6 @@
 import React, { useCallback, useMemo, useState, useEffect } from "react";
-import { fetchAllUser } from "../../services/admin";
+import { fetchAllUser,deleteUser,editUser } from "../../services/admin";
 
-const deleteUser = async (userId) => {
-  console.log("Deleting user:", userId);
-  return Promise.resolve();
-};
 
 const adminRegister = async (userData) => {
   console.log("Creating user:", userData);
