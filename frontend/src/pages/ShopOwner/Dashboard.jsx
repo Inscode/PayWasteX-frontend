@@ -94,7 +94,7 @@ const ShopOwnerDashboard = () => {
                 </button>
                 <div>
                   <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                    Complete Billing History
+                    All Billing History
                   </h1>
                   <p className="text-slate-600 mt-1">View all your billing records and payment history</p>
                 </div>
@@ -222,7 +222,7 @@ const ShopOwnerDashboard = () => {
                     <th className="text-left py-4 px-6 text-sm font-semibold text-slate-600">Amount Paid</th>
                     <th className="text-left py-4 px-6 text-sm font-semibold text-slate-600">Paid Date</th>
                     <th className="text-left py-4 px-6 text-sm font-semibold text-slate-600">Status</th>
-                    <th className="text-center py-4 px-6 text-sm font-semibold text-slate-600">Actions</th>
+                    {/* <th className="text-center py-4 px-6 text-sm font-semibold text-slate-600">Actions</th> */}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
@@ -242,7 +242,7 @@ const ShopOwnerDashboard = () => {
                           {getStatusBadge(bill.status)}
                         </div>
                       </td>
-                      <td className="py-4 px-6 text-center">
+                      {/* <td className="py-4 px-6 text-center">
                         <div className="flex justify-center gap-2">
                           <button className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors duration-200">
                             <Eye className="w-4 h-4" />
@@ -251,7 +251,7 @@ const ShopOwnerDashboard = () => {
                             <Download className="w-4 h-4" />
                           </button>
                         </div>
-                      </td>
+                      </td> */}
                     </tr>
                   ))}
                 </tbody>
