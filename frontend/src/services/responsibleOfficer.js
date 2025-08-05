@@ -40,3 +40,13 @@ export const getAllZOnes = async () => {
     throw error;
   }
 };  
+
+export const addZOnes = async (formData) => { 
+  try {
+    const response = await api.post("responsibleOfficer/add-zone", formData);
+    return response.data;
+  } catch (error) {
+    console.error("Error add Zone data:", error);
+    throw error;
+  }
+};  

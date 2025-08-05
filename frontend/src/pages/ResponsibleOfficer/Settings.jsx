@@ -21,7 +21,7 @@ import {
   User,
 } from "lucide-react";
 
-import { getAllZOnes } from "../../services/responsibleOfficer";
+import { getAllZOnes, addZOnes } from "../../services/responsibleOfficer";
 
 const ResponsibleOfficerSettings = () => {
   const [activeTab, setActiveTab] = useState("zones");
@@ -173,7 +173,7 @@ const ResponsibleOfficerSettings = () => {
     setShowAddModal(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const newItem = {
       ...formData,
       id: editingItem ? editingItem.id : Date.now(),
@@ -181,9 +181,21 @@ const ResponsibleOfficerSettings = () => {
 
     if (activeTab === "zones") {
       if (editingItem) {
-        setZones(zones.map((z) => (z.id === editingItem.id ? newItem : z)));
+        // Update existing zone (you'll need to implement this in your service)
+        // await updateZone(formData);
+        const updatedZones = zones.map((z) =>
+          z.id === editingItem.id ? { ...formData, id: editingItem.id } : z
+        );
+        setZones(updatedZones);
       } else {
-        setZones([...zones, { ...newItem, businesses: 0, status: "active" }]);
+        // Add new zone
+        const response = await addZOnes(formData);
+        const newZone = {
+          zoneCode: response.zoneCode,
+          zoneName: response.zoneName,
+          description: response.description,
+        };
+        setZones([...zones, newZone]);
       }
     } else if (activeTab === "customers") {
       if (editingItem) {
@@ -595,7 +607,12 @@ const Modal = ({
   zones,
 }) => {
   const updateFormData = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    const newFormData = { ...formData, [field]: value };
+    setFormData(newFormData);
+
+    // Log the updated form data
+    console.log("Form Data Updated:", newFormData);
+    console.log(`Field "${field}" changed to:`, value);
   };
 
   const renderFormFields = () => {
@@ -610,9 +627,12 @@ const Modal = ({
                 </label>
                 <input
                   type="text"
-                  value={formData.code || ""}
-                  onChange={(e) => updateFormData("code", e.target.value)}
-                  placeholder="e.g., A1"
+                  value={formData.zoneCode || ""}
+                  onChange={(e) => {
+                    console.log("Zone Code:", e.target.value);
+                    updateFormData("zoneCode", e.target.value);
+                  }}
+                  placeholder="e.g., A01"
                   className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
                 />
               </div>
@@ -622,9 +642,12 @@ const Modal = ({
                 </label>
                 <input
                   type="text"
-                  value={formData.name || ""}
-                  onChange={(e) => updateFormData("name", e.target.value)}
-                  placeholder="e.g., Colombo Central"
+                  value={formData.zoneName || ""}
+                  onChange={(e) => {
+                    console.log("Zone Name:", e.target.value);
+                    updateFormData("zoneName", e.target.value);
+                  }}
+                  placeholder="e.g., Anuradhapura"
                   className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
                 />
               </div>
@@ -635,7 +658,10 @@ const Modal = ({
               </label>
               <textarea
                 value={formData.description || ""}
-                onChange={(e) => updateFormData("description", e.target.value)}
+                onChange={(e) => {
+                  console.log("Description:", e.target.value);
+                  updateFormData("description", e.target.value);
+                }}
                 placeholder="Brief description of the zone"
                 rows={3}
                 className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
