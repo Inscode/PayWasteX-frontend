@@ -18,10 +18,10 @@ export default function RoleButtonGroup() {
       { label: "Audit Logs", path: "/admin/auditLogs" },
       { label: "System Settings", path: "/admin/systemSettings" },
     ],
-    SHOPOWNER: [
-      { label: "Dashboard", path: "/shopOwner/dashboard" },
-      { label: "Billing History", path: "/shopOwner/bills" },
-    ],
+    // SHOPOWNER: [
+    //   { label: "Dashboard", path: "/customer/dashboard" },
+    //   { label: "Billing History", path: "/customer/bills" },
+    // ],
     RESPONSIBLEOFFICER: [
       { label: "Dashboard", path: "/responsibleOfficer/dashboard" },
       { label: "Bill Management", path: "/responsibleOfficer/billmanagement" },
@@ -32,6 +32,8 @@ export default function RoleButtonGroup() {
         path: "/responsibleOfficer/customerdetails",
       },
       { label: "Settings", path: "/responsibleOfficer/settings" },
+
+      {label: "Collector Assign", path: "/responsibleOfficer/assigntocollect"}
     ],
     FEECOLLECTOR: [{ label: "Dashboard", path: "/feeCollector/dashboard" }],
   };
