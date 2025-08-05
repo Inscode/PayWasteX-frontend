@@ -59,8 +59,6 @@ const ShopOwnerRegister = () => {
     try {
       const customerData = await createCustomer(form, "CUSTOMER");
       console.log("Registration successful:", customerData);
-
-      // Clear form data after successful registration
       setForm({
         fullName: "",
         nicOrRegNo: "",
@@ -73,11 +71,7 @@ const ShopOwnerRegister = () => {
         city: "",
         confirmPassword: "",
       });
-
-      // Clear password error
       setPasswordError("");
-
-      // Show success notification
       setSuccessMessage("Registration successful! Welcome to PayWasteX!");
       setTimeout(() => setSuccessMessage(""), 4000); // Auto-hides after 4 seconds
     } catch (error) {
