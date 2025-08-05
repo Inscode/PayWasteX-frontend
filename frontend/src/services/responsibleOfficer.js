@@ -21,3 +21,12 @@ export const feeCollectorTotalPayment = async () => {
   }
 };   
 
+export const billManagementCard = async () => {
+  try {
+    const response = await api.get("responsibleOfficer/bill-management-stats");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching Bill Management Card data:", error);
+    throw error;
+  }
+};  
