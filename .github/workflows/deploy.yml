@@ -22,6 +22,7 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+        working-directory: ./frontend
 
       - name: Run SonarQube Analysis
         env:
@@ -33,3 +34,4 @@ jobs:
             -Dsonar.projectName="Paywastex Frontend" \
             -Dsonar.host.url=$SONAR_HOST_URL \
             -Dsonar.login=$SONAR_TOKEN
+        working-directory: ./frontend
