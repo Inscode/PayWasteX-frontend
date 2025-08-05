@@ -30,3 +30,13 @@ export const billManagementCard = async () => {
     throw error;
   }
 };  
+
+export const getAllZOnes = async () => { 
+  try {
+    const response = await api.get("responsibleOfficer/get-zone");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching Zone data:", error);
+    throw error;
+  }
+};  
