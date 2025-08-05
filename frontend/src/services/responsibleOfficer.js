@@ -30,3 +30,23 @@ export const billManagementCard = async () => {
     throw error;
   }
 };  
+
+export const getAllZOnes = async () => { 
+  try {
+    const response = await api.get("responsibleOfficer/get-zone");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching Zone data:", error);
+    throw error;
+  }
+};  
+
+export const addZOnes = async (formData) => { 
+  try {
+    const response = await api.post("responsibleOfficer/add-zone", formData);
+    return response.data;
+  } catch (error) {
+    console.error("Error add Zone data:", error);
+    throw error;
+  }
+};  
